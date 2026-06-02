@@ -70,14 +70,22 @@ export default function Footer() {
           {/* Links */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">LIENS RAPIDES</h4>
-            {["Accueil", "Programme", "Intervenants", "Informations pratiques"].map((l) => (
-              <Link key={l} href="#" className="block text-sm text-gray-400 hover:text-white mb-2">{l}</Link>
+            {[
+              { label: "Accueil", href: "/" },
+              { label: "À propos", href: "/a-propos" },
+              { label: "Programme", href: "/programme" },
+              { label: "S'inscrire", href: "/inscription" },
+            ].map(({ label, href }) => (
+              <Link key={label} href={href} className="block text-sm text-gray-400 hover:text-white mb-2">{label}</Link>
             ))}
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">INFORMATIONS</h4>
-            {["À propos", "Partenaires", "Actualités", "Contact"].map((l) => (
-              <Link key={l} href="#" className="block text-sm text-gray-400 hover:text-white mb-2">{l}</Link>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">L'ÉVÉNEMENT</h4>
+            {[
+              { label: "Thèmes & sous-thèmes", href: "/a-propos" },
+              { label: "Devenir sponsor", href: "#" },
+            ].map(({ label, href }) => (
+              <Link key={label} href={href} className="block text-sm text-gray-400 hover:text-white mb-2">{label}</Link>
             ))}
           </div>
           <div>
