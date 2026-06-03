@@ -18,7 +18,7 @@ export default function Hero() {
         className="absolute inset-0 z-10 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(244,247,245,0.50) 0%, rgba(244,247,245,0.92) 40%, rgba(244,247,245,0.98) 70%), linear-gradient(to right, rgba(244,247,245,0.97) 30%, rgba(244,247,245,0.75) 55%, rgba(244,247,245,0.05) 100%)",
+            "linear-gradient(to right, rgba(244,247,245,0.97) 30%, rgba(244,247,245,0.75) 55%, rgba(244,247,245,0.05) 100%)",
         }}
       />
 
