@@ -31,17 +31,46 @@ export default function Hero() {
           </div>
 
           {/* Titre */}
-          <h1 className="font-heading font-black leading-[1.08] mb-5 hero-slide-up">
-            <span className="block text-gray-900 text-[2.75rem] md:text-5xl lg:text-[3.25rem]">
-              Salon Ouest Africain
+          <h1 className="font-heading font-black mb-5 hero-slide-up" style={{ lineHeight: 0.92 }}>
+            {/* Sur-titre */}
+            <span
+              className="block font-medium uppercase tracking-[0.18em] mb-3"
+              style={{ fontSize: "clamp(0.7rem, 1.2vw, 0.85rem)", color: "rgba(36,100,68,0.50)", lineHeight: 1 }}
+            >
+              Salon Ouest Africain Francophone
             </span>
-            <span className="block text-gray-900 text-[2.75rem] md:text-5xl lg:text-[3.25rem]">
-              Francophone du
+            {/* GAZ */}
+            <span
+              className="block text-gray-900"
+              style={{ fontSize: "clamp(4rem, 8vw, 6.5rem)", letterSpacing: "-0.02em" }}
+            >
+              GAZ
             </span>
-            <span className="block text-[2.75rem] md:text-5xl lg:text-[3.25rem] text-forest-600">
-              Gaz Naturel
+            {/* NATUREL — dégradé forest→gold */}
+            <span
+              className="block"
+              style={{
+                fontSize: "clamp(4rem, 8vw, 6.5rem)",
+                letterSpacing: "-0.02em",
+                background: "linear-gradient(90deg, #246444 0%, #1e5238 40%, #c49a30 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              NATUREL
             </span>
-            <span className="block text-[2.75rem] md:text-5xl lg:text-[3.25rem] text-gold-500">
+            {/* 2027 — outline */}
+            <span
+              className="block"
+              style={{
+                fontSize: "clamp(2.5rem, 5vw, 4rem)",
+                letterSpacing: "0.12em",
+                color: "transparent",
+                WebkitTextStroke: "1.5px rgba(15,45,31,0.22)",
+                lineHeight: 1.1,
+              }}
+            >
               2027
             </span>
           </h1>
