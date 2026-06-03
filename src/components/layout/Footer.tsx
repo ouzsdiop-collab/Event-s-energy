@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-900 text-white">
+    <footer className="bg-forest-900 text-white">
       {/* CTA Banner */}
       <div
         className="relative py-16 px-4 text-center"
@@ -16,7 +16,7 @@ export default function Footer() {
         <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
           Participez à la construction d&apos;un avenir gazier intégré et durable.
         </h2>
-        <p className="text-green-400 font-medium mb-8">
+        <p className="text-forest-400 font-medium mb-8">
           Rejoignez les décideurs, investisseurs et experts du secteur à Cotonou en février 2027.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -48,14 +48,14 @@ export default function Footer() {
               </span>
             )
           )}
-          <a href="#" className="text-green-600 text-sm font-medium hover:underline">
+          <a href="#" className="text-forest-600 text-sm font-medium hover:underline">
             Voir tous nos partenaires &rarr;
           </a>
         </div>
       </div>
 
       {/* Footer links */}
-      <div className="bg-navy-900 py-12 px-4">
+      <div className="bg-forest-900 py-12 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Logo col */}
           <div className="lg:col-span-1">
@@ -63,7 +63,7 @@ export default function Footer() {
               <div className="text-xs uppercase tracking-wide opacity-80">SALON OUEST AFRICAIN</div>
               <div className="text-xs uppercase tracking-wide opacity-80">FRANCOPHONE SUR LE</div>
               <div className="text-base uppercase">GAZ NATUREL</div>
-              <div className="text-green-500 text-xs mt-1">1ère ÉDITION</div>
+              <div className="text-forest-500 text-xs mt-1">1ère ÉDITION</div>
             </div>
           </div>
 

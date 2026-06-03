@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply font-sans text-gray-900 antialiased;
+    @apply font-sans text-gray-900 antialiased bg-white;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
@@ -15,18 +15,18 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded transition-colors duration-200 inline-flex items-center gap-2;
+    @apply bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-md transition-colors duration-200 inline-flex items-center gap-2;
   }
   .btn-outline {
-    @apply border-2 border-white text-white hover:bg-white hover:text-navy-900 font-semibold px-6 py-3 rounded transition-colors duration-200 inline-flex items-center gap-2;
+    @apply border-2 border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-md transition-colors duration-200 inline-flex items-center gap-2;
   }
-  .input-field {
-    @apply w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 bg-white transition-colors;
-  }
-  .btn-outline-green {
-    @apply border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white font-semibold px-6 py-3 rounded transition-colors duration-200 inline-flex items-center gap-2;
+  .btn-gold {
+    @apply border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-6 py-3 rounded-md transition-colors duration-200 inline-flex items-center gap-2;
   }
   .section-label {
-    @apply text-green-600 text-sm font-semibold uppercase tracking-widest mb-3;
+    @apply text-forest-600 text-xs font-semibold uppercase tracking-widest mb-3;
+  }
+  .input-field {
+    @apply w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 bg-white transition-colors;
   }
 }

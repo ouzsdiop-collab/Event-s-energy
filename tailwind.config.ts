@@ -9,18 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: {
-          900: "#0D1B2A",
-          800: "#112436",
-          700: "#1a3550",
-          600: "#1e3d5c",
+        forest: {
+          900: "#0f2d1f",
+          800: "#163d2a",
+          700: "#1e5238",
+          600: "#246444",
+          500: "#2d7a4f",
         },
-        green: {
-          600: "#16a34a",
-          500: "#22c55e",
-          400: "#4ade80",
+        gold: {
+          600: "#a07828",
+          500: "#c49a30",
+          400: "#d4aa3a",
+          300: "#e8c96a",
         },
-        gold: "#d4a017",
+        sage: {
+          100: "#f0f5f2",
+          50:  "#f7faf8",
+        },
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
