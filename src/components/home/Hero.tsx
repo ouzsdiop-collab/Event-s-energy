@@ -130,29 +130,42 @@ export default function Hero() {
       </div>
 
       {/* Barre de stats */}
-      <div className="relative z-20 bg-white/80 backdrop-blur-sm border-t border-gray-200">
+      <div className="relative z-20 bg-white border-t border-gray-100">
+        {/* Ligne dorée décorative */}
+        <div className="h-[2px]" style={{ background: "linear-gradient(to right, transparent, #c49a30 25%, #d4aa3a 50%, #c49a30 75%, transparent)" }} />
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap divide-x divide-gray-200">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
             {[
-              { value: "200+", label: "Participants" },
-              { value: "8",    label: "Pays UEMOA" },
-              { value: "4",    label: "Thématiques" },
-              { value: "3",    label: "Jours d'échanges" },
-              { value: null,   label: "Rencontres B2B", accent: true },
+              { value: "200+", label: "Participants attendus",     desc: "Décideurs, experts & investisseurs" },
+              { value: "8",    label: "Pays de l'espace UEMOA",   desc: "Représentation régionale" },
+              { value: "4",    label: "Thématiques stratégiques", desc: "Panels, tables rondes & ateliers" },
+              { value: "3",    label: "Jours d'échanges",         desc: "3–5 février 2027, Cotonou" },
             ].map((s, i) => (
-              <div key={i} className="flex items-center gap-3 px-6 py-4 flex-1 min-w-36">
-                <div>
-                  {s.value && (
-                    <div className="text-2xl font-heading font-black text-gold-500 leading-none">
-                      {s.value}
-                    </div>
-                  )}
-                  <div className={`text-xs font-medium mt-0.5 ${s.accent ? "text-forest-600 font-semibold text-sm" : "text-gray-500"}`}>
-                    {s.label}
-                  </div>
+              <div key={i} className="px-6 py-6 flex flex-col gap-1 group">
+                <div
+                  className="font-heading font-black leading-none"
+                  style={{
+                    fontSize: "clamp(2rem, 3.5vw, 2.75rem)",
+                    background: "linear-gradient(135deg, #1e5238 0%, #c49a30 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  {s.value}
                 </div>
+                <div className="text-sm font-semibold text-gray-800 mt-1">{s.label}</div>
+                <div className="text-xs text-gray-400 font-normal leading-snug">{s.desc}</div>
               </div>
             ))}
+          </div>
+          {/* Rencontres B2B — bandeau bas */}
+          <div className="border-t border-gray-100 py-3 flex items-center justify-center gap-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-[0.16em] text-forest-600">
+              Rencontres B2B organisées entre participants
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
           </div>
         </div>
       </div>
