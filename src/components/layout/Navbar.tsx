@@ -4,17 +4,19 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/Logo";
 import { ChevronRight } from "lucide-react";
-
-const navLinks = [
-  { href: "/a-propos", label: "À propos" },
-  { href: "/programme", label: "Programme" },
-  { href: "/intervenants", label: "Intervenants" },
-  { href: "/inscription", label: "Inscription" },
-];
+import { useLang } from "@/lib/i18n";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { lang, setLang, t } = useLang();
+
+  const navLinks = [
+    { href: "/a-propos", label: t.nav.about },
+    { href: "/programme", label: t.nav.programme },
+    { href: "/intervenants", label: t.nav.speakers },
+    { href: "/inscription", label: t.nav.register },
+  ];
 
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
@@ -41,15 +43,21 @@ export default function Navbar() {
         {/* Right actions */}
         <div className="hidden lg:flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-            <button className="text-forest-700 font-bold">FR</button>
+            <button
+              onClick={() => setLang("fr")}
+              className={`transition-colors ${lang === "fr" ? "text-forest-700 font-bold" : "hover:text-forest-700"}`}
+            >FR</button>
             <span className="text-gray-300">|</span>
-            <button className="hover:text-forest-700 transition-colors">EN</button>
+            <button
+              onClick={() => setLang("en")}
+              className={`transition-colors ${lang === "en" ? "text-forest-700 font-bold" : "hover:text-forest-700"}`}
+            >EN</button>
           </div>
           <Link
             href="/inscription"
             className="bg-forest-700 hover:bg-forest-800 text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-colors inline-flex items-center gap-1.5"
           >
-            Inscription <ChevronRight className="w-3.5 h-3.5" />
+            {t.nav.registerCta} <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
@@ -72,9 +80,16 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="pt-3">
+          <div className="flex items-center gap-3 pt-2 pb-1">
+            <button onClick={() => setLang("fr")}
+              className={`text-sm font-semibold ${lang === "fr" ? "text-forest-700" : "text-gray-400"}`}>FR</button>
+            <span className="text-gray-300">|</span>
+            <button onClick={() => setLang("en")}
+              className={`text-sm font-semibold ${lang === "en" ? "text-forest-700" : "text-gray-400"}`}>EN</button>
+          </div>
+          <div className="pt-2">
             <Link href="/inscription" className="block bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md text-center">
-              Inscription
+              {t.nav.registerCta}
             </Link>
           </div>
         </div>

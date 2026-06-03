@@ -3,120 +3,81 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Plus, Minus } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
 interface Speaker {
   id: string;
   name: string;
-  role: string;
+  role: string; roleEn: string;
   org: string;
-  country: string;
+  country: string; countryEn: string;
   flag: string;
-  topic: string;
+  topic: string; topicEn: string;
   image: string;
   confirmed: boolean;
 }
 
 const SPEAKERS: Speaker[] = [
-  {
-    id: "01",
-    name: "Amadou Hott",
-    role: "Envoyé spécial du Président",
+  { id: "01", name: "Amadou Hott",
+    role: "Envoyé spécial du Président", roleEn: "Special Envoy of the President",
     org: "Banque Africaine de Développement",
-    country: "Sénégal", flag: "🇸🇳",
-    topic: "Financement des infrastructures gazières",
-    image: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=800&q=80",
-    confirmed: true,
-  },
-  {
-    id: "02",
-    name: "Romuald Wadagni",
-    role: "Ancien Ministre de l'Économie",
+    country: "Sénégal", countryEn: "Senegal", flag: "🇸🇳",
+    topic: "Financement des infrastructures gazières", topicEn: "Financing gas infrastructure",
+    image: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=800&q=80", confirmed: true },
+  { id: "02", name: "Romuald Wadagni",
+    role: "Ancien Ministre de l'Économie", roleEn: "Former Minister of Economy",
     org: "République du Bénin",
-    country: "Bénin", flag: "🇧🇯",
-    topic: "Harmonisation des cadres réglementaires UEMOA",
-    image: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=800&q=80",
-    confirmed: true,
-  },
-  {
-    id: "03",
-    name: "Fatoumata Bah",
-    role: "Vice-Présidente Énergie",
+    country: "Bénin", countryEn: "Benin", flag: "🇧🇯",
+    topic: "Harmonisation des cadres réglementaires UEMOA", topicEn: "Harmonising UEMOA regulatory frameworks",
+    image: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=800&q=80", confirmed: true },
+  { id: "03", name: "Fatoumata Bah",
+    role: "Vice-Présidente Énergie", roleEn: "VP Energy",
     org: "Afreximbank",
-    country: "Guinée", flag: "🇬🇳",
-    topic: "Mobilisation des capitaux privés",
-    image: "",
-    confirmed: true,
-  },
-  {
-    id: "04",
-    name: "Mahaman Laouan Gaya",
-    role: "Secrétaire Général",
+    country: "Guinée", countryEn: "Guinea", flag: "🇬🇳",
+    topic: "Mobilisation des capitaux privés", topicEn: "Mobilising private capital",
+    image: "", confirmed: true },
+  { id: "04", name: "Mahaman Laouan Gaya",
+    role: "Secrétaire Général", roleEn: "Secretary General",
     org: "APPO — Africa Petroleum Producers' Organization",
-    country: "Niger", flag: "🇳🇪",
-    topic: "Souveraineté énergétique africaine",
-    image: "",
-    confirmed: true,
-  },
-  {
-    id: "05",
-    name: "Aïssatou Diallo",
-    role: "Directrice des Investissements",
+    country: "Niger", countryEn: "Niger", flag: "🇳🇪",
+    topic: "Souveraineté énergétique africaine", topicEn: "African energy sovereignty",
+    image: "", confirmed: true },
+  { id: "05", name: "Aïssatou Diallo",
+    role: "Directrice des Investissements", roleEn: "Director of Investments",
     org: "BOAD",
-    country: "Sénégal", flag: "🇸🇳",
-    topic: "Financement structuré de projets gaziers",
-    image: "",
-    confirmed: true,
-  },
-  {
-    id: "06",
-    name: "Wole Ogunsanya",
-    role: "Chief Executive Officer",
+    country: "Sénégal", countryEn: "Senegal", flag: "🇸🇳",
+    topic: "Financement structuré de projets gaziers", topicEn: "Structured financing of gas projects",
+    image: "", confirmed: true },
+  { id: "06", name: "Wole Ogunsanya",
+    role: "Chief Executive Officer", roleEn: "Chief Executive Officer",
     org: "NNPC Gas Marketing Ltd.",
-    country: "Nigeria", flag: "🇳🇬",
-    topic: "Marchés régionaux du gaz naturel",
-    image: "https://images.unsplash.com/photo-1542909168-82c3e7fdcd5f?w=800&q=80",
-    confirmed: true,
-  },
-  {
-    id: "07",
-    name: "Cheikh Tidiane Mbaye",
-    role: "Directeur Stratégie Afrique",
+    country: "Nigeria", countryEn: "Nigeria", flag: "🇳🇬",
+    topic: "Marchés régionaux du gaz naturel", topicEn: "Regional natural gas markets",
+    image: "https://images.unsplash.com/photo-1542909168-82c3e7fdcd5f?w=800&q=80", confirmed: true },
+  { id: "07", name: "Cheikh Tidiane Mbaye",
+    role: "Directeur Stratégie Afrique", roleEn: "Head of Africa Strategy",
     org: "TotalEnergies",
-    country: "Sénégal", flag: "🇸🇳",
-    topic: "Investissement privé dans la chaîne de valeur",
-    image: "",
-    confirmed: true,
-  },
-  {
-    id: "08",
-    name: "Kassimu Issa",
-    role: "Commissaire Énergie",
+    country: "Sénégal", countryEn: "Senegal", flag: "🇸🇳",
+    topic: "Investissement privé dans la chaîne de valeur", topicEn: "Private investment across the value chain",
+    image: "", confirmed: true },
+  { id: "08", name: "Kassimu Issa",
+    role: "Commissaire Énergie", roleEn: "Energy Commissioner",
     org: "CEDEAO",
-    country: "Ghana", flag: "🇬🇭",
-    topic: "Intégration régionale des réseaux gaziers",
-    image: "",
-    confirmed: true,
-  },
-  {
-    id: "09",
-    name: "Kofi Asante Mensah",
-    role: "Directeur Général",
+    country: "Ghana", countryEn: "Ghana", flag: "🇬🇭",
+    topic: "Intégration régionale des réseaux gaziers", topicEn: "Regional gas network integration",
+    image: "", confirmed: true },
+  { id: "09", name: "Kofi Asante Mensah",
+    role: "Directeur Général", roleEn: "Chief Executive Officer",
     org: "Ghana National Gas Company",
-    country: "Ghana", flag: "🇬🇭",
-    topic: "Valorisation du gaz associé",
-    image: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=800&q=80",
-    confirmed: false,
-  },
-  {
-    id: "10",
-    name: "Amara Kouyaté",
-    role: "Directrice Développement Durable",
+    country: "Ghana", countryEn: "Ghana", flag: "🇬🇭",
+    topic: "Valorisation du gaz associé", topicEn: "Associated gas monetisation",
+    image: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=800&q=80", confirmed: false },
+  { id: "10", name: "Amara Kouyaté",
+    role: "Directrice Développement Durable", roleEn: "Director of Sustainable Development",
     org: "IFC — Groupe Banque Mondiale",
-    country: "Mali", flag: "🇲🇱",
-    topic: "Transition énergétique & standards ESG",
-    image: "https://images.unsplash.com/photo-1618498082410-b4aa22193b9e?w=800&q=80",
-    confirmed: false,
-  },
+    country: "Mali", countryEn: "Mali", flag: "🇲🇱",
+    topic: "Transition énergétique & standards ESG", topicEn: "Energy transition & ESG standards",
+    image: "https://images.unsplash.com/photo-1618498082410-b4aa22193b9e?w=800&q=80", confirmed: false },
 ];
 
 export default function IntervenantsPage() {
@@ -127,6 +88,8 @@ export default function IntervenantsPage() {
   const headerRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
   const rafRef = useRef<number | null>(null);
+  const { lang, t } = useLang();
+  const iv = t.intervenants;
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -165,13 +128,20 @@ export default function IntervenantsPage() {
   const activeSpeaker = SPEAKERS.find((s) => s.id === activeId);
   const confirmed = SPEAKERS.filter(s => s.confirmed).length;
 
+  const confirmedLabel = lang === "en" ? "confirmed" : "confirmés";
+  const totalLabel = lang === "en"
+    ? `${SPEAKERS.length} speakers total`
+    : `${SPEAKERS.length} intervenants au total`;
+  const noteText = lang === "en"
+    ? "More speakers will be announced in the coming weeks. Hover over a name to see the profile."
+    : "D'autres intervenants seront annoncés dans les prochaines semaines. Passez la souris sur un nom pour découvrir le profil.";
+
   return (
     <div
       className="relative min-h-screen w-full cursor-default"
       style={{ backgroundColor: "#f4f7f5" }}
       onMouseMove={handleMouseMove}
     >
-      {/* Subtle top gradient */}
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-[40vh]"
         style={{ background: "linear-gradient(to bottom, rgba(36,100,68,0.04) 0%, transparent 100%)" }} />
 
@@ -183,66 +153,49 @@ export default function IntervenantsPage() {
           className="mb-16 transition-all duration-700"
           style={{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? "translateY(0)" : "translateY(24px)" }}
         >
-          {/* Top meta row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
             <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: "#c49a30" }}>
-              ILS PRENDRONT LA PAROLE
+              {iv.eyebrow}
             </p>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-forest-600 animate-pulse" />
                 <span className="text-xs font-medium" style={{ color: "rgba(15,45,31,0.55)" }}>
-                  {confirmed} confirmés
+                  {confirmed} {confirmedLabel}
                 </span>
               </div>
               <span className="w-px h-3 bg-gray-300" />
-              <span className="text-xs" style={{ color: "rgba(15,45,31,0.40)" }}>
-                {SPEAKERS.length} intervenants au total
-              </span>
+              <span className="text-xs" style={{ color: "rgba(15,45,31,0.40)" }}>{totalLabel}</span>
               <Link href="/programme"
                 className="hidden md:inline-flex items-center gap-1 text-xs font-semibold transition-colors duration-200"
-                style={{ color: "#246444" }}
-              >
-                Programme <ArrowUpRight className="w-3.5 h-3.5" />
+                style={{ color: "#246444" }}>
+                {iv.viewProg} <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
 
-          {/* Monumental title */}
           <h1 className="font-heading font-black leading-[0.88] mb-10">
-            <span className="block" style={{
-              fontSize: "clamp(3.2rem, 8vw, 7rem)",
-              letterSpacing: "-0.03em",
-              color: "#0f2d1f",
-            }}>
-              INTER
+            <span className="block" style={{ fontSize: "clamp(3.2rem, 8vw, 7rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
+              {iv.title1}
             </span>
             <span className="block" style={{
-              fontSize: "clamp(3.2rem, 8vw, 7rem)",
-              letterSpacing: "-0.03em",
+              fontSize: "clamp(3.2rem, 8vw, 7rem)", letterSpacing: "-0.03em",
               background: "linear-gradient(90deg, #246444 0%, #1e5238 50%, #c49a30 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
             }}>
-              VENANTS
+              {iv.title2}
             </span>
           </h1>
 
-          {/* Stats strip */}
           <div className="flex flex-wrap gap-4 mb-8">
-            {[
-              { n: `${confirmed}`, label: "Confirmés" },
-              { n: "8", label: "Pays représentés" },
-              { n: "10+", label: "Organisations" },
-              { n: "4", label: "Thématiques" },
-            ].map((s) => (
+            {iv.stats.map((s) => (
               <div key={s.label} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
-                <span className="font-heading font-black text-xl" style={{ color: "#246444" }}>{s.n}</span>
+                <span className="font-heading font-black text-xl" style={{ color: "#246444" }}>{s.value}</span>
                 <span className="text-xs text-gray-500">{s.label}</span>
               </div>
             ))}
           </div>
 
-          {/* Divider */}
           <div className="h-px w-full" style={{ background: "linear-gradient(to right, rgba(36,100,68,0.30), rgba(196,154,48,0.20), transparent)" }} />
         </div>
 
@@ -256,6 +209,8 @@ export default function IntervenantsPage() {
               isActive={activeId === sp.id}
               isAnyActive={activeId !== null}
               isMobile={isMobile}
+              lang={lang}
+              confirmedText={iv.confirmed}
               onEnter={() => !isMobile && setActiveId(sp.id)}
               onLeave={() => !isMobile && setActiveId(null)}
               onToggle={() => isMobile && setActiveId(activeId === sp.id ? null : sp.id)}
@@ -263,17 +218,14 @@ export default function IntervenantsPage() {
           ))}
         </div>
 
-        {/* Bottom note */}
         <div className="mt-14 pt-7 flex items-center gap-3"
           style={{ borderTop: "1px solid rgba(36,100,68,0.12)" }}>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "#c49a30" }} />
-          <p className="text-xs" style={{ color: "rgba(15,45,31,0.40)" }}>
-            D&apos;autres intervenants seront annoncés dans les prochaines semaines. Passez la souris sur un nom pour découvrir le profil.
-          </p>
+          <p className="text-xs" style={{ color: "rgba(15,45,31,0.40)" }}>{noteText}</p>
         </div>
       </div>
 
-      {/* Desktop floating card — dark panel */}
+      {/* Floating card */}
       {!isMobile && activeSpeaker && (
         <div
           className="pointer-events-none fixed left-0 top-0 z-50 w-72 rounded-2xl overflow-hidden"
@@ -285,11 +237,7 @@ export default function IntervenantsPage() {
           }}
         >
           {activeSpeaker.image ? (
-            <img
-              src={activeSpeaker.image}
-              alt={activeSpeaker.name}
-              className="w-full h-56 object-cover object-top"
-            />
+            <img src={activeSpeaker.image} alt={activeSpeaker.name} className="w-full h-56 object-cover object-top" />
           ) : (
             <div className="w-full h-56 flex items-center justify-center"
               style={{ background: "linear-gradient(135deg, #1e5238 0%, #0f2d1f 100%)" }}>
@@ -307,17 +255,19 @@ export default function IntervenantsPage() {
                 style={{ color: activeSpeaker.confirmed ? "#c49a30" : "rgba(255,255,255,0.40)" }}>
                 <span className="w-1.5 h-1.5 rounded-full"
                   style={{ backgroundColor: activeSpeaker.confirmed ? "#c49a30" : "rgba(255,255,255,0.30)" }} />
-                {activeSpeaker.confirmed ? "Confirmé" : "À confirmer"}
+                {activeSpeaker.confirmed
+                  ? (lang === "en" ? "Confirmed" : "Confirmé")
+                  : (lang === "en" ? "To be confirmed" : "À confirmer")}
               </span>
               <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-                {activeSpeaker.flag} {activeSpeaker.country}
+                {activeSpeaker.flag} {lang === "en" ? activeSpeaker.countryEn : activeSpeaker.country}
               </span>
             </div>
             <p className="text-sm font-bold text-white mb-0.5">{activeSpeaker.name}</p>
             <p className="text-xs mb-2" style={{ color: "rgba(255,255,255,0.50)" }}>{activeSpeaker.org}</p>
             <div className="pt-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
               <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
-                {activeSpeaker.topic}
+                {lang === "en" ? activeSpeaker.topicEn : activeSpeaker.topic}
               </p>
             </div>
           </div>
@@ -332,11 +282,11 @@ export default function IntervenantsPage() {
 }
 
 function SpeakerRow({
-  data, index, isActive, isAnyActive, isMobile,
+  data, index, isActive, isAnyActive, isMobile, lang, confirmedText,
   onEnter, onLeave, onToggle,
 }: {
   data: Speaker; index: number;
-  isActive: boolean; isAnyActive: boolean; isMobile: boolean;
+  isActive: boolean; isAnyActive: boolean; isMobile: boolean; lang: string; confirmedText: string;
   onEnter: () => void; onLeave: () => void; onToggle: () => void;
 }) {
   const [mounted, setMounted] = useState(false);
@@ -352,6 +302,11 @@ function SpeakerRow({
   }, [index]);
 
   const dimmed = isAnyActive && !isActive;
+  const topic = lang === "en" ? data.topicEn : data.topic;
+  const country = lang === "en" ? data.countryEn : data.country;
+  const confirmedBadge = data.confirmed
+    ? `✓ ${confirmedText}`
+    : (lang === "en" ? "To be confirmed" : "À confirmer");
 
   return (
     <div
@@ -370,26 +325,14 @@ function SpeakerRow({
     >
       <div className="flex flex-col py-6 md:flex-row md:items-center md:py-8"
         style={{ transition: "padding 0.3s ease" }}>
-
-        {/* Left block */}
         <div className="flex items-center gap-6 md:gap-8 flex-1 min-w-0"
-          style={{
-            transform: isActive ? "translateX(12px)" : "translateX(0)",
-            transition: "transform 0.35s ease",
-          }}>
-
-          {/* Index */}
+          style={{ transform: isActive ? "translateX(12px)" : "translateX(0)", transition: "transform 0.35s ease" }}>
           <span className="font-mono text-xs shrink-0 w-6 text-right" style={{ color: "rgba(36,100,68,0.25)" }}>
             {data.id}
           </span>
-
-          {/* Name + org */}
           <div className="min-w-0">
             <h2 className="font-heading font-black tracking-tight leading-none transition-colors duration-300 truncate"
-              style={{
-                fontSize: "clamp(1.3rem, 3.5vw, 2.8rem)",
-                color: isActive ? "#0f2d1f" : "rgba(15,45,31,0.35)",
-              }}>
+              style={{ fontSize: "clamp(1.3rem, 3.5vw, 2.8rem)", color: isActive ? "#0f2d1f" : "rgba(15,45,31,0.35)" }}>
               {data.name}
             </h2>
             <p className="text-xs mt-1.5 font-medium transition-colors duration-300 truncate"
@@ -399,53 +342,38 @@ function SpeakerRow({
           </div>
         </div>
 
-        {/* Right block */}
         <div className="mt-3 flex items-center gap-4 pl-12 md:mt-0 md:pl-0 md:gap-8">
-
-          {/* Role + country */}
           <div className="text-right hidden md:block">
             <p className="text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300"
               style={{ color: isActive ? "rgba(15,45,31,0.55)" : "rgba(15,45,31,0.22)" }}>
-              {data.role}
+              {lang === "en" ? data.roleEn : data.role}
             </p>
             <p className="text-xs mt-0.5 transition-colors duration-300"
               style={{ color: isActive ? "#c49a30" : "rgba(196,154,48,0.35)" }}>
-              {data.flag}&nbsp;{data.country}
+              {data.flag}&nbsp;{country}
             </p>
           </div>
-
-          {/* Topic chip — visible on active desktop */}
           <div className="hidden md:block overflow-hidden"
-            style={{
-              maxWidth: isActive ? "240px" : "0px",
-              opacity: isActive ? 1 : 0,
-              transition: "max-width 0.4s ease, opacity 0.3s ease",
-            }}>
+            style={{ maxWidth: isActive ? "240px" : "0px", opacity: isActive ? 1 : 0, transition: "max-width 0.4s ease, opacity 0.3s ease" }}>
             <span className="whitespace-nowrap text-[10px] font-medium px-3 py-1 rounded-full"
               style={{ backgroundColor: "rgba(36,100,68,0.08)", color: "#246444" }}>
-              {data.topic}
+              {topic}
             </span>
           </div>
-
-          {/* Confirmed badge */}
           <span className="hidden md:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0"
             style={{
               color: data.confirmed ? "#246444" : "rgba(15,45,31,0.30)",
               border: `1px solid ${data.confirmed ? "rgba(36,100,68,0.25)" : "rgba(15,45,31,0.10)"}`,
               background: data.confirmed ? "rgba(36,100,68,0.07)" : "transparent",
             }}>
-            {data.confirmed ? "✓ Confirmé" : "À confirmer"}
+            {confirmedBadge}
           </span>
-
-          {/* Mobile: country + toggle */}
           <div className="flex items-center gap-3 md:hidden">
             <span className="text-xs" style={{ color: "rgba(15,45,31,0.40)" }}>{data.flag}</span>
             <div style={{ color: "rgba(15,45,31,0.40)" }}>
               {isActive ? <Minus size={15} /> : <Plus size={15} />}
             </div>
           </div>
-
-          {/* Desktop arrow */}
           <div className="hidden md:block transition-all duration-300"
             style={{ opacity: isActive ? 1 : 0, transform: isActive ? "translateX(0)" : "translateX(-6px)", color: "#c49a30" }}>
             <ArrowUpRight size={22} strokeWidth={1.5} />
@@ -453,7 +381,6 @@ function SpeakerRow({
         </div>
       </div>
 
-      {/* Mobile accordion */}
       {isMobile && isActive && (
         <div className="overflow-hidden pb-5 px-4">
           <div className="rounded-xl overflow-hidden relative aspect-video">
@@ -473,18 +400,18 @@ function SpeakerRow({
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,31,20,0.88) 0%, transparent 55%)" }} />
             <div className="absolute bottom-3 left-3 right-3">
               <p className="text-xs font-semibold text-white mb-1">{data.org}</p>
-              <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.65)" }}>{data.topic}</p>
+              <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.65)" }}>{topic}</p>
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2 flex-wrap">
             <span className="text-xs px-2.5 py-1 rounded-full font-medium"
               style={{ backgroundColor: "rgba(36,100,68,0.09)", color: "#246444" }}>
-              {data.flag} {data.country}
+              {data.flag} {country}
             </span>
             {data.confirmed && (
               <span className="text-xs px-2.5 py-1 rounded-full font-bold"
                 style={{ backgroundColor: "rgba(36,100,68,0.09)", color: "#246444" }}>
-                ✓ Confirmé
+                {confirmedBadge}
               </span>
             )}
           </div>

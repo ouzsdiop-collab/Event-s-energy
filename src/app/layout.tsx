@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { LangProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Salon Ouest Africain Francophone sur le Gaz Naturel – 1ère Édition",
@@ -13,9 +14,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LangProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </LangProvider>
       </body>
     </html>
   );

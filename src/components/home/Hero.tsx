@@ -4,13 +4,16 @@ import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import Link from "next/link";
 import { Calendar, MapPin, ChevronRight } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
 export default function Hero() {
+  const { t } = useLang();
+  const h = t.hero;
+
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#f4f7f5]">
       <EnergyCanvas />
 
-      {/* Overlay — laisse les particules visibles à droite */}
       <div
         className="absolute inset-0 z-10 pointer-events-none"
         style={{
@@ -19,35 +22,28 @@ export default function Hero() {
         }}
       />
 
-      {/* Contenu */}
       <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center py-24">
         <div className="max-w-xl">
-
-          {/* Badge */}
           <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/8 border border-forest-600/25 rounded-full px-4 py-1.5 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
             <span className="text-xs font-semibold text-forest-700 uppercase tracking-[0.12em]">
-              1ère Édition &nbsp;·&nbsp; Cotonou, Bénin
+              {h.badge}
             </span>
           </div>
 
-          {/* Titre monumental */}
           <h1 className="font-heading font-black mb-6 hero-slide-up" style={{ lineHeight: 0.92 }}>
-            {/* Sur-titre */}
             <span
               className="block font-medium uppercase tracking-[0.18em] mb-4"
               style={{ fontSize: "clamp(0.65rem, 1.1vw, 0.80rem)", color: "rgba(36,100,68,0.45)", lineHeight: 1 }}
             >
-              Salon Ouest Africain Francophone
+              {h.supertitle}
             </span>
-            {/* GAZ */}
             <span
               className="block text-gray-900"
               style={{ fontSize: "clamp(3.8rem, 7.5vw, 6.2rem)", letterSpacing: "-0.02em" }}
             >
               GAZ
             </span>
-            {/* NATUREL — dégradé */}
             <span
               className="block"
               style={{
@@ -61,7 +57,6 @@ export default function Hero() {
             >
               NATUREL
             </span>
-            {/* 2027 — outline */}
             <span
               className="block"
               style={{
@@ -76,24 +71,20 @@ export default function Hero() {
             </span>
           </h1>
 
-          {/* Trait doré */}
           <div className="w-12 h-[3px] bg-gold-400 rounded-full mb-6 hero-fade" />
 
-          {/* Sous-titre */}
           <p className="text-gray-500 text-base leading-[1.75] mb-8 max-w-md hero-fade">
-            La rencontre régionale de référence pour les acteurs du secteur gazier
-            de l&apos;espace UEMOA : investisseurs, opérateurs et décideurs publics.
+            {h.subtitle}
           </p>
 
-          {/* Chips info */}
           <div className="flex flex-wrap items-center gap-2 mb-9 hero-fade">
             <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
               <Calendar className="w-3.5 h-3.5 text-forest-600 shrink-0" />
-              3–5 fév. 2027
+              {h.date}
             </div>
             <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
               <MapPin className="w-3.5 h-3.5 text-forest-600 shrink-0" />
-              Sofitel Cotonou Marina
+              {h.location}
             </div>
             <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
               <svg width="20" height="14" viewBox="0 0 20 14" className="rounded-sm shrink-0 overflow-hidden">
@@ -101,46 +92,38 @@ export default function Hero() {
                 <rect x="7" width="13" height="7" fill="#FCD116" />
                 <rect x="7" y="7" width="13" height="7" fill="#E8112D" />
               </svg>
-              Bénin
+              {h.country}
             </div>
           </div>
 
-          {/* CTAs */}
           <div className="flex flex-wrap gap-3 hero-fade">
             <Link
               href="/inscription"
               className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm"
             >
-              S&apos;inscrire <ChevronRight className="w-4 h-4" />
+              {h.registerBtn} <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="/programme"
               className="border border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
-              Programme <ChevronRight className="w-4 h-4" />
+              {h.programBtn} <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="/intervenants"
               className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
-              Intervenants <ChevronRight className="w-4 h-4" />
+              {h.speakersBtn} <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Barre de stats */}
       <div className="relative z-20 bg-white border-t border-gray-100">
-        {/* Ligne dorée décorative */}
         <div className="h-[2px]" style={{ background: "linear-gradient(to right, transparent, #c49a30 25%, #d4aa3a 50%, #c49a30 75%, transparent)" }} />
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
-            {[
-              { value: "200+", label: "Participants attendus",     desc: "Décideurs, experts & investisseurs" },
-              { value: "8",    label: "Pays de l'espace UEMOA",   desc: "Représentation régionale" },
-              { value: "4",    label: "Thématiques stratégiques", desc: "Panels, tables rondes & ateliers" },
-              { value: "3",    label: "Jours d'échanges",         desc: "3–5 février 2027, Cotonou" },
-            ].map((s, i) => (
+            {h.stats.map((s, i) => (
               <div key={i} className="px-6 py-6 flex flex-col gap-1 group">
                 <div
                   className="font-heading font-black leading-none"
@@ -159,11 +142,10 @@ export default function Hero() {
               </div>
             ))}
           </div>
-          {/* Rencontres B2B — bandeau bas */}
           <div className="border-t border-gray-100 py-3 flex items-center justify-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-forest-600">
-              Rencontres B2B organisées entre participants
+              {h.b2b}
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
           </div>
@@ -190,7 +172,6 @@ export default function Hero() {
   );
 }
 
-// ─── Three.js canvas ──────────────────────────────────────────────────────────
 function EnergyCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
 
@@ -213,7 +194,6 @@ function EnergyCanvas() {
     const mouse = new THREE.Vector2(0, 0);
     const clock  = new THREE.Clock();
 
-    // ── Particles ──
     const particleCount     = 50000;
     const positions         = new Float32Array(particleCount * 3);
     const originalPositions = new Float32Array(particleCount * 3);
@@ -235,10 +215,9 @@ function EnergyCanvas() {
 
       const t = Math.random();
       const c = new THREE.Color();
-      // Sur fond clair NormalBlending : couleurs mid-range bien visibles
-      if (t < 0.50)      c.setHSL(0.37, 0.72, 0.28 + Math.random() * 0.12); // vert forêt
-      else if (t < 0.78) c.setHSL(0.11, 0.88, 0.35 + Math.random() * 0.10); // or/ambre
-      else               c.setHSL(0.42, 0.65, 0.32 + Math.random() * 0.12); // vert émeraude
+      if (t < 0.50)      c.setHSL(0.37, 0.72, 0.28 + Math.random() * 0.12);
+      else if (t < 0.78) c.setHSL(0.11, 0.88, 0.35 + Math.random() * 0.10);
+      else               c.setHSL(0.42, 0.65, 0.32 + Math.random() * 0.12);
 
       colors[i*3]   = c.r;
       colors[i*3+1] = c.g;

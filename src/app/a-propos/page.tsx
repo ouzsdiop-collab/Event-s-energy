@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
 function useReveal(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
@@ -18,85 +19,14 @@ function useReveal(threshold = 0.15) {
   return { ref, visible };
 }
 
-const subthemes = [
-  {
-    num: "01",
-    title: "Financement des infrastructures gazières",
-    desc: "Mobiliser les capitaux pour développer des infrastructures de transport, de stockage et de distribution compétitives et résilientes dans la région.",
-  },
-  {
-    num: "02",
-    title: "Mitigation des risques dans la chaîne de valeur",
-    desc: "Identifier, partager et réduire les risques techniques, financiers et réglementaires pour sécuriser les investissements dans les projets gaziers.",
-  },
-  {
-    num: "03",
-    title: "Harmonisation des cadres réglementaires",
-    desc: "Aligner les politiques nationales pour créer un cadre régional cohérent, prévisible et attractif pour les investisseurs.",
-  },
-  {
-    num: "04",
-    title: "Mesures incitatives à l'investissement privé",
-    desc: "Créer un environnement favorable à l'investissement privé et à l'innovation dans toute la chaîne de valeur du gaz naturel.",
-  },
-];
-
-const objectives = [
-  "Faciliter le dialogue entre gouvernements, investisseurs et opérateurs du secteur",
-  "Identifier des modèles de financement viables pour les projets gaziers",
-  "Promouvoir le gaz naturel comme solution pour la production d'électricité régionale",
-  "Renforcer la coopération en matière d'intégration énergétique UEMOA",
-  "Positionner l'espace UEMOA comme un marché gazier attractif et compétitif",
-];
-
-const stats = [
-  { value: "+35%", label: "du mix électrique régional couvert par le gaz naturel" },
-  { value: "125M+", label: "habitants dans l'espace UEMOA" },
-  { value: "+3%/an", label: "croissance projetée de la demande gazière africaine" },
-  { value: "56%", label: "taux d'électrification moyen UEMOA en 2023" },
-];
-
-const orgs = [
-  {
-    initials: "NE",
-    name: "NTAB ENERGY SARL",
-    role: "Organisateur principal",
-    desc: "Société de conseil et d'organisation d'évènements dans le secteur énergétique africain.",
-  },
-  {
-    initials: "VE",
-    name: "VerteVille Energy",
-    role: "Sponsor officiel & initiateur",
-    desc: "Opérateur gazier basé au Nigéria, partenaire stratégique pour le développement du marché régional.",
-  },
-  {
-    initials: "BJ",
-    name: "Gouvernement du Bénin",
-    role: "Co-organisateur institutionnel",
-    desc: "La République du Bénin, pays hôte, apporte son soutien institutionnel à cet événement régional.",
-  },
-];
-
 export default function AProposPage() {
   return (
     <div style={{ backgroundColor: "#f4f7f5" }}>
-
-      {/* ── HERO ── */}
       <HeroSection />
-
-      {/* ── CONTEXT + STATS ── */}
       <ContextSection />
-
-      {/* ── THÈME CENTRAL ── */}
       <ThemeSection />
-
-      {/* ── SOUS-THÈMES ── */}
       <SubthemesSection />
-
-      {/* ── OBJECTIFS ── */}
       <ObjectivesSection />
-
-      {/* ── ORGANISATEURS ── */}
       <OrgsSection />
 
       <style jsx global>{`
@@ -123,51 +53,39 @@ export default function AProposPage() {
 
 function HeroSection() {
   const { ref, visible } = useReveal(0.1);
+  const { t } = useLang();
+  const a = t.about;
   return (
     <section className="max-w-6xl mx-auto px-6 md:px-12 pt-24 pb-20">
       <div ref={ref}>
-        {/* Eyebrow */}
         <p className={`text-[11px] font-bold uppercase tracking-[0.22em] mb-8 ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "#c49a30", animationDelay: "0.1s" }}>
-          À PROPOS
+          {a.eyebrow}
         </p>
-
-        {/* Title */}
         <h1 className={`font-heading font-black leading-[0.88] mb-10 ap-reveal ${visible ? "visible" : ""}`}
           style={{ animationDelay: "0.2s" }}>
-          <span className="block" style={{
-            fontSize: "clamp(3rem, 7vw, 6rem)",
-            letterSpacing: "-0.03em",
-            color: "#0f2d1f",
-          }}>
-            PRÉSENTATION
+          <span className="block" style={{ fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
+            {a.title1}
           </span>
           <span className="block" style={{
-            fontSize: "clamp(3rem, 7vw, 6rem)",
-            letterSpacing: "-0.03em",
+            fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.03em",
             background: "linear-gradient(90deg, #246444 0%, #1e5238 50%, #c49a30 100%)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
           }}>
-            DE L'ÉVÉNEMENT
+            {a.title2}
           </span>
         </h1>
-
-        {/* Intro text + meta */}
         <div className={`flex flex-col md:flex-row md:items-end gap-8 ap-fade ${visible ? "visible" : ""}`}
           style={{ animationDelay: "0.45s" }}>
           <p className="text-base leading-[1.8] max-w-xl" style={{ color: "rgba(15,45,31,0.60)" }}>
-            La première plateforme régionale dédiée au développement du gaz naturel
-            en Afrique de l&apos;Ouest francophone — une rencontre stratégique entre
-            décideurs publics, investisseurs et opérateurs du secteur.
+            {a.intro}
           </p>
           <div className="shrink-0 flex flex-col gap-1.5 md:text-right">
             <span className="text-xs font-medium" style={{ color: "rgba(15,45,31,0.40)" }}>3–5 février 2027</span>
             <span className="text-xs font-medium" style={{ color: "rgba(15,45,31,0.40)" }}>Sofitel Cotonou Marina, Bénin</span>
-            <span className="text-xs font-semibold" style={{ color: "#246444" }}>1ère Édition</span>
+            <span className="text-xs font-semibold" style={{ color: "#246444" }}>{a.edition}</span>
           </div>
         </div>
-
-        {/* Divider */}
         <div className={`mt-12 h-px ap-fade ${visible ? "visible" : ""}`}
           style={{
             animationDelay: "0.55s",
@@ -180,43 +98,30 @@ function HeroSection() {
 
 function ContextSection() {
   const { ref, visible } = useReveal();
+  const { t } = useLang();
+  const a = t.about;
   return (
     <section className="max-w-6xl mx-auto px-6 md:px-12 py-16" ref={ref}>
       <div className="grid md:grid-cols-2 gap-16 items-start">
-
-        {/* Left: text */}
         <div className={`ap-reveal ${visible ? "visible" : ""}`} style={{ animationDelay: "0s" }}>
           <p className="text-[10px] font-bold uppercase tracking-[0.20em] mb-4" style={{ color: "#c49a30" }}>
-            CONTEXTE & JUSTIFICATION
+            {a.contextLabel}
           </p>
           <h2 className="font-heading font-black text-2xl md:text-3xl mb-6 leading-tight" style={{ color: "#0f2d1f" }}>
-            Un marché gazier régional en construction
+            {a.contextTitle}
           </h2>
           <div className="space-y-4 text-sm leading-[1.85]" style={{ color: "rgba(15,45,31,0.60)" }}>
+            <p>{a.contextP1}</p>
+            <p>{a.contextP2}</p>
             <p>
-              L&apos;Afrique connaît une croissance soutenue de la demande d&apos;électricité,
-              projetée à plus de 40&nbsp;% à l&apos;horizon 2040. Dans l&apos;espace UEMOA, le taux
-              d&apos;électrification moyen s&apos;établissait à 56,37&nbsp;% en 2023, laissant
-              près de la moitié de la population sans accès à une énergie fiable.
-            </p>
-            <p>
-              Le gaz naturel représente déjà plus de 35&nbsp;% du mix de production
-              électrique de la région. Des découvertes significatives en Côte d&apos;Ivoire
-              et au Sénégal viennent consolider ce potentiel, offrant une opportunité
-              historique de structurer un marché régional intégré.
-            </p>
-            <p>
-              C&apos;est dans ce contexte que le Gouvernement du Bénin, en collaboration avec
-              VerteVille Energy, organise la première édition du{" "}
-              <strong style={{ color: "#0f2d1f" }}>Salon Ouest Africain Francophone sur le Gaz Naturel</strong>,
-              confié à la société NTAB ENERGY SARL.
+              {a.contextP3.split("{name}")[0]}
+              <strong style={{ color: "#0f2d1f" }}>{a.contextP3Bold}</strong>
+              {a.contextP3.split("{name}")[1]}
             </p>
           </div>
         </div>
-
-        {/* Right: stat cards */}
         <div className="grid grid-cols-2 gap-3">
-          {stats.map((s, i) => (
+          {a.stats.map((s, i) => (
             <div key={s.value}
               className={`ap-reveal ${visible ? "visible" : ""}`}
               style={{ animationDelay: `${i * 0.08}s` }}>
@@ -240,30 +145,25 @@ function ContextSection() {
 
 function ThemeSection() {
   const { ref, visible } = useReveal();
+  const { t } = useLang();
+  const a = t.about;
   return (
-    <section ref={ref} className="py-20 px-6 md:px-12"
-      style={{ backgroundColor: "#0f2d1f" }}>
+    <section ref={ref} className="py-20 px-6 md:px-12" style={{ backgroundColor: "#0f2d1f" }}>
       <div className="max-w-4xl mx-auto text-center">
         <p className={`text-[10px] font-bold uppercase tracking-[0.22em] mb-8 ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "rgba(196,154,48,0.70)", animationDelay: "0.1s" }}>
-          THÈME CENTRAL
+          {a.themeLabel}
         </p>
         <blockquote
           className={`font-heading font-black leading-tight ap-reveal ${visible ? "visible" : ""}`}
-          style={{
-            fontSize: "clamp(1.4rem, 3.5vw, 2.4rem)",
-            color: "rgba(255,255,255,0.92)",
-            animationDelay: "0.2s",
-          }}>
-          «&nbsp;Construire un marché gazier intégré et accessible dans l&apos;espace UEMOA&nbsp;:
-          défis, opportunités et engagements&nbsp;»
+          style={{ fontSize: "clamp(1.4rem, 3.5vw, 2.4rem)", color: "rgba(255,255,255,0.92)", animationDelay: "0.2s" }}>
+          {a.themeQuote}
         </blockquote>
         <div className="mt-8 mx-auto w-16 h-[2px]"
           style={{ background: "linear-gradient(to right, transparent, #c49a30, transparent)" }} />
         <p className={`mt-6 text-sm leading-relaxed max-w-xl mx-auto ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "rgba(255,255,255,0.40)", animationDelay: "0.4s" }}>
-          Quatre sous-thèmes stratégiques définissent les conditions d&apos;émergence
-          d&apos;un marché gazier régional compétitif et durable.
+          {a.themeSub}
         </p>
       </div>
     </section>
@@ -272,38 +172,31 @@ function ThemeSection() {
 
 function SubthemesSection() {
   const { ref, visible } = useReveal();
+  const { t } = useLang();
+  const a = t.about;
   return (
     <section ref={ref} className="max-w-6xl mx-auto px-6 md:px-12 py-20">
       <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
         style={{ color: "#c49a30", animationDelay: "0s" }}>
-        LES SOUS-THÈMES
+        {a.subthemesLabel}
       </p>
       <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${visible ? "visible" : ""}`}
         style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
-        4 axes de travail
+        {a.subthemesTitle}
       </h2>
-
       <div className="flex flex-col divide-y" style={{ borderColor: "rgba(36,100,68,0.10)" }}>
-        {subthemes.map((t, i) => (
-          <div key={t.num}
+        {a.subthemes.map((st, i) => (
+          <div key={st.num}
             className={`flex gap-8 py-8 ap-reveal ${visible ? "visible" : ""}`}
             style={{ borderColor: "rgba(36,100,68,0.10)", animationDelay: `${0.05 + i * 0.07}s` }}>
-
-            {/* Number */}
-            <span className="font-mono text-xs shrink-0 pt-1 w-6"
-              style={{ color: "rgba(36,100,68,0.30)" }}>
-              {t.num}
+            <span className="font-mono text-xs shrink-0 pt-1 w-6" style={{ color: "rgba(36,100,68,0.30)" }}>
+              {st.num}
             </span>
-
-            {/* Content */}
             <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-10 flex-1">
-              <h3 className="font-heading font-bold text-base md:text-lg shrink-0 md:w-72"
-                style={{ color: "#0f2d1f" }}>
-                {t.title}
+              <h3 className="font-heading font-bold text-base md:text-lg shrink-0 md:w-72" style={{ color: "#0f2d1f" }}>
+                {st.title}
               </h3>
-              <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.55)" }}>
-                {t.desc}
-              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.55)" }}>{st.desc}</p>
             </div>
           </div>
         ))}
@@ -314,31 +207,29 @@ function SubthemesSection() {
 
 function ObjectivesSection() {
   const { ref, visible } = useReveal();
+  const { t } = useLang();
+  const a = t.about;
   return (
     <section ref={ref} className="py-16 px-6 md:px-12" style={{ backgroundColor: "white" }}>
       <div className="max-w-6xl mx-auto">
         <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "#c49a30", animationDelay: "0s" }}>
-          OBJECTIFS
+          {a.objectivesLabel}
         </p>
         <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${visible ? "visible" : ""}`}
           style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
-          Une plateforme au service de l&apos;intégration régionale
+          {a.objectivesTitle}
         </h2>
-
         <div className="grid md:grid-cols-2 gap-x-16 gap-y-0">
-          {objectives.map((obj, i) => (
+          {a.objectives.map((obj, i) => (
             <div key={i}
               className={`flex items-start gap-4 py-5 border-t ap-reveal ${visible ? "visible" : ""}`}
               style={{ borderColor: "rgba(36,100,68,0.09)", animationDelay: `${0.05 + i * 0.06}s` }}>
-              {/* Gold dot */}
               <span className="w-5 h-5 rounded-full shrink-0 mt-0.5 flex items-center justify-center"
                 style={{ backgroundColor: "rgba(196,154,48,0.12)" }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#c49a30" }} />
               </span>
-              <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.65)" }}>
-                {obj}
-              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.65)" }}>{obj}</p>
             </div>
           ))}
         </div>
@@ -349,66 +240,52 @@ function ObjectivesSection() {
 
 function OrgsSection() {
   const { ref, visible } = useReveal();
+  const { t } = useLang();
+  const a = t.about;
   return (
     <section ref={ref} className="max-w-6xl mx-auto px-6 md:px-12 py-20">
       <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
         style={{ color: "#c49a30", animationDelay: "0s" }}>
-        ORGANISATEURS
+        {a.orgsLabel}
       </p>
       <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${visible ? "visible" : ""}`}
         style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
-        À l&apos;initiative de l&apos;événement
+        {a.orgsTitle}
       </h2>
-
       <div className="grid md:grid-cols-3 gap-5">
-        {orgs.map((org, i) => (
+        {a.orgs.map((org, i) => (
           <div key={org.name}
             className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-7 ap-reveal ${visible ? "visible" : ""}`}
             style={{ animationDelay: `${0.05 + i * 0.08}s` }}>
-            {/* Avatar */}
             <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 font-heading font-black text-sm"
-              style={{
-                background: "linear-gradient(135deg, #1e5238, #0f2d1f)",
-                color: "#c49a30",
-              }}>
+              style={{ background: "linear-gradient(135deg, #1e5238, #0f2d1f)", color: "#c49a30" }}>
               {org.initials}
             </div>
-            <h3 className="font-heading font-bold text-base mb-1" style={{ color: "#0f2d1f" }}>
-              {org.name}
-            </h3>
-            <p className="text-[11px] font-bold uppercase tracking-wide mb-3" style={{ color: "#c49a30" }}>
-              {org.role}
-            </p>
-            <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.50)" }}>
-              {org.desc}
-            </p>
+            <h3 className="font-heading font-bold text-base mb-1" style={{ color: "#0f2d1f" }}>{org.name}</h3>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-3" style={{ color: "#c49a30" }}>{org.role}</p>
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.50)" }}>{org.desc}</p>
           </div>
         ))}
       </div>
 
-      {/* Bottom CTA */}
       <div className={`mt-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-10 ap-fade ${visible ? "visible" : ""}`}
         style={{ borderTop: "1px solid rgba(36,100,68,0.12)", animationDelay: "0.35s" }}>
         <div>
-          <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>
-            Rejoignez cet événement historique
-          </p>
-          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>
-            Cotonou, Bénin · 3–5 février 2027
-          </p>
+          <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{a.ctaTitle}</p>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>{a.ctaSub}</p>
         </div>
         <div className="flex gap-3">
           <Link href="/inscription"
             className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
             style={{ backgroundColor: "#246444", color: "white" }}>
-            S&apos;inscrire <ArrowUpRight className="w-4 h-4" />
+            {a.ctaRegister} <ArrowUpRight className="w-4 h-4" />
           </Link>
           <Link href="/programme"
             className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200"
             style={{ border: "1px solid rgba(36,100,68,0.25)", color: "#246444" }}
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(36,100,68,0.05)")}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
-            Programme <ArrowUpRight className="w-4 h-4" />
+            {a.ctaProgram} <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
