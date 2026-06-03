@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/Logo";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LayoutDashboard } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
 export default function Navbar() {
@@ -42,6 +42,14 @@ export default function Navbar() {
 
         {/* Right actions */}
         <div className="hidden lg:flex items-center gap-4">
+          <Link href="/espace-admin"
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
+              pathname === "/espace-admin"
+                ? "border-forest-700 text-forest-700 bg-forest-50"
+                : "border-gray-200 text-gray-500 hover:border-forest-700 hover:text-forest-700"
+            }`}>
+            <LayoutDashboard className="w-3.5 h-3.5" /> Admin
+          </Link>
           <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
             <button
               onClick={() => setLang("fr")}
@@ -80,6 +88,10 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          <Link href="/espace-admin" onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 py-2.5 text-sm font-medium text-gray-600 hover:text-forest-700">
+            <LayoutDashboard className="w-4 h-4" /> Espace Admin
+          </Link>
           <div className="flex items-center gap-3 pt-2 pb-1">
             <button onClick={() => setLang("fr")}
               className={`text-sm font-semibold ${lang === "fr" ? "text-forest-700" : "text-gray-400"}`}>FR</button>
