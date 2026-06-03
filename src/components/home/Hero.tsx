@@ -20,74 +20,75 @@ export default function Hero() {
       />
 
       {/* Contenu */}
-      <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center py-24">
-        <div className="max-w-2xl">
+      <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center py-20">
+        <div className="max-w-xl">
           {/* Badge */}
-          <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/10 border border-forest-600/20 rounded-full px-4 py-1.5 mb-6">
-            <span className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
-            <span className="text-xs font-semibold text-forest-700 uppercase tracking-widest">
-              1ère Édition — Cotonou 2027
+          <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/8 border border-forest-600/25 rounded-full px-4 py-1.5 mb-7">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
+            <span className="text-xs font-semibold text-forest-700 uppercase tracking-[0.12em]">
+              1ère Édition &nbsp;·&nbsp; Cotonou, Bénin
             </span>
           </div>
 
           {/* Titre */}
-          <h1 className="font-heading font-black leading-tight mb-4 hero-slide-up">
-            <span className="block text-gray-900 text-4xl md:text-5xl lg:text-[3.4rem]">
+          <h1 className="font-heading font-black leading-[1.08] mb-5 hero-slide-up">
+            <span className="block text-gray-900 text-[2.75rem] md:text-5xl lg:text-[3.25rem]">
               Salon Ouest Africain
             </span>
-            <span className="block text-gray-900 text-4xl md:text-5xl lg:text-[3.4rem]">
+            <span className="block text-gray-900 text-[2.75rem] md:text-5xl lg:text-[3.25rem]">
               Francophone du
             </span>
-            <span className="block text-4xl md:text-5xl lg:text-[3.4rem] text-forest-600">
+            <span className="block text-[2.75rem] md:text-5xl lg:text-[3.25rem] text-forest-600">
               Gaz Naturel
             </span>
-            <span className="block text-4xl md:text-5xl lg:text-[3.4rem] text-gold-500">
+            <span className="block text-[2.75rem] md:text-5xl lg:text-[3.25rem] text-gold-500">
               2027
             </span>
           </h1>
 
           {/* Trait doré */}
-          <div className="w-16 h-1 bg-gold-400 rounded mb-5 hero-fade" />
+          <div className="w-12 h-[3px] bg-gold-400 rounded-full mb-6 hero-fade" />
 
-          {/* Sous-titre */}
-          <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg hero-fade">
-            Construire un marché gazier intégré et accessible dans l&apos;espace UEMOA :
-            défis, opportunités et engagements.
+          {/* Sous-titre — concis, direct */}
+          <p className="text-gray-500 text-base leading-[1.7] mb-8 max-w-md hero-fade">
+            La rencontre régionale de référence pour les acteurs du secteur gazier
+            de l&apos;espace UEMOA — investisseurs, opérateurs et décideurs publics.
           </p>
 
-          {/* Chips info */}
-          <div className="flex flex-wrap gap-3 mb-10 hero-fade">
-            <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2.5 text-sm text-gray-700">
-              <Calendar className="w-4 h-4 text-forest-600 shrink-0" />
-              3–5 février 2027
+          {/* Chips info — sur une ligne */}
+          <div className="flex flex-wrap items-center gap-2 mb-9 hero-fade">
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+              <Calendar className="w-3.5 h-3.5 text-forest-600 shrink-0" />
+              3–5 fév. 2027
             </div>
-            <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2.5 text-sm text-gray-700">
-              <MapPin className="w-4 h-4 text-forest-600 shrink-0" />
-              Sofitel Cotonou Marina Hotel & Spa
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+              <MapPin className="w-3.5 h-3.5 text-forest-600 shrink-0" />
+              Sofitel Cotonou Marina
             </div>
-            <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2.5 text-sm text-gray-700">
-              <span className="inline-flex w-5 h-3.5 rounded-sm overflow-hidden shrink-0">
-                <span className="w-1/3 h-full bg-green-600" />
-                <span className="w-1/3 h-full bg-yellow-400" />
-                <span className="w-1/3 h-full bg-red-500" />
-              </span>
+            {/* Drapeau Bénin correct : bande verte à gauche, jaune+rouge à droite */}
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+              <svg width="20" height="14" viewBox="0 0 20 14" className="rounded-sm shrink-0 overflow-hidden">
+                <rect width="7" height="14" fill="#008751"/>
+                <rect x="7" width="13" height="7" fill="#FCD116"/>
+                <rect x="7" y="7" width="13" height="7" fill="#E8112D"/>
+              </svg>
               Bénin
             </div>
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-4 hero-fade">
+          {/* CTAs — alignés proprement */}
+          <div className="flex flex-wrap gap-3 hero-fade">
             <Link
               href="/inscription"
-              className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-md shadow-forest-900/20"
+              className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm"
             >
-              S&apos;inscrire maintenant <ChevronRight className="w-4 h-4" />
+              S&apos;inscrire <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="/programme"
-              className="border-2 border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2"
+              className="border border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
-              Découvrir le programme <ChevronRight className="w-4 h-4" />
+              Programme <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="#"
@@ -187,9 +188,9 @@ function EnergyCanvas() {
       // Palette fond clair : vert forêt profond + or soutenu + vert émeraude
       const t = Math.random();
       const c = new THREE.Color();
-      if (t < 0.50)      c.setRGB(0.08, 0.30 + Math.random()*0.18, 0.12); // vert forêt
-      else if (t < 0.78) c.setRGB(0.60 + Math.random()*0.18, 0.46 + Math.random()*0.12, 0.04); // or/ambre
-      else               c.setRGB(0.05, 0.52 + Math.random()*0.18, 0.22); // vert émeraude
+      if (t < 0.50)      c.setRGB(0.04, 0.18 + Math.random()*0.12, 0.06); // vert forêt profond
+      else if (t < 0.78) c.setRGB(0.48 + Math.random()*0.14, 0.34 + Math.random()*0.10, 0.02); // or foncé
+      else               c.setRGB(0.03, 0.36 + Math.random()*0.14, 0.15); // vert émeraude soutenu
       colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
     }
 
