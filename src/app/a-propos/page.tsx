@@ -1,13 +1,22 @@
-import Link from "next/link";
-import { Target, Users, Globe, Zap, CheckCircle } from "lucide-react";
+"use client";
 
-const objectives = [
-  "Faciliter le dialogue et le partage de connaissances entre gouvernements, investisseurs et opérateurs du secteur",
-  "Identifier des modèles de financement viables et des structures de partenariat pour les projets gaziers",
-  "Promouvoir le gaz naturel comme solution pour la production d'électricité et le développement industriel",
-  "Renforcer la coopération régionale en matière d'intégration énergétique",
-  "Positionner l'espace UEMOA comme un marché gazier attractif et compétitif",
-];
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+
+function useReveal(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
 
 const subthemes = [
   {
@@ -17,202 +26,392 @@ const subthemes = [
   },
   {
     num: "02",
-    title: "Mitigation des risques dans la chaîne de valeur du gaz",
-    desc: "Identifier, partager et réduire les risques techniques, financiers et règlementaires pour sécuriser les investissements dans les projets gaziers.",
+    title: "Mitigation des risques dans la chaîne de valeur",
+    desc: "Identifier, partager et réduire les risques techniques, financiers et réglementaires pour sécuriser les investissements dans les projets gaziers.",
   },
   {
     num: "03",
     title: "Harmonisation des cadres réglementaires",
-    desc: "Aligner les politiques et réglementations nationales pour créer un cadre régional cohérent, prévisible et attractif pour les investisseurs.",
+    desc: "Aligner les politiques nationales pour créer un cadre régional cohérent, prévisible et attractif pour les investisseurs.",
   },
   {
     num: "04",
     title: "Mesures incitatives à l'investissement privé",
-    desc: "Créer un environnement des affaires favorable à l'investissement privé et à l'innovation dans toute la chaîne de valeur du gaz naturel.",
+    desc: "Créer un environnement favorable à l'investissement privé et à l'innovation dans toute la chaîne de valeur du gaz naturel.",
   },
 ];
 
-const expectedResults = [
-  { category: "Résultats institutionnels", items: ["Adoption d'une feuille de route régionale sur le gaz naturel", "Renforcement des cadres de coopération entre pays francophones et secteur privé"] },
-  { category: "Résultats économiques", items: ["Identification de projets structurants (centrales, pipelines, terminaux GNL)", "Mobilisation d'investissements publics et privés", "Développement de partenariats stratégiques régionaux et internationaux"] },
-  { category: "Résultats techniques", items: ["Partage des meilleures pratiques sur la conception et l'exploitation d'infrastructures gazières", "Meilleure compréhension de la réglementation sectorielle", "Contributions pratiques à l'intégration énergétique régionale"] },
+const objectives = [
+  "Faciliter le dialogue entre gouvernements, investisseurs et opérateurs du secteur",
+  "Identifier des modèles de financement viables pour les projets gaziers",
+  "Promouvoir le gaz naturel comme solution pour la production d'électricité régionale",
+  "Renforcer la coopération en matière d'intégration énergétique UEMOA",
+  "Positionner l'espace UEMOA comme un marché gazier attractif et compétitif",
+];
+
+const stats = [
+  { value: "+35%", label: "du mix électrique régional couvert par le gaz naturel" },
+  { value: "125M+", label: "habitants dans l'espace UEMOA" },
+  { value: "+3%/an", label: "croissance projetée de la demande gazière africaine" },
+  { value: "56%", label: "taux d'électrification moyen UEMOA en 2023" },
+];
+
+const orgs = [
+  {
+    initials: "NE",
+    name: "NTAB ENERGY SARL",
+    role: "Organisateur principal",
+    desc: "Société de conseil et d'organisation d'évènements dans le secteur énergétique africain.",
+  },
+  {
+    initials: "VE",
+    name: "VerteVille Energy",
+    role: "Sponsor officiel & initiateur",
+    desc: "Opérateur gazier basé au Nigéria, partenaire stratégique pour le développement du marché régional.",
+  },
+  {
+    initials: "BJ",
+    name: "Gouvernement du Bénin",
+    role: "Co-organisateur institutionnel",
+    desc: "La République du Bénin, pays hôte, apporte son soutien institutionnel à cet événement régional.",
+  },
 ];
 
 export default function AProposPage() {
   return (
-    <>
-      {/* Hero */}
-      <section
-        className="relative min-h-64 flex items-end pb-12"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(13,27,42,0.9) 50%, rgba(13,27,42,0.5) 100%), url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 w-full">
-          <p className="section-label">À PROPOS</p>
-          <h1 className="text-4xl md:text-5xl font-heading font-black text-white mb-3">
-            Présentation de l&apos;évènement
-          </h1>
-          <p className="text-gray-300 text-sm max-w-2xl leading-relaxed">
-            La première plateforme régionale dédiée au développement du gaz naturel en Afrique de l&apos;Ouest francophone.
+    <div style={{ backgroundColor: "#f4f7f5" }}>
+
+      {/* ── HERO ── */}
+      <HeroSection />
+
+      {/* ── CONTEXT + STATS ── */}
+      <ContextSection />
+
+      {/* ── THÈME CENTRAL ── */}
+      <ThemeSection />
+
+      {/* ── SOUS-THÈMES ── */}
+      <SubthemesSection />
+
+      {/* ── OBJECTIFS ── */}
+      <ObjectivesSection />
+
+      {/* ── ORGANISATEURS ── */}
+      <OrgsSection />
+
+      <style jsx global>{`
+        @keyframes ap-slide-up {
+          from { opacity: 0; transform: translateY(32px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ap-fade {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        .ap-reveal { opacity: 0; }
+        .ap-reveal.visible {
+          animation: ap-slide-up 0.7s cubic-bezier(0.2, 0.65, 0.3, 0.9) forwards;
+        }
+        .ap-fade { opacity: 0; }
+        .ap-fade.visible {
+          animation: ap-fade 0.8s ease forwards;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function HeroSection() {
+  const { ref, visible } = useReveal(0.1);
+  return (
+    <section className="max-w-6xl mx-auto px-6 md:px-12 pt-24 pb-20">
+      <div ref={ref}>
+        {/* Eyebrow */}
+        <p className={`text-[11px] font-bold uppercase tracking-[0.22em] mb-8 ap-fade ${visible ? "visible" : ""}`}
+          style={{ color: "#c49a30", animationDelay: "0.1s" }}>
+          À PROPOS
+        </p>
+
+        {/* Title */}
+        <h1 className={`font-heading font-black leading-[0.88] mb-10 ap-reveal ${visible ? "visible" : ""}`}
+          style={{ animationDelay: "0.2s" }}>
+          <span className="block" style={{
+            fontSize: "clamp(3rem, 7vw, 6rem)",
+            letterSpacing: "-0.03em",
+            color: "#0f2d1f",
+          }}>
+            PRÉSENTATION
+          </span>
+          <span className="block" style={{
+            fontSize: "clamp(3rem, 7vw, 6rem)",
+            letterSpacing: "-0.03em",
+            background: "linear-gradient(90deg, #246444 0%, #1e5238 50%, #c49a30 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+          }}>
+            DE L'ÉVÉNEMENT
+          </span>
+        </h1>
+
+        {/* Intro text + meta */}
+        <div className={`flex flex-col md:flex-row md:items-end gap-8 ap-fade ${visible ? "visible" : ""}`}
+          style={{ animationDelay: "0.45s" }}>
+          <p className="text-base leading-[1.8] max-w-xl" style={{ color: "rgba(15,45,31,0.60)" }}>
+            La première plateforme régionale dédiée au développement du gaz naturel
+            en Afrique de l&apos;Ouest francophone — une rencontre stratégique entre
+            décideurs publics, investisseurs et opérateurs du secteur.
           </p>
-        </div>
-      </section>
-
-      {/* Context */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-start">
-          <div>
-            <p className="section-label">CONTEXTE ET JUSTIFICATION</p>
-            <h2 className="text-3xl font-heading font-bold text-navy-900 mb-6 leading-tight">
-              Un marché gazier régional en construction
-            </h2>
-            <div className="prose prose-gray max-w-none text-gray-600 space-y-4 leading-relaxed">
-              <p>
-                L&apos;Afrique connaît une croissance soutenue de la demande d&apos;électricité, projetée à plus de 40 % à l&apos;horizon 2040. Dans l&apos;espace UEMOA, le taux d&apos;électrification moyen s&apos;établissait à 56,37 % en 2023, laissant près de la moitié de la population sans accès à une énergie fiable.
-              </p>
-              <p>
-                Le gaz naturel représente déjà plus de 35 % du mix de production électrique de la région. Des découvertes gazières significatives en Côte d&apos;Ivoire et au Sénégal viennent consolider ce potentiel, offrant une opportunité historique de structurer un marché régional intégré.
-              </p>
-              <p>
-                C&apos;est dans ce contexte que le Gouvernement de la République du Bénin, en collaboration avec la société VerteVille Energy, opérateur du secteur gazier au Nigéria, organise la première édition du <strong>Salon Ouest Africain Francophone sur le Gaz Naturel</strong>, entièrement confié à la société NTAB ENERGY SARL.
-              </p>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="bg-navy-900 text-white rounded-xl p-6">
-              <div className="text-4xl font-heading font-black text-green-400 mb-1">+35%</div>
-              <div className="text-sm text-gray-300">du mix électrique régional couvert par le gaz naturel dans l&apos;espace UEMOA</div>
-            </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-xl p-6">
-              <div className="text-4xl font-heading font-black text-navy-900 mb-1">125M+</div>
-              <div className="text-sm text-gray-500">d&apos;habitants dans l&apos;espace UEMOA, marché potentiel pour le développement gazier</div>
-            </div>
-            <div className="bg-green-600 text-white rounded-xl p-6">
-              <div className="text-4xl font-heading font-black mb-1">+3%/an</div>
-              <div className="text-sm text-green-100">croissance projetée de la demande gazière en Afrique jusqu&apos;en 2050</div>
-            </div>
+          <div className="shrink-0 flex flex-col gap-1.5 md:text-right">
+            <span className="text-xs font-medium" style={{ color: "rgba(15,45,31,0.40)" }}>3–5 février 2027</span>
+            <span className="text-xs font-medium" style={{ color: "rgba(15,45,31,0.40)" }}>Sofitel Cotonou Marina, Bénin</span>
+            <span className="text-xs font-semibold" style={{ color: "#246444" }}>1ère Édition</span>
           </div>
         </div>
-      </section>
 
-      {/* Theme */}
-      <section className="py-16 px-4 bg-navy-900 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="section-label">THÈME CENTRAL</p>
-          <h2 className="text-2xl md:text-4xl font-heading font-bold leading-tight mb-6">
-            &laquo;&nbsp;Construire un marché gazier intégré et accessible dans l&apos;espace UEMOA :
-            défis, opportunités et engagements&nbsp;&raquo;
+        {/* Divider */}
+        <div className={`mt-12 h-px ap-fade ${visible ? "visible" : ""}`}
+          style={{
+            animationDelay: "0.55s",
+            background: "linear-gradient(to right, rgba(36,100,68,0.30), rgba(196,154,48,0.20), transparent)",
+          }} />
+      </div>
+    </section>
+  );
+}
+
+function ContextSection() {
+  const { ref, visible } = useReveal();
+  return (
+    <section className="max-w-6xl mx-auto px-6 md:px-12 py-16" ref={ref}>
+      <div className="grid md:grid-cols-2 gap-16 items-start">
+
+        {/* Left: text */}
+        <div className={`ap-reveal ${visible ? "visible" : ""}`} style={{ animationDelay: "0s" }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.20em] mb-4" style={{ color: "#c49a30" }}>
+            CONTEXTE & JUSTIFICATION
+          </p>
+          <h2 className="font-heading font-black text-2xl md:text-3xl mb-6 leading-tight" style={{ color: "#0f2d1f" }}>
+            Un marché gazier régional en construction
           </h2>
-          <p className="text-gray-300 leading-relaxed max-w-2xl mx-auto">
-            Les échanges s&apos;articuleront autour de quatre sous-thèmes stratégiques qui définissent les conditions d&apos;émergence d&apos;un marché gazier régional compétitif et durable.
-          </p>
+          <div className="space-y-4 text-sm leading-[1.85]" style={{ color: "rgba(15,45,31,0.60)" }}>
+            <p>
+              L&apos;Afrique connaît une croissance soutenue de la demande d&apos;électricité,
+              projetée à plus de 40&nbsp;% à l&apos;horizon 2040. Dans l&apos;espace UEMOA, le taux
+              d&apos;électrification moyen s&apos;établissait à 56,37&nbsp;% en 2023, laissant
+              près de la moitié de la population sans accès à une énergie fiable.
+            </p>
+            <p>
+              Le gaz naturel représente déjà plus de 35&nbsp;% du mix de production
+              électrique de la région. Des découvertes significatives en Côte d&apos;Ivoire
+              et au Sénégal viennent consolider ce potentiel, offrant une opportunité
+              historique de structurer un marché régional intégré.
+            </p>
+            <p>
+              C&apos;est dans ce contexte que le Gouvernement du Bénin, en collaboration avec
+              VerteVille Energy, organise la première édition du{" "}
+              <strong style={{ color: "#0f2d1f" }}>Salon Ouest Africain Francophone sur le Gaz Naturel</strong>,
+              confié à la société NTAB ENERGY SARL.
+            </p>
+          </div>
         </div>
-      </section>
 
-      {/* Sub-themes */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <p className="section-label text-center">LES SOUS-THÈMES</p>
-          <h2 className="text-3xl font-heading font-bold text-navy-900 text-center mb-12">4 axes de travail</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {subthemes.map((t) => (
-              <div key={t.num} className="bg-white rounded-xl border border-gray-100 p-6 flex gap-5">
-                <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg shrink-0">
-                  {t.num}
+        {/* Right: stat cards */}
+        <div className="grid grid-cols-2 gap-3">
+          {stats.map((s, i) => (
+            <div key={s.value}
+              className={`ap-reveal ${visible ? "visible" : ""}`}
+              style={{ animationDelay: `${i * 0.08}s` }}>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 h-full">
+                <div className="font-heading font-black mb-2" style={{
+                  fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+                  background: "linear-gradient(135deg, #1e5238 0%, #c49a30 100%)",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                }}>
+                  {s.value}
                 </div>
-                <div>
-                  <h3 className="font-heading font-bold text-navy-900 text-base mb-2">{t.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{t.desc}</p>
-                </div>
+                <p className="text-xs leading-snug" style={{ color: "rgba(15,45,31,0.50)" }}>{s.label}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Objectives */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
-          <div>
-            <p className="section-label">OBJECTIFS</p>
-            <h2 className="text-3xl font-heading font-bold text-navy-900 mb-8 leading-tight">
-              Une plateforme au service de l&apos;intégration énergétique régionale
-            </h2>
-            <ul className="space-y-3">
-              {objectives.map((obj, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                  <span className="text-gray-600 text-sm leading-relaxed">{obj}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="section-label">RÉSULTATS ATTENDUS</p>
-            <h2 className="text-3xl font-heading font-bold text-navy-900 mb-8 leading-tight">
-              Des impacts concrets et mesurables
-            </h2>
-            <div className="space-y-5">
-              {expectedResults.map((r) => (
-                <div key={r.category}>
-                  <h4 className="font-semibold text-navy-900 text-sm mb-2">{r.category}</h4>
-                  <ul className="space-y-1.5">
-                    {r.items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500">
-                        <svg className="w-3.5 h-3.5 text-green-500 shrink-0 mt-1" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+function ThemeSection() {
+  const { ref, visible } = useReveal();
+  return (
+    <section ref={ref} className="py-20 px-6 md:px-12"
+      style={{ backgroundColor: "#0f2d1f" }}>
+      <div className="max-w-4xl mx-auto text-center">
+        <p className={`text-[10px] font-bold uppercase tracking-[0.22em] mb-8 ap-fade ${visible ? "visible" : ""}`}
+          style={{ color: "rgba(196,154,48,0.70)", animationDelay: "0.1s" }}>
+          THÈME CENTRAL
+        </p>
+        <blockquote
+          className={`font-heading font-black leading-tight ap-reveal ${visible ? "visible" : ""}`}
+          style={{
+            fontSize: "clamp(1.4rem, 3.5vw, 2.4rem)",
+            color: "rgba(255,255,255,0.92)",
+            animationDelay: "0.2s",
+          }}>
+          «&nbsp;Construire un marché gazier intégré et accessible dans l&apos;espace UEMOA&nbsp;:
+          défis, opportunités et engagements&nbsp;»
+        </blockquote>
+        <div className="mt-8 mx-auto w-16 h-[2px]"
+          style={{ background: "linear-gradient(to right, transparent, #c49a30, transparent)" }} />
+        <p className={`mt-6 text-sm leading-relaxed max-w-xl mx-auto ap-fade ${visible ? "visible" : ""}`}
+          style={{ color: "rgba(255,255,255,0.40)", animationDelay: "0.4s" }}>
+          Quatre sous-thèmes stratégiques définissent les conditions d&apos;émergence
+          d&apos;un marché gazier régional compétitif et durable.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function SubthemesSection() {
+  const { ref, visible } = useReveal();
+  return (
+    <section ref={ref} className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+      <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
+        style={{ color: "#c49a30", animationDelay: "0s" }}>
+        LES SOUS-THÈMES
+      </p>
+      <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${visible ? "visible" : ""}`}
+        style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
+        4 axes de travail
+      </h2>
+
+      <div className="flex flex-col divide-y" style={{ borderColor: "rgba(36,100,68,0.10)" }}>
+        {subthemes.map((t, i) => (
+          <div key={t.num}
+            className={`flex gap-8 py-8 ap-reveal ${visible ? "visible" : ""}`}
+            style={{ borderColor: "rgba(36,100,68,0.10)", animationDelay: `${0.05 + i * 0.07}s` }}>
+
+            {/* Number */}
+            <span className="font-mono text-xs shrink-0 pt-1 w-6"
+              style={{ color: "rgba(36,100,68,0.30)" }}>
+              {t.num}
+            </span>
+
+            {/* Content */}
+            <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-10 flex-1">
+              <h3 className="font-heading font-bold text-base md:text-lg shrink-0 md:w-72"
+                style={{ color: "#0f2d1f" }}>
+                {t.title}
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.55)" }}>
+                {t.desc}
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-      {/* Organizers */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <p className="section-label text-center">ORGANISATEURS</p>
-          <h2 className="text-3xl font-heading font-bold text-navy-900 text-center mb-10">À l&apos;initiative de l&apos;évènement</h2>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { name: "NTAB ENERGY SARL", role: "Organisateur principal de l'évènement", desc: "Société de conseil et d'organisation d'évènements dans le secteur énergétique." },
-              { name: "VerteVille Energy", role: "Sponsor officiel & initiateur", desc: "Opérateur gazier basé au Nigéria, partenaire stratégique pour le développement du marché gazier régional." },
-              { name: "Gouvernement du Bénin", role: "Co-organisateur institutionnel", desc: "La République du Bénin, pays hôte, apporte son soutien institutionnel à cet événement régional stratégique." },
-            ].map((org) => (
-              <div key={org.name} className="bg-white rounded-xl border border-gray-100 p-6 text-center">
-                <div className="w-16 h-16 rounded-full bg-navy-900 mx-auto mb-4 flex items-center justify-center">
-                  <Globe className="w-7 h-7 text-green-400" />
-                </div>
-                <h3 className="font-heading font-bold text-navy-900 mb-1">{org.name}</h3>
-                <p className="text-green-600 text-xs font-semibold mb-3">{org.role}</p>
-                <p className="text-gray-500 text-sm leading-relaxed">{org.desc}</p>
-              </div>
-            ))}
+function ObjectivesSection() {
+  const { ref, visible } = useReveal();
+  return (
+    <section ref={ref} className="py-16 px-6 md:px-12" style={{ backgroundColor: "white" }}>
+      <div className="max-w-6xl mx-auto">
+        <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
+          style={{ color: "#c49a30", animationDelay: "0s" }}>
+          OBJECTIFS
+        </p>
+        <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${visible ? "visible" : ""}`}
+          style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
+          Une plateforme au service de l&apos;intégration régionale
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-x-16 gap-y-0">
+          {objectives.map((obj, i) => (
+            <div key={i}
+              className={`flex items-start gap-4 py-5 border-t ap-reveal ${visible ? "visible" : ""}`}
+              style={{ borderColor: "rgba(36,100,68,0.09)", animationDelay: `${0.05 + i * 0.06}s` }}>
+              {/* Gold dot */}
+              <span className="w-5 h-5 rounded-full shrink-0 mt-0.5 flex items-center justify-center"
+                style={{ backgroundColor: "rgba(196,154,48,0.12)" }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#c49a30" }} />
+              </span>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.65)" }}>
+                {obj}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function OrgsSection() {
+  const { ref, visible } = useReveal();
+  return (
+    <section ref={ref} className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+      <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
+        style={{ color: "#c49a30", animationDelay: "0s" }}>
+        ORGANISATEURS
+      </p>
+      <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${visible ? "visible" : ""}`}
+        style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
+        À l&apos;initiative de l&apos;événement
+      </h2>
+
+      <div className="grid md:grid-cols-3 gap-5">
+        {orgs.map((org, i) => (
+          <div key={org.name}
+            className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-7 ap-reveal ${visible ? "visible" : ""}`}
+            style={{ animationDelay: `${0.05 + i * 0.08}s` }}>
+            {/* Avatar */}
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 font-heading font-black text-sm"
+              style={{
+                background: "linear-gradient(135deg, #1e5238, #0f2d1f)",
+                color: "#c49a30",
+              }}>
+              {org.initials}
+            </div>
+            <h3 className="font-heading font-bold text-base mb-1" style={{ color: "#0f2d1f" }}>
+              {org.name}
+            </h3>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-3" style={{ color: "#c49a30" }}>
+              {org.role}
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.50)" }}>
+              {org.desc}
+            </p>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
 
-      {/* CTA */}
-      <section className="bg-navy-800 py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-2xl font-heading font-bold mb-4">Participez à cet événement historique</h2>
-          <p className="text-gray-300 mb-8 leading-relaxed">
-            Rejoignez les décideurs, investisseurs et experts du secteur gazier à Cotonou du 3 au 5 février 2027.
+      {/* Bottom CTA */}
+      <div className={`mt-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-10 ap-fade ${visible ? "visible" : ""}`}
+        style={{ borderTop: "1px solid rgba(36,100,68,0.12)", animationDelay: "0.35s" }}>
+        <div>
+          <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>
+            Rejoignez cet événement historique
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/inscription" className="btn-primary">S&apos;inscrire dès maintenant</Link>
-            <Link href="/programme" className="btn-outline">Voir le programme</Link>
-          </div>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>
+            Cotonou, Bénin · 3–5 février 2027
+          </p>
         </div>
-      </section>
-    </>
+        <div className="flex gap-3">
+          <Link href="/inscription"
+            className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
+            style={{ backgroundColor: "#246444", color: "white" }}>
+            S&apos;inscrire <ArrowUpRight className="w-4 h-4" />
+          </Link>
+          <Link href="/programme"
+            className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200"
+            style={{ border: "1px solid rgba(36,100,68,0.25)", color: "#246444" }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(36,100,68,0.05)")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+            Programme <ArrowUpRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
