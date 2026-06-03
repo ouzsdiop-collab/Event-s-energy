@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { ArrowUpRight, Plus, Minus } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
@@ -166,11 +166,11 @@ export default function IntervenantsPage() {
               </div>
               <span className="w-px h-3 bg-gray-300" />
               <span className="text-xs" style={{ color: "rgba(15,45,31,0.40)" }}>{totalLabel}</span>
-              <Link href="/programme"
+              <TransitionLink href="/programme"
                 className="hidden md:inline-flex items-center gap-1 text-xs font-semibold transition-colors duration-200"
                 style={{ color: "#246444" }}>
                 {iv.viewProg} <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
+              </TransitionLink>
             </div>
           </div>
 

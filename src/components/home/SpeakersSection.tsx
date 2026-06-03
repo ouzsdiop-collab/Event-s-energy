@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
 
 const speakers = [
@@ -80,7 +80,7 @@ export default function SpeakersSection() {
             </h2>
             <div className="w-14 h-[3px] bg-gold-400 rounded-full mt-5" />
           </div>
-          <Link
+          <TransitionLink
             href="/programme"
             className="self-start md:self-auto inline-flex items-center gap-2 text-forest-600 font-semibold text-sm border border-forest-200 rounded-lg px-5 py-2.5 hover:bg-forest-50 hover:border-forest-400 transition-all duration-200 shrink-0"
           >
@@ -88,7 +88,7 @@ export default function SpeakersSection() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </TransitionLink>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">

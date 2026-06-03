@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
 
 const partners = [
@@ -44,7 +44,7 @@ export default function PartnersSection() {
             {p.sub}
           </p>
         </div>
-        <Link
+        <TransitionLink
           href="/inscription"
           className="inline-flex items-center gap-2 text-gold-400 font-semibold text-xs border border-gold-500/30 rounded-lg px-4 py-2 hover:bg-gold-500/10 hover:border-gold-400 transition-all duration-200 shrink-0"
         >
@@ -52,7 +52,7 @@ export default function PartnersSection() {
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </Link>
+        </TransitionLink>
       </div>
 
       <div className="relative pb-10">

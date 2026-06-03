@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { ArrowRight, ArrowLeft, Shield, Mail, QrCode, CreditCard, Smartphone, Building2, Download, Share2, Check, Calendar, MapPin } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
@@ -273,17 +273,17 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
         </div>
         <span className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.60)" }}>
           {ins.cgText.split("{terms}")[0]}
-          <Link href="#" className="underline" style={{ color: "#246444" }}>{ins.terms}</Link>
+          <TransitionLink href="#" className="underline" style={{ color: "#246444" }}>{ins.terms}</TransitionLink>
           {ins.cgText.split("{terms}")[1]?.split("{privacy}")[0]}
-          <Link href="#" className="underline" style={{ color: "#246444" }}>{ins.privacyLabel}</Link>
+          <TransitionLink href="#" className="underline" style={{ color: "#246444" }}>{ins.privacyLabel}</TransitionLink>
           {ins.cgText.split("{privacy}")[1]}
         </span>
       </label>
 
       <div className="flex items-center justify-between pt-2">
-        <Link href="/" className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "rgba(15,45,31,0.45)" }}>
+        <TransitionLink href="/" className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "rgba(15,45,31,0.45)" }}>
           <ArrowLeft size={15} /> {ins.back}
-        </Link>
+        </TransitionLink>
         <button onClick={onNext}
           className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
           style={{ backgroundColor: "#0f2d1f", color: "white" }}>
@@ -512,11 +512,11 @@ function Step3({ form, selectedPass, ins }: { form: FormData; selectedPass: Ins[
       </div>
 
       <div className="flex justify-center pt-2">
-        <Link href="/"
+        <TransitionLink href="/"
           className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
           style={{ backgroundColor: "#0f2d1f", color: "white" }}>
           {ins.backHome} <ArrowRight size={16} />
-        </Link>
+        </TransitionLink>
       </div>
     </div>
   );

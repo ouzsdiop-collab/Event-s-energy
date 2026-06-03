@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { ArrowUpRight, MapPin, Calendar } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
@@ -184,11 +184,11 @@ export default function ProgrammePage() {
             <div className="flex items-center gap-2 md:justify-end text-sm" style={{ color: "rgba(15,45,31,0.50)" }}>
               <MapPin className="w-3.5 h-3.5" />{p.location}
             </div>
-            <Link href="/inscription"
+            <TransitionLink href="/inscription"
               className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide md:self-end"
               style={{ color: "#c49a30" }}>
               {p.registerCta} <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+            </TransitionLink>
           </div>
         </div>
         <div className={`h-px transition-all duration-700 ${headerVisible ? "opacity-100" : "opacity-0"}`}
@@ -253,18 +253,18 @@ export default function ProgrammePage() {
             {lang === "en" ? "Programme subject to change · Version June 3, 2026" : "Programme sous réserve de modifications · Version du 3 juin 2026"}
           </p>
           <div className="flex gap-3">
-            <Link href="/inscription"
+            <TransitionLink href="/inscription"
               className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
               style={{ backgroundColor: "#246444", color: "white" }}>
               {p.registerCta} <ArrowUpRight className="w-4 h-4" />
-            </Link>
-            <Link href="/intervenants"
+            </TransitionLink>
+            <TransitionLink href="/intervenants"
               className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200"
               style={{ border: "1px solid rgba(36,100,68,0.25)", color: "#246444" }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(36,100,68,0.05)")}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
               {lang === "en" ? "Speakers" : "Intervenants"} <ArrowUpRight className="w-4 h-4" />
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>

@@ -13,7 +13,9 @@ function LogoCanvas({ size = 40, speed = 0.8 }: LogoCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const container = mountRef.current;
+    if (!container) return;
+    container.innerHTML = "";
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
@@ -23,9 +25,10 @@ function LogoCanvas({ size = 40, speed = 0.8 }: LogoCanvasProps) {
     renderer.setSize(size, size);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
-    mountRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
 
-    const clock = new THREE.Clock();
+    let elapsed = 0;
+    let lastTs  = performance.now();
 
     const particleCount = 6000;
     const positions = new Float32Array(particleCount * 3);
@@ -65,18 +68,28 @@ function LogoCanvas({ size = 40, speed = 0.8 }: LogoCanvasProps) {
     scene.add(points);
 
     let animId: number;
-    const animate = () => {
+    let active = true;
+
+    const animate = (ts: number) => {
+      if (!active) return;
       animId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      points.rotation.y = t * speed;
-      points.rotation.x = Math.sin(t * 0.4) * 0.3;
+      const delta = Math.min((ts - lastTs) / 1000, 0.05);
+      lastTs  = ts;
+      elapsed += delta;
+      points.rotation.y = elapsed * speed;
+      points.rotation.x = Math.sin(elapsed * 0.4) * 0.3;
       renderer.render(scene, camera);
     };
-    animate();
+    animId = requestAnimationFrame(animate);
+
+    const onVisibility = () => { if (!document.hidden) lastTs = performance.now(); };
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
+      active = false;
       cancelAnimationFrame(animId);
-      mountRef.current?.removeChild(renderer.domElement);
+      document.removeEventListener("visibilitychange", onVisibility);
+      container.innerHTML = "";
       geo.dispose(); mat.dispose(); renderer.dispose();
     };
   }, [size, speed]);
