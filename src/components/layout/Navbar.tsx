@@ -9,9 +9,7 @@ const navLinks = [
   { href: "/a-propos", label: "À propos" },
   { href: "/programme", label: "Programme" },
   { href: "/intervenants", label: "Intervenants" },
-  { href: "/b2b", label: "B2B" },
-  { href: "/sponsors", label: "Sponsors" },
-  { href: "/lieu", label: "Lieu" },
+  { href: "/inscription", label: "Inscription" },
 ];
 
 export default function Navbar() {

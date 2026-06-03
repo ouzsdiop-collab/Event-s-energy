@@ -120,10 +120,10 @@ export default function Hero() {
               Programme <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/devenir-sponsor"
+              href="/intervenants"
               className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
-              Devenir sponsor <ChevronRight className="w-4 h-4" />
+              Intervenants <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

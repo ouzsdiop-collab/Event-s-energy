@@ -13,8 +13,8 @@ const footerLinks = {
   evenement: [
     { href: "/a-propos", label: "Thèmes & sous-thèmes" },
     { href: "/intervenants", label: "Intervenants" },
-    { href: "/devenir-sponsor", label: "Devenir sponsor" },
-    { href: "/b2b", label: "Rencontres B2B" },
+    { href: "/programme", label: "Agenda complet" },
+    { href: "/inscription", label: "Participer" },
   ],
   legal: [
     { href: "#", label: "Mentions légales" },
@@ -104,10 +104,10 @@ export default function Footer() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-          <Link href="/devenir-sponsor"
+          <Link href="/inscription"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5"
             style={{ border: "1px solid rgba(196,154,48,0.4)", color: "#d4aa3a" }}>
-            Devenir sponsor
+            Programme
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
