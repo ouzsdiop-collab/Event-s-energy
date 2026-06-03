@@ -56,14 +56,13 @@ export default function Footer() {
   useEffect(() => {
     let t = 0;
     const animate = () => {
-      let offset = 0;
       waveRefs.current.forEach((el, i) => {
         if (el) {
-          offset += Math.max(0, 18 * Math.sin((t + i) * 0.28));
-          el.style.transform = `translateY(${i + offset}px)`;
+          const shift = Math.sin((t + i * 0.35) * 0.5) * 4;
+          el.style.transform = `translateX(${shift}px)`;
         }
       });
-      t += 0.08;
+      t += 0.04;
       animationFrameRef.current = requestAnimationFrame(animate);
     };
     if (isVisible) {
@@ -81,38 +80,33 @@ export default function Footer() {
       style={{ backgroundColor: "#0a1f14" }}>
 
       {/* ── CTA Banner ── */}
-      <div className="relative py-20 px-4 text-center"
-        style={{
-          backgroundImage: "linear-gradient(rgba(10,31,20,0.90), rgba(10,31,20,0.90)), url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1400&q=80')",
-          backgroundSize: "cover", backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute top-0 left-0 right-0 h-[2px]"
-          style={{ background: "linear-gradient(to right, transparent, #c49a30 30%, #d4aa3a 50%, #c49a30 70%, transparent)" }} />
+      <div className="relative py-16 px-4 text-center">
+        <div className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(to right, transparent, rgba(196,154,48,0.4) 30%, rgba(212,170,58,0.6) 50%, rgba(196,154,48,0.4) 70%, transparent)" }} />
 
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-5" style={{ color: "#c49a30" }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(196,154,48,0.7)" }}>
           1ère Édition &nbsp;·&nbsp; Cotonou, Bénin &nbsp;·&nbsp; 3–5 Février 2027
         </p>
-        <h2 className="text-3xl md:text-4xl font-heading font-black text-white mb-4 max-w-3xl mx-auto leading-tight">
+        <h2 className="text-2xl md:text-3xl font-heading font-black text-white mb-3 max-w-2xl mx-auto leading-tight">
           Participez à la construction d&apos;un avenir gazier intégré et durable.
         </h2>
-        <p className="mb-8 max-w-lg mx-auto text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.50)" }}>
+        <p className="mb-7 max-w-md mx-auto text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.40)" }}>
           Rejoignez les décideurs, investisseurs et experts du secteur à Cotonou en février 2027.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/inscription"
-            className="inline-flex items-center justify-center gap-2 font-bold text-sm px-8 py-3.5 rounded-lg transition-all duration-200 hover:opacity-90"
-            style={{ backgroundColor: "#c49a30", color: "#0a1f14", boxShadow: "0 0 28px rgba(196,154,48,0.25)" }}>
+            className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
+            style={{ backgroundColor: "#c49a30", color: "#0a1f14" }}>
             S&apos;inscrire dès maintenant
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
           <Link href="/devenir-sponsor"
-            className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-8 py-3.5 rounded-lg transition-all duration-200 hover:bg-white/5"
-            style={{ border: "1px solid rgba(196,154,48,0.35)", color: "#d4aa3a" }}>
+            className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5"
+            style={{ border: "1px solid rgba(196,154,48,0.25)", color: "rgba(212,170,58,0.8)" }}>
             Devenir sponsor
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
@@ -246,20 +240,22 @@ export default function Footer() {
       </div>
 
       {/* ── Wave animation ── */}
-      <div aria-hidden="true" style={{ overflow: "hidden", height: 160 }}>
-        <div>
-          {Array.from({ length: barCount }).map((_, i) => (
+      <div aria-hidden="true" style={{ overflow: "hidden", height: 80, position: "relative" }}>
+        {Array.from({ length: barCount }).map((_, i) => {
+          const progress = i / (barCount - 1);
+          const alpha = Math.sin(progress * Math.PI);
+          return (
             <div key={i} ref={(el) => { waveRefs.current[i] = el; }}
               style={{
-                height: `${i + 1}px`,
-                background: `linear-gradient(to right, #0a1f14, #1e5238 ${25 + i * 2}%, #c49a30 50%, #1e5238 ${75 - i * 2}%, #0a1f14)`,
-                marginTop: "-2px",
+                height: "1.5px",
+                background: `linear-gradient(to right, transparent, rgba(30,82,56,${0.3 + alpha * 0.4}) 20%, rgba(196,154,48,${alpha * 0.7}) 50%, rgba(30,82,56,${0.3 + alpha * 0.4}) 80%, transparent)`,
+                marginBottom: "1.5px",
                 willChange: "transform",
-                transition: "transform 0.1s ease",
+                opacity: 0.4 + alpha * 0.6,
               }}
             />
-          ))}
-        </div>
+          );
+        })}
       </div>
     </footer>
   );
