@@ -1,41 +1,105 @@
+"use client";
+
+import { useRef, useEffect } from "react";
+import * as THREE from "three";
 import Link from "next/link";
 
-export function LogoMark({ size = 48 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Outer drop / flame — dark green */}
-      <path
-        d="M24 2 C24 2 6 18 6 32 C6 42.5 14.1 52 24 52 C33.9 52 42 42.5 42 32 C42 18 24 2 24 2Z"
-        fill="#1e5238"
-      />
-      {/* Inner flame — gold */}
-      <path
-        d="M24 16 C24 16 15 26 15 33 C15 38.5 19 43 24 43 C29 43 33 38.5 33 33 C33 26 24 16 24 16Z"
-        fill="#c49a30"
-      />
-      {/* Inner highlight — light green */}
-      <path
-        d="M24 26 C24 26 20 31 20 34.5 C20 37.5 21.8 40 24 40 C26.2 40 28 37.5 28 34.5 C28 31 24 26 24 26Z"
-        fill="#2d7a4f"
-      />
-    </svg>
-  );
+interface LogoCanvasProps {
+  size?: number;
+  speed?: number;
 }
 
-export default function Logo({ variant = "full" }: { variant?: "full" | "compact" }) {
+function LogoCanvas({ size = 40, speed = 0.8 }: LogoCanvasProps) {
+  const mountRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+    camera.position.z = 3.8;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(size, size);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    mountRef.current.appendChild(renderer.domElement);
+
+    const clock = new THREE.Clock();
+
+    const particleCount = 6000;
+    const positions = new Float32Array(particleCount * 3);
+    const colors    = new Float32Array(particleCount * 3);
+
+    const knot = new THREE.TorusKnotGeometry(1, 0.38, 120, 16);
+    const base  = knot.attributes.position;
+
+    for (let i = 0; i < particleCount; i++) {
+      const vi = i % base.count;
+      positions[i * 3]     = base.getX(vi);
+      positions[i * 3 + 1] = base.getY(vi);
+      positions[i * 3 + 2] = base.getZ(vi);
+
+      const t = Math.random();
+      const c = new THREE.Color();
+      if (t < 0.55)      c.setRGB(0.1, 0.55 + Math.random() * 0.25, 0.2);
+      else if (t < 0.82) c.setRGB(0.75 + Math.random() * 0.15, 0.62, 0.08);
+      else               c.setRGB(0.08, 0.85 + Math.random() * 0.1, 0.35);
+      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.045,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 1,
+      depthWrite: false,
+    });
+
+    const points = new THREE.Points(geo, mat);
+    scene.add(points);
+
+    let animId: number;
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      points.rotation.y = t * speed;
+      points.rotation.x = Math.sin(t * 0.4) * 0.3;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      mountRef.current?.removeChild(renderer.domElement);
+      geo.dispose(); mat.dispose(); renderer.dispose();
+    };
+  }, [size, speed]);
+
+  return <div ref={mountRef} style={{ width: size, height: size }} />;
+}
+
+export function LogoMark({ size = 40 }: { size?: number }) {
+  return <LogoCanvas size={size} speed={0.8} />;
+}
+
+export default function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-3 shrink-0 group">
-      <LogoMark size={variant === "compact" ? 36 : 44} />
-      {variant === "full" && (
-        <div className="leading-tight">
-          <div className="font-heading font-bold text-gray-800" style={{ fontSize: "12px", lineHeight: "1.3" }}>
-            Salon Ouest Africain<br />
-            Francophone du{" "}
-            <span className="text-forest-600">Gaz Naturel</span>{" "}
-            <span className="text-gold-500">2027</span>
-          </div>
+    <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+      <LogoCanvas size={40} speed={0.8} />
+      <div className="leading-tight">
+        <div className="font-heading font-bold text-gray-800" style={{ fontSize: "11px", lineHeight: "1.35" }}>
+          Salon Ouest Africain<br />
+          Francophone du{" "}
+          <span className="text-emerald-700">Gaz Naturel</span>{" "}
+          <span className="text-yellow-600">2027</span>
         </div>
-      )}
+      </div>
     </Link>
   );
 }

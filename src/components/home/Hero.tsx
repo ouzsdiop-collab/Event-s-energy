@@ -7,7 +7,7 @@ import { Calendar, MapPin, ChevronRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#0a1a0f]">
+    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#080c10]">
       <EnergyCanvas />
 
       {/* Gradient overlay — gauche opaque pour lisibilité du texte */}
@@ -15,7 +15,7 @@ export default function Hero() {
         className="absolute inset-0 z-10"
         style={{
           background:
-            "linear-gradient(to right, rgba(10,26,15,0.95) 35%, rgba(10,26,15,0.6) 65%, rgba(10,26,15,0.1) 100%)",
+            "linear-gradient(to right, rgba(8,12,16,0.97) 30%, rgba(8,12,16,0.75) 55%, rgba(8,12,16,0.15) 100%)",
         }}
       />
 
@@ -218,7 +218,7 @@ function EnergyCanvas() {
     });
 
     const points = new THREE.Points(geometry, material);
-    points.position.x = 1.5;
+    points.position.x = 2.8;
     scene.add(points);
 
     const onMouseMove = (e: MouseEvent) => {
