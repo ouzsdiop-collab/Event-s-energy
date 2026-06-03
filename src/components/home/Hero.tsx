@@ -129,16 +129,33 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Transition douce hero → stats */}
-      <div
-        className="relative z-20 pointer-events-none"
-        style={{ height: "80px", marginBottom: "-1px",
-          background: "linear-gradient(to bottom, rgba(244,247,245,0) 0%, rgba(244,247,245,0.6) 50%, rgba(255,255,255,1) 100%)"
-        }}
-      />
-
       {/* Barre de stats */}
-      <StatsBar />
+      <div className="relative z-20 bg-white/80 backdrop-blur-sm border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-wrap divide-x divide-gray-200">
+            {[
+              { value: "200+", label: "Participants" },
+              { value: "8",    label: "Pays UEMOA" },
+              { value: "4",    label: "Thématiques" },
+              { value: "3",    label: "Jours d'échanges" },
+              { value: null,   label: "Rencontres B2B", accent: true },
+            ].map((s, i) => (
+              <div key={i} className="flex items-center gap-3 px-6 py-4 flex-1 min-w-36">
+                <div>
+                  {s.value && (
+                    <div className="text-2xl font-heading font-black text-gold-500 leading-none">
+                      {s.value}
+                    </div>
+                  )}
+                  <div className={`text-xs font-medium mt-0.5 ${s.accent ? "text-forest-600 font-semibold text-sm" : "text-gray-500"}`}>
+                    {s.label}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <style jsx>{`
         .hero-slide-up {
@@ -155,149 +172,8 @@ export default function Hero() {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
-        .stats-item {
-          animation: fadeInUp 0.6s cubic-bezier(0.2, 0.65, 0.3, 0.9) both;
-        }
-        .stats-item:hover .stat-dot {
-          opacity: 1;
-        }
       `}</style>
     </section>
-  );
-}
-
-// ─── Stats bar avec count-up ─────────────────────────────────────────────────
-const StatIcons = {
-  participants: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-      <circle cx="9" cy="7" r="3"/><circle cx="17" cy="8" r="2.5"/>
-      <path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M22 20c0-2.5-2-4.5-5-5.2"/>
-    </svg>
-  ),
-  globe: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-      <circle cx="12" cy="12" r="9"/>
-      <path d="M12 3c-2.5 3-4 5.5-4 9s1.5 6 4 9"/><path d="M12 3c2.5 3 4 5.5 4 9s-1.5 6-4 9"/>
-      <path d="M3.6 9h16.8M3.6 15h16.8"/>
-    </svg>
-  ),
-  themes: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-      <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-      <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-      <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-      <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-    </svg>
-  ),
-  days: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-      <rect x="3" y="5" width="18" height="16" rx="2"/>
-      <path d="M3 10h18M8 3v4M16 3v4"/>
-      <circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/>
-    </svg>
-  ),
-};
-
-const stats = [
-  { target: 200, suffix: "+", label: "Participants attendus",    icon: StatIcons.participants },
-  { target: 8,   suffix: "",  label: "Pays de l'espace UEMOA",  icon: StatIcons.globe },
-  { target: 4,   suffix: "",  label: "Thématiques stratégiques", icon: StatIcons.themes },
-  { target: 3,   suffix: "",  label: "Jours d'échanges intenses",icon: StatIcons.days },
-];
-
-function StatsBar() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [triggered, setTriggered] = React.useState(false);
-  const [counts, setCounts] = React.useState(stats.map(() => 0));
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); obs.disconnect(); } },
-      { threshold: 0.4 }
-    );
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!triggered) return;
-    const duration = 1800;
-    const startTime = performance.now();
-
-    const tick = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // ease-out cubic
-      const ease = 1 - Math.pow(1 - progress, 3);
-      setCounts(stats.map((s) => Math.floor(s.target * ease)));
-      if (progress < 1) requestAnimationFrame(tick);
-      else setCounts(stats.map((s) => s.target));
-    };
-    requestAnimationFrame(tick);
-  }, [triggered]);
-
-  return (
-    <div ref={ref} className="relative z-20 bg-white border-t border-gray-100">
-      {/* Ligne dorée décorative en haut */}
-      <div
-        className="h-[3px] w-full"
-        style={{ background: "linear-gradient(to right, transparent 0%, #c49a30 30%, #d4aa3a 50%, #c49a30 70%, transparent 100%)" }}
-      />
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((s, i) => (
-            <div
-              key={i}
-              className={`
-                relative px-6 py-7 flex flex-col items-center text-center
-                ${i < stats.length - 1 ? "border-r border-gray-100" : ""}
-                stats-item
-              `}
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              {/* Icône SVG */}
-              <div className="mb-3 text-forest-600 opacity-50">{s.icon}</div>
-
-              {/* Chiffre animé */}
-              <div
-                className="font-heading font-black leading-none mb-1"
-                style={{
-                  fontSize: "clamp(2.2rem, 4vw, 3rem)",
-                  background: "linear-gradient(135deg, #1e5238 0%, #c49a30 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                {counts[i]}{s.suffix}
-              </div>
-
-              {/* Label */}
-              <div className="text-xs font-medium text-gray-400 leading-snug max-w-[120px]">
-                {s.label}
-              </div>
-
-              {/* Point doré en bas au hover */}
-              <div
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold-400 opacity-0 transition-opacity duration-300 stat-dot"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Rencontres B2B — bandeau séparé */}
-      <div
-        className="border-t border-gray-100 py-3 px-6 flex items-center justify-center gap-3"
-        style={{ background: "linear-gradient(to right, rgba(30,82,56,0.03), rgba(196,154,48,0.05), rgba(30,82,56,0.03))" }}
-      >
-        <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
-        <span className="text-xs font-bold uppercase tracking-[0.16em] text-forest-600">
-          Rencontres B2B organisées
-        </span>
-        <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
-      </div>
-    </div>
   );
 }
 
