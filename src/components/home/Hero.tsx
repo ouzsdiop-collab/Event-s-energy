@@ -217,9 +217,9 @@ function EnergyCanvas() {
       // Palette fond clair : vert forêt profond + or soutenu + vert émeraude
       const t = Math.random();
       const c = new THREE.Color();
-      if (t < 0.50)      c.setRGB(0.04, 0.18 + Math.random()*0.12, 0.06); // vert forêt profond
-      else if (t < 0.78) c.setRGB(0.48 + Math.random()*0.14, 0.34 + Math.random()*0.10, 0.02); // or foncé
-      else               c.setRGB(0.03, 0.36 + Math.random()*0.14, 0.15); // vert émeraude soutenu
+      if (t < 0.50)      c.setRGB(0.05, 0.28 + Math.random()*0.14, 0.10); // vert forêt saturé
+      else if (t < 0.78) c.setRGB(0.55 + Math.random()*0.15, 0.38 + Math.random()*0.12, 0.02); // or chaud
+      else               c.setRGB(0.03, 0.42 + Math.random()*0.16, 0.18); // vert émeraude
       colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
     }
 
@@ -229,11 +229,11 @@ function EnergyCanvas() {
 
     // NormalBlending indispensable sur fond clair (AdditiveBlending = invisible sur blanc)
     const mat = new THREE.PointsMaterial({
-      size: 0.022,
+      size: 0.026,
       vertexColors: true,
       blending: THREE.NormalBlending,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.95,
       depthWrite: false,
     });
 
