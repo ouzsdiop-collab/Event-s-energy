@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { Calendar, MapPin, ChevronRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
@@ -97,24 +97,24 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-wrap gap-3 hero-fade">
-            <Link
+            <TransitionLink
               href="/inscription"
               className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm"
             >
               {h.registerBtn} <ChevronRight className="w-4 h-4" />
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/programme"
               className="border border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
               {h.programBtn} <ChevronRight className="w-4 h-4" />
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/intervenants"
               className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
               {h.speakersBtn} <ChevronRight className="w-4 h-4" />
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>

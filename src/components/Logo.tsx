@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 
 interface LogoCanvasProps {
   size?: number;
@@ -90,7 +90,7 @@ export function LogoMark({ size = 40 }: { size?: number }) {
 
 export default function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+    <TransitionLink href="/" className="flex items-center gap-2.5 shrink-0 group">
       <LogoCanvas size={40} speed={0.8} />
       <div className="leading-tight">
         <div className="font-heading font-bold text-gray-800" style={{ fontSize: "11px", lineHeight: "1.35" }}>
@@ -100,6 +100,6 @@ export default function Logo() {
           <span className="text-yellow-600">2027</span>
         </div>
       </div>
-    </Link>
+    </TransitionLink>
   );
 }

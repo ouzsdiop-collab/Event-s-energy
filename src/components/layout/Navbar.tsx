@@ -1,10 +1,10 @@
 "use client";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/Logo";
 import { ChevronRight, LayoutDashboard } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import TransitionLink from "@/components/TransitionLink";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -26,7 +26,7 @@ export default function Navbar() {
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
-            <Link
+            <TransitionLink
               key={link.href}
               href={link.href}
               className={`text-sm font-medium px-3 py-2 rounded transition-colors ${
@@ -36,20 +36,20 @@ export default function Navbar() {
               }`}
             >
               {link.label}
-            </Link>
+            </TransitionLink>
           ))}
         </nav>
 
         {/* Right actions */}
         <div className="hidden lg:flex items-center gap-4">
-          <Link href="/espace-admin"
+          <TransitionLink href="/espace-admin"
             className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
               pathname === "/espace-admin"
                 ? "border-forest-700 text-forest-700 bg-forest-50"
                 : "border-gray-200 text-gray-500 hover:border-forest-700 hover:text-forest-700"
             }`}>
             <LayoutDashboard className="w-3.5 h-3.5" /> Admin
-          </Link>
+          </TransitionLink>
           <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
             <button
               onClick={() => setLang("fr")}
@@ -61,12 +61,12 @@ export default function Navbar() {
               className={`transition-colors ${lang === "en" ? "text-forest-700 font-bold" : "hover:text-forest-700"}`}
             >EN</button>
           </div>
-          <Link
+          <TransitionLink
             href="/inscription"
             className="bg-forest-700 hover:bg-forest-800 text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-colors inline-flex items-center gap-1.5"
           >
             {t.nav.registerCta} <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
+          </TransitionLink>
         </div>
 
         {/* Mobile toggle */}
@@ -83,15 +83,15 @@ export default function Navbar() {
       {menuOpen && (
         <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
+            <TransitionLink key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
               className="block py-2.5 text-sm font-medium text-gray-600 hover:text-forest-700">
               {link.label}
-            </Link>
+            </TransitionLink>
           ))}
-          <Link href="/espace-admin" onClick={() => setMenuOpen(false)}
+          <TransitionLink href="/espace-admin" onClick={() => setMenuOpen(false)}
             className="flex items-center gap-2 py-2.5 text-sm font-medium text-gray-600 hover:text-forest-700">
             <LayoutDashboard className="w-4 h-4" /> Espace Admin
-          </Link>
+          </TransitionLink>
           <div className="flex items-center gap-3 pt-2 pb-1">
             <button onClick={() => setLang("fr")}
               className={`text-sm font-semibold ${lang === "fr" ? "text-forest-700" : "text-gray-400"}`}>FR</button>
@@ -100,9 +100,9 @@ export default function Navbar() {
               className={`text-sm font-semibold ${lang === "en" ? "text-forest-700" : "text-gray-400"}`}>EN</button>
           </div>
           <div className="pt-2">
-            <Link href="/inscription" className="block bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md text-center">
+            <TransitionLink href="/inscription" className="block bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md text-center">
               {t.nav.registerCta}
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       )}

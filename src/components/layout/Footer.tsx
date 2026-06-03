@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
 
 const socials = [
@@ -83,22 +83,22 @@ export default function Footer() {
           {f.tagline}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/inscription"
+          <TransitionLink href="/inscription"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
             style={{ backgroundColor: "#c49a30", color: "#0a1f14" }}>
             {f.ctaBtn}
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
-          <Link href="/programme"
+          </TransitionLink>
+          <TransitionLink href="/programme"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5"
             style={{ border: "1px solid rgba(196,154,48,0.4)", color: "#d4aa3a" }}>
             {f.programBtn}
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </TransitionLink>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px"
           style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.06) 80%, transparent)" }} />
@@ -144,11 +144,11 @@ export default function Footer() {
             <ul className="space-y-3">
               {navLinks.map(({ href, label }) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm transition-colors duration-200"
+                  <TransitionLink href={href} className="text-sm transition-colors duration-200"
                     style={{ color: "rgba(255,255,255,0.50)" }}
                     onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
                     onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
-                  >{label}</Link>
+                  >{label}</TransitionLink>
                 </li>
               ))}
             </ul>
@@ -162,11 +162,11 @@ export default function Footer() {
             <ul className="space-y-3">
               {eventLinks.map(({ href, label }) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm transition-colors duration-200"
+                  <TransitionLink href={href} className="text-sm transition-colors duration-200"
                     style={{ color: "rgba(255,255,255,0.50)" }}
                     onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
                     onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
-                  >{label}</Link>
+                  >{label}</TransitionLink>
                 </li>
               ))}
             </ul>
@@ -200,11 +200,11 @@ export default function Footer() {
           </span>
           <div className="flex gap-5">
             {legalLinks.map(({ href, label }) => (
-              <Link key={label} href={href} className="text-xs transition-colors duration-200"
+              <TransitionLink key={label} href={href} className="text-xs transition-colors duration-200"
                 style={{ color: "rgba(255,255,255,0.25)" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
                 onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-              >{label}</Link>
+              >{label}</TransitionLink>
             ))}
           </div>
         </div>

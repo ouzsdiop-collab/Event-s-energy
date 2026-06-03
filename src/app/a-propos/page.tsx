@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { ArrowUpRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
@@ -275,18 +275,18 @@ function OrgsSection() {
           <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>{a.ctaSub}</p>
         </div>
         <div className="flex gap-3">
-          <Link href="/inscription"
+          <TransitionLink href="/inscription"
             className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
             style={{ backgroundColor: "#246444", color: "white" }}>
             {a.ctaRegister} <ArrowUpRight className="w-4 h-4" />
-          </Link>
-          <Link href="/programme"
+          </TransitionLink>
+          <TransitionLink href="/programme"
             className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200"
             style={{ border: "1px solid rgba(36,100,68,0.25)", color: "#246444" }}
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(36,100,68,0.05)")}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
             {a.ctaProgram} <ArrowUpRight className="w-4 h-4" />
-          </Link>
+          </TransitionLink>
         </div>
       </div>
     </section>

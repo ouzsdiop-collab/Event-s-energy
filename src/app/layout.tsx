@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { LangProvider } from "@/lib/i18n";
+import { TransitionProvider } from "@/lib/transition";
 
 export const metadata: Metadata = {
   title: "Salon Ouest Africain Francophone sur le Gaz Naturel – 1ère Édition",
@@ -15,9 +16,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <body>
         <LangProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <TransitionProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </TransitionProvider>
         </LangProvider>
       </body>
     </html>
