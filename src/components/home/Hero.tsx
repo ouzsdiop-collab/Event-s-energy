@@ -7,65 +7,65 @@ import { Calendar, MapPin, ChevronRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#080c10]">
+    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#f4f7f5]">
       <EnergyCanvas />
 
-      {/* Gradient overlay — gauche opaque pour lisibilité du texte */}
+      {/* Overlay doux — laisse les particules visibles à droite */}
       <div
         className="absolute inset-0 z-10"
         style={{
           background:
-            "linear-gradient(to right, rgba(8,12,16,0.97) 30%, rgba(8,12,16,0.75) 55%, rgba(8,12,16,0.15) 100%)",
+            "linear-gradient(to right, rgba(244,247,245,0.97) 32%, rgba(244,247,245,0.80) 58%, rgba(244,247,245,0.10) 100%)",
         }}
       />
 
       {/* Contenu */}
       <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center py-24">
-        <div className="max-w-2xl hero-content">
+        <div className="max-w-2xl">
           {/* Badge */}
-          <div className="hero-fade inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-            <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-            <span className="text-xs font-semibold text-white uppercase tracking-widest">
+          <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/10 border border-forest-600/20 rounded-full px-4 py-1.5 mb-6">
+            <span className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
+            <span className="text-xs font-semibold text-forest-700 uppercase tracking-widest">
               1ère Édition — Cotonou 2027
             </span>
           </div>
 
           {/* Titre */}
           <h1 className="font-heading font-black leading-tight mb-4 hero-slide-up">
-            <span className="block text-white text-4xl md:text-5xl lg:text-[3.5rem]">
+            <span className="block text-gray-900 text-4xl md:text-5xl lg:text-[3.4rem]">
               Salon Ouest Africain
             </span>
-            <span className="block text-white text-4xl md:text-5xl lg:text-[3.5rem]">
+            <span className="block text-gray-900 text-4xl md:text-5xl lg:text-[3.4rem]">
               Francophone du
             </span>
-            <span className="block text-4xl md:text-5xl lg:text-[3.5rem] text-emerald-400">
+            <span className="block text-4xl md:text-5xl lg:text-[3.4rem] text-forest-600">
               Gaz Naturel
             </span>
-            <span className="block text-4xl md:text-5xl lg:text-[3.5rem] text-yellow-400">
+            <span className="block text-4xl md:text-5xl lg:text-[3.4rem] text-gold-500">
               2027
             </span>
           </h1>
 
           {/* Trait doré */}
-          <div className="w-16 h-1 bg-yellow-400 rounded mb-5 hero-fade" />
+          <div className="w-16 h-1 bg-gold-400 rounded mb-5 hero-fade" />
 
           {/* Sous-titre */}
-          <p className="text-gray-300 text-lg leading-relaxed mb-8 max-w-lg hero-fade">
+          <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg hero-fade">
             Construire un marché gazier intégré et accessible dans l&apos;espace UEMOA :
             défis, opportunités et engagements.
           </p>
 
           {/* Chips info */}
           <div className="flex flex-wrap gap-3 mb-10 hero-fade">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white">
-              <Calendar className="w-4 h-4 text-yellow-400 shrink-0" />
+            <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2.5 text-sm text-gray-700">
+              <Calendar className="w-4 h-4 text-forest-600 shrink-0" />
               3–5 février 2027
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white">
-              <MapPin className="w-4 h-4 text-yellow-400 shrink-0" />
+            <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2.5 text-sm text-gray-700">
+              <MapPin className="w-4 h-4 text-forest-600 shrink-0" />
               Sofitel Cotonou Marina Hotel & Spa
             </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white">
+            <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2.5 text-sm text-gray-700">
               <span className="inline-flex w-5 h-3.5 rounded-sm overflow-hidden shrink-0">
                 <span className="w-1/3 h-full bg-green-600" />
                 <span className="w-1/3 h-full bg-yellow-400" />
@@ -79,19 +79,19 @@ export default function Hero() {
           <div className="flex flex-wrap gap-4 hero-fade">
             <Link
               href="/inscription"
-              className="bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-lg"
+              className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-md shadow-forest-900/20"
             >
               S&apos;inscrire maintenant <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="/programme"
-              className="border-2 border-white/30 hover:border-white/60 text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2 backdrop-blur-sm"
+              className="border-2 border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2"
             >
               Découvrir le programme <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="#"
-              className="border-2 border-yellow-500/50 hover:border-yellow-400 text-yellow-400 font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2"
+              className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2"
             >
               Devenir sponsor <ChevronRight className="w-4 h-4" />
             </Link>
@@ -100,9 +100,9 @@ export default function Hero() {
       </div>
 
       {/* Barre de stats */}
-      <div className="relative z-20 bg-black/40 backdrop-blur-md border-t border-white/10">
+      <div className="relative z-20 bg-white/80 backdrop-blur-sm border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-wrap divide-x divide-white/10">
+          <div className="flex flex-wrap divide-x divide-gray-200">
             {[
               { value: "200+", label: "Participants" },
               { value: "8",    label: "Pays UEMOA" },
@@ -113,11 +113,11 @@ export default function Hero() {
               <div key={i} className="flex items-center gap-3 px-6 py-4 flex-1 min-w-36">
                 <div>
                   {s.value && (
-                    <div className="text-2xl font-heading font-black text-yellow-400 leading-none">
+                    <div className="text-2xl font-heading font-black text-gold-500 leading-none">
                       {s.value}
                     </div>
                   )}
-                  <div className={`text-xs font-medium mt-0.5 ${s.accent ? "text-emerald-400 font-semibold text-sm" : "text-gray-400"}`}>
+                  <div className={`text-xs font-medium mt-0.5 ${s.accent ? "text-forest-600 font-semibold text-sm" : "text-gray-500"}`}>
                     {s.label}
                   </div>
                 </div>
@@ -155,69 +155,59 @@ function EnergyCanvas() {
     if (!mountRef.current) return;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
     const mouse = new THREE.Vector2(0, 0);
-    const clock = new THREE.Clock();
+    const clock  = new THREE.Clock();
 
     const particleCount = 40000;
-    const positions = new Float32Array(particleCount * 3);
+    const positions         = new Float32Array(particleCount * 3);
     const originalPositions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-    const velocities = new Float32Array(particleCount * 3);
+    const colors            = new Float32Array(particleCount * 3);
+    const velocities        = new Float32Array(particleCount * 3);
 
-    const torusKnot = new THREE.TorusKnotGeometry(1.8, 0.55, 250, 32);
-    const base = torusKnot.attributes.position;
+    const knot = new THREE.TorusKnotGeometry(1.8, 0.55, 250, 32);
+    const base = knot.attributes.position;
 
     for (let i = 0; i < particleCount; i++) {
       const vi = i % base.count;
-      const x = base.getX(vi);
-      const y = base.getY(vi);
-      const z = base.getZ(vi);
+      const x = base.getX(vi), y = base.getY(vi), z = base.getZ(vi);
 
-      positions[i * 3]     = x;
-      positions[i * 3 + 1] = y;
-      positions[i * 3 + 2] = z;
-      originalPositions[i * 3]     = x;
-      originalPositions[i * 3 + 1] = y;
-      originalPositions[i * 3 + 2] = z;
+      positions[i*3]   = originalPositions[i*3]   = x;
+      positions[i*3+1] = originalPositions[i*3+1] = y;
+      positions[i*3+2] = originalPositions[i*3+2] = z;
 
+      // Palette fond clair : vert forêt profond + or soutenu + vert émeraude
       const t = Math.random();
       const c = new THREE.Color();
-      if (t < 0.5)      c.setRGB(0.1, 0.45 + Math.random() * 0.25, 0.2);
-      else if (t < 0.8) c.setRGB(0.7 + Math.random() * 0.2, 0.6, 0.1);
-      else               c.setRGB(0.1, 0.8 + Math.random() * 0.15, 0.35);
-
-      colors[i * 3]     = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
+      if (t < 0.50)      c.setRGB(0.08, 0.30 + Math.random()*0.18, 0.12); // vert forêt
+      else if (t < 0.78) c.setRGB(0.60 + Math.random()*0.18, 0.46 + Math.random()*0.12, 0.04); // or/ambre
+      else               c.setRGB(0.05, 0.52 + Math.random()*0.18, 0.22); // vert émeraude
+      colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
     }
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
 
-    const material = new THREE.PointsMaterial({
-      size: 0.02,
+    // NormalBlending indispensable sur fond clair (AdditiveBlending = invisible sur blanc)
+    const mat = new THREE.PointsMaterial({
+      size: 0.022,
       vertexColors: true,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.88,
       depthWrite: false,
     });
 
-    const points = new THREE.Points(geometry, material);
+    const points = new THREE.Points(geo, mat);
     points.position.x = 2.8;
     scene.add(points);
 
@@ -234,29 +224,20 @@ function EnergyCanvas() {
       const mw = new THREE.Vector3(mouse.x * 3, mouse.y * 3, 0);
 
       for (let i = 0; i < particleCount; i++) {
-        const ix = i * 3, iy = ix + 1, iz = ix + 2;
+        const ix = i*3, iy = ix+1, iz = ix+2;
         const cur = new THREE.Vector3(positions[ix], positions[iy], positions[iz]);
         const ori = new THREE.Vector3(originalPositions[ix], originalPositions[iy], originalPositions[iz]);
         const vel = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz]);
 
         const d = cur.distanceTo(mw);
-        if (d < 1.5) {
-          vel.add(
-            new THREE.Vector3().subVectors(cur, mw).normalize().multiplyScalar((1.5 - d) * 0.008)
-          );
-        }
+        if (d < 1.5) vel.add(new THREE.Vector3().subVectors(cur, mw).normalize().multiplyScalar((1.5-d)*0.008));
         vel.add(new THREE.Vector3().subVectors(ori, cur).multiplyScalar(0.0015));
         vel.multiplyScalar(0.94);
 
-        positions[ix] += vel.x;
-        positions[iy] += vel.y;
-        positions[iz] += vel.z;
-        velocities[ix] = vel.x;
-        velocities[iy] = vel.y;
-        velocities[iz] = vel.z;
+        positions[ix] += vel.x; positions[iy] += vel.y; positions[iz] += vel.z;
+        velocities[ix] = vel.x; velocities[iy] = vel.y; velocities[iz] = vel.z;
       }
-      geometry.attributes.position.needsUpdate = true;
-
+      geo.attributes.position.needsUpdate = true;
       points.rotation.y = elapsed * 0.06;
       points.rotation.x = Math.sin(elapsed * 0.03) * 0.15;
       renderer.render(scene, camera);
@@ -275,9 +256,7 @@ function EnergyCanvas() {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
       mountRef.current?.removeChild(renderer.domElement);
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
+      geo.dispose(); mat.dispose(); renderer.dispose();
     };
   }, []);
 

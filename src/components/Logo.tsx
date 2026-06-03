@@ -55,7 +55,7 @@ function LogoCanvas({ size = 40, speed = 0.8 }: LogoCanvasProps) {
     const mat = new THREE.PointsMaterial({
       size: 0.045,
       vertexColors: true,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       transparent: true,
       opacity: 1,
       depthWrite: false,
