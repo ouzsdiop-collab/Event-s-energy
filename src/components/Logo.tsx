@@ -42,9 +42,9 @@ function LogoCanvas({ size = 40, speed = 0.8 }: LogoCanvasProps) {
 
       const t = Math.random();
       const c = new THREE.Color();
-      if (t < 0.55)      c.setRGB(0.05, 0.72 + Math.random() * 0.22, 0.22);
-      else if (t < 0.82) c.setRGB(0.88 + Math.random() * 0.12, 0.74 + Math.random() * 0.14, 0.06);
-      else               c.setRGB(0.04, 0.92 + Math.random() * 0.08, 0.40);
+      if (t < 0.55)      c.setHSL(0.37, 0.75, 0.30 + Math.random() * 0.12);
+      else if (t < 0.82) c.setHSL(0.11, 0.90, 0.38 + Math.random() * 0.10);
+      else               c.setHSL(0.42, 0.68, 0.34 + Math.random() * 0.10);
       colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
     }
 
