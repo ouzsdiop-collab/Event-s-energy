@@ -1,13 +1,6 @@
 import Hero from "@/components/home/Hero";
+import ThemesSection from "@/components/home/ThemesSection";
 import Link from "next/link";
-import { CheckCircle, TrendingUp, Shield, Handshake, Leaf } from "lucide-react";
-
-const themes = [
-  { num: "01", title: "Financement des infrastructures gazières", desc: "Mobiliser les capitaux pour développer des infrastructures compétitives et résilientes.", img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80" },
-  { num: "02", title: "Mitigation des risques pour les investisseurs", desc: "Identifier, partager et réduire les risques pour sécuriser les projets gaziers.", img: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&q=80" },
-  { num: "03", title: "Harmonisation des cadres réglementaires", desc: "Aligner les politiques pour un marché régional intégré et attractif.", img: "https://images.unsplash.com/photo-1575879285940-f7d4a4b5a60d?w=600&q=80" },
-  { num: "04", title: "Mesures incitatives à l'investissement privé", desc: "Créer un environnement favorable à l'investissement dans toute la chaîne de valeur.", img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" },
-];
 
 const speakers = [
   { name: "Amadou Hott", title: "Envoyé spécial du Président de la BAD pour Power Africa", img: "https://randomuser.me/api/portraits/men/1.jpg" },
@@ -23,33 +16,7 @@ export default function HomePage() {
     <>
       <Hero />
 
-      {/* THEMES */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="section-label">LES THÈMES CLÉS</p>
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-900">
-              4 axes pour bâtir l&apos;avenir du gaz naturel
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {themes.map((t) => (
-              <div key={t.num} className="relative rounded-xl overflow-hidden min-h-64 group cursor-pointer"
-                style={{ backgroundImage: `linear-gradient(to bottom, rgba(15,45,31,0.4) 0%, rgba(15,45,31,0.88) 100%), url('${t.img}')`, backgroundSize: "cover", backgroundPosition: "center" }}>
-                <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                  <div className="w-9 h-9 rounded-full bg-gold-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {t.num}
-                  </div>
-                  <div>
-                    <h3 className="text-white font-heading font-bold text-sm leading-snug mb-2">{t.title}</h3>
-                    <p className="text-gray-300 text-xs leading-relaxed">{t.desc}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ThemesSection />
 
       {/* SPEAKERS */}
       <section className="py-20 px-4 bg-sage-50">
