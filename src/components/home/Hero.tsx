@@ -176,23 +176,29 @@ function EnergyCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const container = mountRef.current;
+    if (!container) return;
+
+    // Clear any stale canvas from a previous mount (e.g. HMR or fast navigation)
+    container.innerHTML = "";
 
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
     camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
-    mountRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
 
     const mouse = new THREE.Vector2(0, 0);
-    const clock  = new THREE.Clock();
+    // Track elapsed time manually so tab-visibility pauses don't cause jumps
+    let elapsed = 0;
+    let lastTs  = performance.now();
 
     const particleCount     = 50000;
     const positions         = new Float32Array(particleCount * 3);
@@ -205,23 +211,16 @@ function EnergyCanvas() {
 
     for (let i = 0; i < particleCount; i++) {
       const vi = i % base.count;
-      const x  = base.getX(vi);
-      const y  = base.getY(vi);
-      const z  = base.getZ(vi);
-
-      positions[i*3]   = originalPositions[i*3]   = x;
-      positions[i*3+1] = originalPositions[i*3+1] = y;
-      positions[i*3+2] = originalPositions[i*3+2] = z;
+      positions[i*3]   = originalPositions[i*3]   = base.getX(vi);
+      positions[i*3+1] = originalPositions[i*3+1] = base.getY(vi);
+      positions[i*3+2] = originalPositions[i*3+2] = base.getZ(vi);
 
       const t = Math.random();
       const c = new THREE.Color();
       if (t < 0.50)      c.setHSL(0.37, 0.72, 0.28 + Math.random() * 0.12);
       else if (t < 0.78) c.setHSL(0.11, 0.88, 0.35 + Math.random() * 0.10);
       else               c.setHSL(0.42, 0.65, 0.32 + Math.random() * 0.12);
-
-      colors[i*3]   = c.r;
-      colors[i*3+1] = c.g;
-      colors[i*3+2] = c.b;
+      colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
     }
 
     const geo = new THREE.BufferGeometry();
@@ -229,13 +228,8 @@ function EnergyCanvas() {
     geo.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
 
     const mat = new THREE.PointsMaterial({
-      size: 0.032,
-      vertexColors: true,
-      blending: THREE.NormalBlending,
-      transparent: true,
-      opacity: 1.0,
-      depthWrite: false,
-      sizeAttenuation: true,
+      size: 0.032, vertexColors: true, blending: THREE.NormalBlending,
+      transparent: true, opacity: 1.0, depthWrite: false, sizeAttenuation: true,
     });
 
     const points = new THREE.Points(geo, mat);
@@ -249,11 +243,18 @@ function EnergyCanvas() {
     window.addEventListener("mousemove", onMouseMove);
 
     let animId: number;
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
-      const mw = new THREE.Vector3(mouse.x * 3, mouse.y * 3, 0);
+    let active = true;
 
+    const animate = (ts: number) => {
+      if (!active) return;
+      animId = requestAnimationFrame(animate);
+
+      // Cap delta so a long background pause doesn't cause a huge jump
+      const delta = Math.min((ts - lastTs) / 1000, 0.05);
+      lastTs  = ts;
+      elapsed += delta;
+
+      const mw = new THREE.Vector3(mouse.x * 3, mouse.y * 3, 0);
       for (let i = 0; i < particleCount; i++) {
         const ix = i*3, iy = ix+1, iz = ix+2;
         const cur = new THREE.Vector3(positions[ix], positions[iy], positions[iz]);
@@ -261,20 +262,12 @@ function EnergyCanvas() {
         const vel = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz]);
 
         const d = cur.distanceTo(mw);
-        if (d < 1.5) {
-          vel.add(
-            new THREE.Vector3().subVectors(cur, mw).normalize().multiplyScalar((1.5 - d) * 0.01)
-          );
-        }
+        if (d < 1.5) vel.add(new THREE.Vector3().subVectors(cur, mw).normalize().multiplyScalar((1.5 - d) * 0.01));
         vel.add(new THREE.Vector3().subVectors(ori, cur).multiplyScalar(0.002));
         vel.multiplyScalar(0.95);
 
-        positions[ix] += vel.x;
-        positions[iy] += vel.y;
-        positions[iz] += vel.z;
-        velocities[ix] = vel.x;
-        velocities[iy] = vel.y;
-        velocities[iz] = vel.z;
+        positions[ix] += vel.x; positions[iy] += vel.y; positions[iz] += vel.z;
+        velocities[ix] = vel.x; velocities[iy] = vel.y; velocities[iz] = vel.z;
       }
 
       geo.attributes.position.needsUpdate = true;
@@ -282,7 +275,13 @@ function EnergyCanvas() {
       points.rotation.x = Math.sin(elapsed * 0.03) * 0.15;
       renderer.render(scene, camera);
     };
-    animate();
+    animId = requestAnimationFrame(animate);
+
+    // When tab comes back into view, reset lastTs so delta doesn't spike
+    const onVisibility = () => {
+      if (!document.hidden) lastTs = performance.now();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
 
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -292,12 +291,13 @@ function EnergyCanvas() {
     window.addEventListener("resize", onResize);
 
     return () => {
+      active = false;
       cancelAnimationFrame(animId);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
-      if (mountRef.current?.contains(renderer.domElement)) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
+      document.removeEventListener("visibilitychange", onVisibility);
+      // Clear the container regardless of whether the node is still attached
+      container.innerHTML = "";
       geo.dispose();
       mat.dispose();
       renderer.dispose();
