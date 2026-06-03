@@ -157,7 +157,7 @@ export default function ProgrammePage() {
     <div style={{ backgroundColor: "#f4f7f5", minHeight: "100vh" }}>
 
       {/* Header */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 pt-24 pb-12" ref={headerRef}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 pt-24 pb-12" ref={headerRef}>
         <p className={`text-[11px] font-bold uppercase tracking-[0.22em] mb-8 transition-all duration-700 ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
           style={{ color: "#c49a30", transitionDelay: "0.1s" }}>
           {p.eyebrow}
@@ -165,11 +165,11 @@ export default function ProgrammePage() {
         <div className={`flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 transition-all duration-700 ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           style={{ transitionDelay: "0.2s" }}>
           <h1 className="font-heading font-black leading-[0.88]">
-            <span className="block" style={{ fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
+            <span className="block" style={{ fontSize: "clamp(2.2rem, 8vw, 6rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
               {p.title1}
             </span>
             <span className="block" style={{
-              fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.03em",
+              fontSize: "clamp(2.2rem, 8vw, 6rem)", letterSpacing: "-0.03em",
               background: "linear-gradient(90deg, #246444, #1e5238 50%, #c49a30)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
             }}>
@@ -196,7 +196,7 @@ export default function ProgrammePage() {
       </div>
 
       {/* Controls */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 mb-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 mb-10">
         <div className="flex gap-2 mb-6 flex-wrap">
           {DAYS.map((d, i) => (
             <button key={i} onClick={() => { setActiveDay(i); setActiveFilter("Tous"); }}
@@ -236,7 +236,7 @@ export default function ProgrammePage() {
       </div>
 
       {/* Timeline */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 pb-24">
         <div className="flex flex-col gap-0">
           {filtered.map((session, i) => (
             <SessionCard key={`${activeDay}-${i}`} session={session} index={i} lang={lang} />

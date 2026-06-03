@@ -59,7 +59,7 @@ export default function SpeakersSection() {
   }, []);
 
   return (
-    <section className="py-24 px-4 bg-[#f7faf8] relative overflow-hidden">
+    <section className="py-14 md:py-24 px-4 bg-[#f7faf8] relative overflow-hidden">
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{

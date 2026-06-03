@@ -11,20 +11,20 @@ export default function Hero() {
   const h = t.hero;
 
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#f4f7f5]">
+    <section className="relative min-h-[100dvh] flex flex-col overflow-hidden bg-[#f4f7f5]">
       <EnergyCanvas />
 
       <div
         className="absolute inset-0 z-10 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to right, rgba(244,247,245,0.97) 30%, rgba(244,247,245,0.75) 55%, rgba(244,247,245,0.05) 100%)",
+            "linear-gradient(to bottom, rgba(244,247,245,0.50) 0%, rgba(244,247,245,0.92) 40%, rgba(244,247,245,0.98) 70%), linear-gradient(to right, rgba(244,247,245,0.97) 30%, rgba(244,247,245,0.75) 55%, rgba(244,247,245,0.05) 100%)",
         }}
       />
 
-      <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center py-24">
-        <div className="max-w-xl">
-          <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/8 border border-forest-600/25 rounded-full px-4 py-1.5 mb-8">
+      <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center pt-16 pb-10 md:py-24">
+        <div className="max-w-xl w-full">
+          <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/8 border border-forest-600/25 rounded-full px-4 py-1.5 mb-5 md:mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
             <span className="text-xs font-semibold text-forest-700 uppercase tracking-[0.12em]">
               {h.badge}
@@ -34,20 +34,20 @@ export default function Hero() {
           <h1 className="font-heading font-black mb-6 hero-slide-up" style={{ lineHeight: 0.92 }}>
             <span
               className="block font-medium uppercase tracking-[0.18em] mb-4"
-              style={{ fontSize: "clamp(0.65rem, 1.1vw, 0.80rem)", color: "rgba(36,100,68,0.45)", lineHeight: 1 }}
+              style={{ fontSize: "clamp(0.60rem, 2.5vw, 0.80rem)", color: "rgba(36,100,68,0.45)", lineHeight: 1 }}
             >
               {h.supertitle}
             </span>
             <span
               className="block text-gray-900"
-              style={{ fontSize: "clamp(3.8rem, 7.5vw, 6.2rem)", letterSpacing: "-0.02em" }}
+              style={{ fontSize: "clamp(3rem, 11vw, 6.2rem)", letterSpacing: "-0.02em" }}
             >
               GAZ
             </span>
             <span
               className="block"
               style={{
-                fontSize: "clamp(3.8rem, 7.5vw, 6.2rem)",
+                fontSize: "clamp(3rem, 11vw, 6.2rem)",
                 letterSpacing: "-0.02em",
                 background: "linear-gradient(90deg, #246444 0%, #1e5238 45%, #c49a30 100%)",
                 WebkitBackgroundClip: "text",
@@ -60,7 +60,7 @@ export default function Hero() {
             <span
               className="block"
               style={{
-                fontSize: "clamp(2.2rem, 4.5vw, 3.8rem)",
+                fontSize: "clamp(1.8rem, 7vw, 3.8rem)",
                 letterSpacing: "0.14em",
                 color: "transparent",
                 WebkitTextStroke: "1.5px rgba(15,45,31,0.20)",
@@ -73,20 +73,20 @@ export default function Hero() {
 
           <div className="w-12 h-[3px] bg-gold-400 rounded-full mb-6 hero-fade" />
 
-          <p className="text-gray-500 text-base leading-[1.75] mb-8 max-w-md hero-fade">
+          <p className="text-gray-500 text-sm md:text-base leading-[1.75] mb-8 max-w-md hero-fade">
             {h.subtitle}
           </p>
 
-          <div className="flex flex-wrap items-center gap-2 mb-9 hero-fade">
-            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+          <div className="flex flex-wrap items-center gap-1.5 mb-9 hero-fade">
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-xs md:text-sm font-medium text-gray-700">
               <Calendar className="w-3.5 h-3.5 text-forest-600 shrink-0" />
               {h.date}
             </div>
-            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-xs md:text-sm font-medium text-gray-700">
               <MapPin className="w-3.5 h-3.5 text-forest-600 shrink-0" />
               {h.location}
             </div>
-            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-xs md:text-sm font-medium text-gray-700">
               <svg width="20" height="14" viewBox="0 0 20 14" className="rounded-sm shrink-0 overflow-hidden">
                 <rect width="7" height="14" fill="#008751" />
                 <rect x="7" width="13" height="7" fill="#FCD116" />
@@ -96,22 +96,22 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 hero-fade">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 md:gap-3 hero-fade">
             <TransitionLink
               href="/inscription"
-              className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm"
+              className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm w-full sm:w-auto"
             >
               {h.registerBtn} <ChevronRight className="w-4 h-4" />
             </TransitionLink>
             <TransitionLink
               href="/programme"
-              className="border border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
+              className="border border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm w-full sm:w-auto"
             >
               {h.programBtn} <ChevronRight className="w-4 h-4" />
             </TransitionLink>
             <TransitionLink
               href="/intervenants"
-              className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
+              className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm w-full sm:w-auto"
             >
               {h.speakersBtn} <ChevronRight className="w-4 h-4" />
             </TransitionLink>
@@ -124,7 +124,7 @@ export default function Hero() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
             {h.stats.map((s, i) => (
-              <div key={i} className="px-6 py-6 flex flex-col gap-1 group">
+              <div key={i} className="px-3 py-4 md:px-6 md:py-6 flex flex-col gap-1 group">
                 <div
                   className="font-heading font-black leading-none"
                   style={{

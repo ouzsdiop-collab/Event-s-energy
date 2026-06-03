@@ -56,7 +56,7 @@ function HeroSection() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-12 pt-24 pb-20">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 pt-16 pb-12 md:pt-24 md:pb-20">
       <div ref={ref}>
         <p className={`text-[11px] font-bold uppercase tracking-[0.22em] mb-8 ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "#c49a30", animationDelay: "0.1s" }}>
@@ -64,11 +64,11 @@ function HeroSection() {
         </p>
         <h1 className={`font-heading font-black leading-[0.88] mb-10 ap-reveal ${visible ? "visible" : ""}`}
           style={{ animationDelay: "0.2s" }}>
-          <span className="block" style={{ fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
+          <span className="block" style={{ fontSize: "clamp(2.2rem, 8vw, 6rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
             {a.title1}
           </span>
           <span className="block" style={{
-            fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.03em",
+            fontSize: "clamp(2.2rem, 8vw, 6rem)", letterSpacing: "-0.03em",
             background: "linear-gradient(90deg, #246444 0%, #1e5238 50%, #c49a30 100%)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
           }}>
@@ -101,8 +101,8 @@ function ContextSection() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-12 py-16" ref={ref}>
-      <div className="grid md:grid-cols-2 gap-16 items-start">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-16" ref={ref}>
+      <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
         <div className={`ap-reveal ${visible ? "visible" : ""}`} style={{ animationDelay: "0s" }}>
           <p className="text-[10px] font-bold uppercase tracking-[0.20em] mb-4" style={{ color: "#c49a30" }}>
             {a.contextLabel}
@@ -125,7 +125,7 @@ function ContextSection() {
             <div key={s.value}
               className={`ap-reveal ${visible ? "visible" : ""}`}
               style={{ animationDelay: `${i * 0.08}s` }}>
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 h-full">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 h-full">
                 <div className="font-heading font-black mb-2" style={{
                   fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
                   background: "linear-gradient(135deg, #1e5238 0%, #c49a30 100%)",
@@ -148,7 +148,7 @@ function ThemeSection() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <section ref={ref} className="py-20 px-6 md:px-12" style={{ backgroundColor: "#0f2d1f" }}>
+    <section ref={ref} className="py-20 px-4 sm:px-6 md:px-12" style={{ backgroundColor: "#0f2d1f" }}>
       <div className="max-w-4xl mx-auto text-center">
         <p className={`text-[10px] font-bold uppercase tracking-[0.22em] mb-8 ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "rgba(196,154,48,0.70)", animationDelay: "0.1s" }}>
@@ -175,7 +175,7 @@ function SubthemesSection() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <section ref={ref} className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+    <section ref={ref} className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 md:py-20">
       <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
         style={{ color: "#c49a30", animationDelay: "0s" }}>
         {a.subthemesLabel}
@@ -187,7 +187,7 @@ function SubthemesSection() {
       <div className="flex flex-col divide-y" style={{ borderColor: "rgba(36,100,68,0.10)" }}>
         {a.subthemes.map((st, i) => (
           <div key={st.num}
-            className={`flex gap-8 py-8 ap-reveal ${visible ? "visible" : ""}`}
+            className={`flex gap-8 py-5 md:py-8 ap-reveal ${visible ? "visible" : ""}`}
             style={{ borderColor: "rgba(36,100,68,0.10)", animationDelay: `${0.05 + i * 0.07}s` }}>
             <span className="font-mono text-xs shrink-0 pt-1 w-6" style={{ color: "rgba(36,100,68,0.30)" }}>
               {st.num}
@@ -210,7 +210,7 @@ function ObjectivesSection() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <section ref={ref} className="py-16 px-6 md:px-12" style={{ backgroundColor: "white" }}>
+    <section ref={ref} className="py-16 px-4 sm:px-6 md:px-12" style={{ backgroundColor: "white" }}>
       <div className="max-w-6xl mx-auto">
         <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
           style={{ color: "#c49a30", animationDelay: "0s" }}>
@@ -220,7 +220,7 @@ function ObjectivesSection() {
           style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
           {a.objectivesTitle}
         </h2>
-        <div className="grid md:grid-cols-2 gap-x-16 gap-y-0">
+        <div className="grid md:grid-cols-2 gap-x-0 md:gap-x-16 gap-y-0">
           {a.objectives.map((obj, i) => (
             <div key={i}
               className={`flex items-start gap-4 py-5 border-t ap-reveal ${visible ? "visible" : ""}`}
@@ -243,7 +243,7 @@ function OrgsSection() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <section ref={ref} className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+    <section ref={ref} className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 md:py-20">
       <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${visible ? "visible" : ""}`}
         style={{ color: "#c49a30", animationDelay: "0s" }}>
         {a.orgsLabel}

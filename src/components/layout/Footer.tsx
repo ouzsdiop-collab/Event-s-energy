@@ -127,7 +127,7 @@ export default function Footer() {
             <div className="flex gap-2">
               {socials.map((s) => (
                 <a key={s.label} href={s.href} aria-label={s.label}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200"
                   style={{ border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.40)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "#c49a30"; (e.currentTarget as HTMLElement).style.color = "#c49a30"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.10)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.40)"; }}
@@ -211,7 +211,7 @@ export default function Footer() {
       </div>
 
       {/* Wave animation */}
-      <div aria-hidden="true" style={{ overflow: "hidden", height: 80, position: "relative", backgroundColor: "#071810" }}>
+      <div aria-hidden="true" style={{ overflow: "hidden", height: "clamp(48px, 8vw, 80px)", position: "relative", backgroundColor: "#071810" }}>
         {Array.from({ length: barCount }).map((_, i) => {
           const progress = i / (barCount - 1);
           const alpha = Math.sin(progress * Math.PI);

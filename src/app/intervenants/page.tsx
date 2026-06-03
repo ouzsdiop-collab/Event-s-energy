@@ -145,7 +145,7 @@ export default function IntervenantsPage() {
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-[40vh]"
         style={{ background: "linear-gradient(to bottom, rgba(36,100,68,0.04) 0%, transparent 100%)" }} />
 
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-24">
 
         {/* Header */}
         <div
@@ -175,11 +175,11 @@ export default function IntervenantsPage() {
           </div>
 
           <h1 className="font-heading font-black leading-[0.88] mb-10">
-            <span className="block" style={{ fontSize: "clamp(3.2rem, 8vw, 7rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
+            <span className="block" style={{ fontSize: "clamp(2.2rem, 8vw, 7rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
               {iv.title1}
             </span>
             <span className="block" style={{
-              fontSize: "clamp(3.2rem, 8vw, 7rem)", letterSpacing: "-0.03em",
+              fontSize: "clamp(2.2rem, 8vw, 7rem)", letterSpacing: "-0.03em",
               background: "linear-gradient(90deg, #246444 0%, #1e5238 50%, #c49a30 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
             }}>
@@ -187,7 +187,7 @@ export default function IntervenantsPage() {
             </span>
           </h1>
 
-          <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex flex-wrap gap-3 mb-8">
             {iv.stats.map((s) => (
               <div key={s.label} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
                 <span className="font-heading font-black text-xl" style={{ color: "#246444" }}>{s.value}</span>
@@ -228,7 +228,7 @@ export default function IntervenantsPage() {
       {/* Floating card */}
       {!isMobile && activeSpeaker && (
         <div
-          className="pointer-events-none fixed left-0 top-0 z-50 w-72 rounded-2xl overflow-hidden"
+          className="pointer-events-none fixed left-0 top-0 z-50 w-64 sm:w-72 max-w-[calc(100vw-2rem)] rounded-2xl overflow-hidden"
           style={{
             transform: `translate(${cardPos.x}px, ${cardPos.y}px)`,
             boxShadow: "0 32px 64px rgba(10,31,20,0.25), 0 0 0 1px rgba(196,154,48,0.15)",

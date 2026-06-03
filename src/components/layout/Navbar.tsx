@@ -80,8 +80,8 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      {menuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1">
+      <div className={`lg:hidden bg-white border-t border-gray-100 overflow-hidden transition-all duration-300 ${menuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+        <div className="px-4 py-4 space-y-0.5">
           {navLinks.map((link) => (
             <TransitionLink key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
               className="block py-2.5 text-sm font-medium text-gray-600 hover:text-forest-700">
@@ -89,7 +89,7 @@ export default function Navbar() {
             </TransitionLink>
           ))}
           <TransitionLink href="/espace-admin" onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-2 py-2.5 text-sm font-medium text-gray-600 hover:text-forest-700">
+            className="flex items-center gap-2 py-2.5 text-sm font-medium text-gray-600 hover:text-forest-700 border-t border-gray-100 pt-2 mt-1">
             <LayoutDashboard className="w-4 h-4" /> Espace Admin
           </TransitionLink>
           <div className="flex items-center gap-3 pt-2 pb-1">
@@ -100,12 +100,12 @@ export default function Navbar() {
               className={`text-sm font-semibold ${lang === "en" ? "text-forest-700" : "text-gray-400"}`}>EN</button>
           </div>
           <div className="pt-2">
-            <TransitionLink href="/inscription" className="block bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md text-center">
+            <TransitionLink href="/inscription" className="block w-full bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md text-center">
               {t.nav.registerCta}
             </TransitionLink>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }

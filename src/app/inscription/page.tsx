@@ -33,16 +33,16 @@ export default function InscriptionPage() {
     <div style={{ backgroundColor: "#f4f7f5", minHeight: "100vh" }}>
 
       {/* Header */}
-      <div className="max-w-5xl mx-auto px-6 md:px-10 pt-16 pb-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-10 pt-16 pb-10">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] mb-5" style={{ color: "#c49a30" }}>
           {ins.eyebrow}
         </p>
         <h1 className="font-heading font-black leading-[0.88] mb-2">
-          <span className="block" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", letterSpacing: "-0.025em", color: "#0f2d1f" }}>
+          <span className="block" style={{ fontSize: "clamp(1.8rem, 7vw, 4rem)", letterSpacing: "-0.025em", color: "#0f2d1f" }}>
             {ins.title1}
           </span>
           <span className="block" style={{
-            fontSize: "clamp(2.2rem, 5vw, 4rem)", letterSpacing: "-0.025em",
+            fontSize: "clamp(1.8rem, 7vw, 4rem)", letterSpacing: "-0.025em",
             background: "linear-gradient(90deg, #246444, #c49a30)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
           }}>
@@ -52,7 +52,7 @@ export default function InscriptionPage() {
       </div>
 
       {/* Stepper */}
-      <div className="max-w-5xl mx-auto px-6 md:px-10 mb-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-10 mb-10">
         <div className="flex items-center gap-0">
           {ins.steps.map((label, i) => {
             const n = i + 1;
@@ -88,7 +88,7 @@ export default function InscriptionPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-6 md:px-10 pb-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-10 pb-24">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           <div className="flex-1 min-w-0">
             {step === 1 && <Step1 form={form} update={update} selectedPass={selectedPass} onNext={() => setStep(2)} ins={ins} />}
@@ -97,7 +97,7 @@ export default function InscriptionPage() {
           </div>
 
           {step < 3 && (
-            <div className="lg:w-72 shrink-0 sticky top-24">
+            <div className="w-full lg:w-72 shrink-0 relative lg:sticky lg:top-24">
               <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "#0f2d1f" }}>
                 <div className="px-6 pt-6 pb-4">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(196,154,48,0.70)" }}>
@@ -206,7 +206,7 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
       </Card>
 
       <Card title={ins.identityTitle}>
-        <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <div>
             <Label text={ins.civility} required />
             <select className="ins-input" value={form.civilite} onChange={e => update("civilite", e.target.value)}>
@@ -257,7 +257,7 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
           <div>
             <Label text={ins.phone} required />
             <div className="flex gap-2">
-              <select className="ins-input w-28">
+              <select className="ins-input w-24 sm:w-28">
                 <option>+229</option><option>+33</option><option>+221</option><option>+225</option><option>+234</option>
               </select>
               <input type="tel" className="ins-input flex-1" value={form.telephone} onChange={e => update("telephone", e.target.value)} />

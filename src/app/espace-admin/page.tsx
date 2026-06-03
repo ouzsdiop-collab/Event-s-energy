@@ -683,6 +683,7 @@ Le Comité d'Organisation SOAFGANG 2027`);
 export default function EspaceAdminPage() {
   const [active, setActive]       = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const section = {
     overview:       <SectionOverview />,
@@ -743,9 +744,28 @@ export default function EspaceAdminPage() {
 
       <div className="flex" style={{ minHeight: "calc(100vh - 49px)" }}>
 
+        {/* ── Mobile overlay backdrop ── */}
+        {mobileSidebarOpen && (
+          <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
+        )}
+
         {/* ── Sidebar ── */}
-        <aside className="shrink-0 flex flex-col transition-all duration-300"
-          style={{ width: sidebarOpen ? 224 : 62, backgroundColor: "#0f2d1f", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+        <aside
+          className="shrink-0 flex flex-col transition-all duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:inset-auto lg:z-auto"
+          style={{
+            width: sidebarOpen ? 224 : 62,
+            backgroundColor: "#0f2d1f",
+            borderRight: "1px solid rgba(255,255,255,0.06)",
+            transform: mobileSidebarOpen ? "translateX(0)" : undefined,
+          }}
+          data-mobile-open={mobileSidebarOpen}
+        >
+          <style>{`
+            @media (max-width: 1023px) {
+              aside[data-mobile-open="false"] { transform: translateX(-100%); }
+              aside[data-mobile-open="true"]  { transform: translateX(0); }
+            }
+          `}</style>
 
           <div className="flex items-center justify-between px-4 py-5"
             style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
@@ -767,7 +787,7 @@ export default function EspaceAdminPage() {
             {NAV_SECTIONS.map(({ id, label, icon: Icon }) => {
               const isActive = active === id;
               return (
-                <button key={id} onClick={() => setActive(id)}
+                <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
                   style={{
                     backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent",
@@ -802,11 +822,16 @@ export default function EspaceAdminPage() {
           {/* Top bar */}
           <header className="flex items-center justify-between px-6 py-4 bg-white border-b"
             style={{ borderColor: "rgba(36,100,68,0.10)" }}>
-            <div>
-              <p className="text-sm font-black" style={{ color: "#0f2d1f" }}>
-                {NAV_SECTIONS.find(n => n.id === active)?.label}
-              </p>
-              <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>SOAFGANG 2027 · Espace Administration</p>
+            <div className="flex items-center">
+              <button className="lg:hidden mr-3 p-2 rounded-lg hover:bg-gray-50" onClick={() => setMobileSidebarOpen(true)}>
+                <Menu className="w-5 h-5" style={{ color: "rgba(15,45,31,0.60)" }} />
+              </button>
+              <div>
+                <p className="text-sm font-black" style={{ color: "#0f2d1f" }}>
+                  {NAV_SECTIONS.find(n => n.id === active)?.label}
+                </p>
+                <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>SOAFGANG 2027 · Espace Administration</p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <button className="relative p-2 rounded-xl hover:bg-gray-50 transition-colors">
@@ -819,7 +844,7 @@ export default function EspaceAdminPage() {
             </div>
           </header>
 
-          <main key={active} className="flex-1 p-6 overflow-auto">{section}</main>
+          <main key={active} className="flex-1 p-4 md:p-6 overflow-auto">{section}</main>
         </div>
       </div>
     </div>

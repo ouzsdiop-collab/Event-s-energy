@@ -77,7 +77,7 @@ export default function ThemesSection() {
   }, []);
 
   return (
-    <section className="py-24 px-4 bg-white overflow-hidden">
+    <section className="py-14 md:py-24 px-4 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="mb-16 max-w-2xl">
           <p className="section-label mb-3">{th.label}</p>
@@ -104,7 +104,7 @@ export default function ThemesSection() {
                 ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
                 ${hovered === i ? "-translate-y-2 shadow-2xl shadow-forest-900/30" : "shadow-lg shadow-forest-900/10"}
               `}
-              style={{ minHeight: "340px" }}
+              style={{ minHeight: "280px" }}
             >
               <div
                 className="absolute inset-0 opacity-[0.04]"
@@ -120,10 +120,10 @@ export default function ThemesSection() {
                   opacity: hovered === i ? 1 : 0,
                 }}
               />
-              <div className="relative z-10 p-7 flex flex-col h-full" style={{ minHeight: "340px" }}>
+              <div className="relative z-10 p-7 flex flex-col h-full" style={{ minHeight: "280px" }}>
                 <div className="flex items-start justify-between mb-6">
                   <span
-                    className="text-5xl font-heading font-black leading-none select-none"
+                    className="text-3xl md:text-5xl font-heading font-black leading-none select-none"
                     style={{ color: ACCENTS[i], opacity: 0.25 }}
                   >
                     {item.num}
