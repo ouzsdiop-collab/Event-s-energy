@@ -88,16 +88,23 @@ export function LogoMark({ size = 40 }: { size?: number }) {
   return <LogoCanvas size={size} speed={0.8} />;
 }
 
-export default function Logo() {
+export default function Logo({ dark = true }: { dark?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
       <LogoCanvas size={40} speed={0.8} />
       <div className="leading-tight">
-        <div className="font-heading font-bold text-gray-800" style={{ fontSize: "11px", lineHeight: "1.35" }}>
+        <div
+          className="font-heading font-bold"
+          style={{
+            fontSize: "11px",
+            lineHeight: "1.35",
+            color: dark ? "#1f2937" : "rgba(255,255,255,0.90)",
+          }}
+        >
           Salon Ouest Africain<br />
           Francophone du{" "}
-          <span className="text-emerald-700">Gaz Naturel</span>{" "}
-          <span className="text-yellow-600">2027</span>
+          <span style={{ color: dark ? "#246444" : "#d4aa3a" }}>Gaz Naturel</span>{" "}
+          <span style={{ color: dark ? "#a07828" : "#e8c96a" }}>2027</span>
         </div>
       </div>
     </Link>
