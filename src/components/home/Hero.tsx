@@ -3,264 +3,124 @@
 import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { Calendar, MapPin, ChevronRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section
-      className="relative min-h-screen flex flex-col overflow-hidden"
-      style={{ backgroundColor: "#0a1f14" }}
-    >
-      {/* ── Background photo + overlay ── */}
+    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#f4f7f5]">
+      <EnergyCanvas />
+
+      {/* Overlay doux — laisse les particules visibles à droite */}
       <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1600&q=85')",
-          backgroundSize: "cover",
-          backgroundPosition: "center 40%",
-        }}
-      />
-      <div
-        className="absolute inset-0 z-[1]"
+        className="absolute inset-0 z-10"
         style={{
           background:
-            "linear-gradient(135deg, rgba(10,31,20,0.96) 0%, rgba(10,31,20,0.82) 45%, rgba(10,31,20,0.60) 100%)",
+            "linear-gradient(to right, rgba(244,247,245,0.97) 32%, rgba(244,247,245,0.80) 58%, rgba(244,247,245,0.10) 100%)",
         }}
       />
 
-      {/* ── Grain texture overlay ── */}
-      <div
-        className="absolute inset-0 z-[2] opacity-[0.035] pointer-events-none"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-          backgroundSize: "128px 128px",
-        }}
-      />
-
-      {/* ── Subtle gold radial glow (top-left) ── */}
-      <div
-        className="absolute top-0 left-0 w-[600px] h-[600px] z-[2] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at top left, rgba(196,154,48,0.08) 0%, transparent 65%)",
-        }}
-      />
-
-      {/* ── Three.js 3D — right side, decorative ── */}
-      <div className="absolute right-0 top-0 h-full w-[50%] z-[3] hidden lg:block pointer-events-none opacity-60">
-        <EnergyCanvas />
-      </div>
-
-      {/* ── Main content ── */}
-      <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 lg:px-10 w-full flex items-center py-28">
-        <div className="w-full lg:w-[55%]">
-
+      {/* Contenu */}
+      <div className="relative z-20 flex-1 max-w-7xl mx-auto px-6 w-full flex items-center py-20">
+        <div className="max-w-xl">
           {/* Badge */}
-          <div
-            className="hero-badge inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 mb-8"
-            style={{
-              border: "1px solid rgba(196,154,48,0.40)",
-              background: "rgba(196,154,48,0.08)",
-            }}
-          >
-            <span
-              className="w-1.5 h-1.5 rounded-full animate-pulse"
-              style={{ backgroundColor: "#d4aa3a" }}
-            />
-            <span
-              className="text-[11px] font-semibold uppercase tracking-[0.15em]"
-              style={{ color: "#d4aa3a" }}
-            >
-              1ère Édition &nbsp;·&nbsp; Cotonou, Bénin &nbsp;·&nbsp; 3–5 fév. 2027
+          <div className="hero-fade inline-flex items-center gap-2 bg-forest-700/8 border border-forest-600/25 rounded-full px-4 py-1.5 mb-7">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse" />
+            <span className="text-xs font-semibold text-forest-700 uppercase tracking-[0.12em]">
+              1ère Édition &nbsp;·&nbsp; Cotonou, Bénin
             </span>
           </div>
 
-          {/* Eyebrow */}
-          <p className="hero-eyebrow text-base md:text-lg font-medium uppercase tracking-[0.22em] mb-3"
-            style={{ color: "rgba(255,255,255,0.40)" }}>
-            Salon Ouest Africain Francophone
-          </p>
-
-          {/* Giant title */}
-          <h1 className="hero-title font-heading font-black leading-[0.92] mb-6 select-none">
-            <span
-              className="block"
-              style={{
-                fontSize: "clamp(4rem, 10vw, 7.5rem)",
-                color: "#ffffff",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              GAZ
+          {/* Titre */}
+          <h1 className="font-heading font-black leading-[1.08] mb-5 hero-slide-up">
+            <span className="block text-gray-900 text-[2.75rem] md:text-5xl lg:text-[3.25rem]">
+              Salon Ouest Africain
             </span>
-            <span
-              className="block"
-              style={{
-                fontSize: "clamp(4rem, 10vw, 7.5rem)",
-                letterSpacing: "-0.02em",
-                background: "linear-gradient(90deg, #e8c96a 0%, #c49a30 60%, #a07828 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              NATUREL
+            <span className="block text-gray-900 text-[2.75rem] md:text-5xl lg:text-[3.25rem]">
+              Francophone du
             </span>
-            <span
-              className="block hero-outline-text"
-              style={{
-                fontSize: "clamp(3rem, 7.5vw, 5.5rem)",
-                letterSpacing: "0.06em",
-                color: "transparent",
-                WebkitTextStroke: "1.5px rgba(196,154,48,0.45)",
-              }}
-            >
+            <span className="block text-[2.75rem] md:text-5xl lg:text-[3.25rem] text-forest-600">
+              Gaz Naturel
+            </span>
+            <span className="block text-[2.75rem] md:text-5xl lg:text-[3.25rem] text-gold-500">
               2027
             </span>
           </h1>
 
-          {/* Separator */}
-          <div className="hero-sep flex items-center gap-3 mb-6">
-            <div
-              className="h-px w-14"
-              style={{ background: "rgba(196,154,48,0.40)" }}
-            />
-            <div
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: "#c49a30" }}
-            />
-            <div
-              className="h-px w-8"
-              style={{ background: "rgba(196,154,48,0.20)" }}
-            />
-          </div>
+          {/* Trait doré */}
+          <div className="w-12 h-[3px] bg-gold-400 rounded-full mb-6 hero-fade" />
 
-          {/* Description */}
-          <p
-            className="hero-desc text-base leading-[1.75] mb-8 max-w-md"
-            style={{ color: "rgba(255,255,255,0.58)" }}
-          >
-            La rencontre régionale de référence pour les décideurs, investisseurs
-            et opérateurs du secteur gazier de l&apos;espace UEMOA.
+          {/* Sous-titre — concis, direct */}
+          <p className="text-gray-500 text-base leading-[1.7] mb-8 max-w-md hero-fade">
+            La rencontre régionale de référence pour les acteurs du secteur gazier
+            de l&apos;espace UEMOA — investisseurs, opérateurs et décideurs publics.
           </p>
 
-          {/* Info chips — minimal inline */}
-          <div
-            className="hero-chips flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-10 text-sm"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
-            <span className="flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "#c49a30" }}>
-                <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="1.8" />
-                <path d="M16 2v4M8 2v4M3 10h18" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-              3–5 février 2027
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.20)" }}>·</span>
-            <span className="flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "#c49a30" }}>
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" strokeWidth="1.8" />
-                <circle cx="12" cy="9" r="2.5" strokeWidth="1.8" />
-              </svg>
+          {/* Chips info — sur une ligne */}
+          <div className="flex flex-wrap items-center gap-2 mb-9 hero-fade">
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+              <Calendar className="w-3.5 h-3.5 text-forest-600 shrink-0" />
+              3–5 fév. 2027
+            </div>
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+              <MapPin className="w-3.5 h-3.5 text-forest-600 shrink-0" />
               Sofitel Cotonou Marina
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.20)" }}>·</span>
-            <span className="flex items-center gap-1.5">
-              <svg width="18" height="13" viewBox="0 0 20 14" className="rounded-sm shrink-0 overflow-hidden">
-                <rect width="7" height="14" fill="#008751" />
-                <rect x="7" width="13" height="7" fill="#FCD116" />
-                <rect x="7" y="7" width="13" height="7" fill="#E8112D" />
+            </div>
+            {/* Drapeau Bénin correct : bande verte à gauche, jaune+rouge à droite */}
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 shadow-sm rounded-full px-3.5 py-2 text-sm font-medium text-gray-700">
+              <svg width="20" height="14" viewBox="0 0 20 14" className="rounded-sm shrink-0 overflow-hidden">
+                <rect width="7" height="14" fill="#008751"/>
+                <rect x="7" width="13" height="7" fill="#FCD116"/>
+                <rect x="7" y="7" width="13" height="7" fill="#E8112D"/>
               </svg>
               Bénin
-            </span>
+            </div>
           </div>
 
-          {/* CTAs */}
-          <div className="hero-ctas flex flex-wrap gap-3">
+          {/* CTAs — alignés proprement */}
+          <div className="flex flex-wrap gap-3 hero-fade">
             <Link
               href="/inscription"
-              className="inline-flex items-center gap-2.5 font-bold text-sm px-8 py-4 rounded-lg transition-all duration-200"
-              style={{
-                backgroundColor: "#c49a30",
-                color: "#0a1f14",
-                boxShadow: "0 0 28px rgba(196,154,48,0.30), 0 4px 16px rgba(0,0,0,0.3)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#d4aa3a";
-                (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                  "0 0 40px rgba(212,170,58,0.45), 0 4px 20px rgba(0,0,0,0.3)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#c49a30";
-                (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                  "0 0 28px rgba(196,154,48,0.30), 0 4px 16px rgba(0,0,0,0.3)";
-              }}
+              className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm"
             >
-              S&apos;inscrire maintenant
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-              </svg>
+              S&apos;inscrire <ChevronRight className="w-4 h-4" />
             </Link>
             <Link
               href="/programme"
-              className="inline-flex items-center gap-2.5 font-semibold text-sm px-8 py-4 rounded-lg transition-all duration-200"
-              style={{
-                border: "1px solid rgba(255,255,255,0.18)",
-                color: "rgba(255,255,255,0.78)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.42)";
-                (e.currentTarget as HTMLAnchorElement).style.color = "#ffffff";
-                (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "rgba(255,255,255,0.06)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.18)";
-                (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.78)";
-                (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "transparent";
-              }}
+              className="border border-forest-700 text-forest-700 hover:bg-forest-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 text-sm"
             >
-              Voir le programme
+              Programme <ChevronRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="#"
+              className="border-2 border-gold-500 text-gold-600 hover:bg-gold-500 hover:text-white font-semibold px-7 py-3.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2"
+            >
+              Devenir sponsor <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* ── Stats bar ── */}
-      <div
-        className="hero-stats relative z-20 border-t"
-        style={{
-          backgroundColor: "rgba(255,255,255,0.04)",
-          backdropFilter: "blur(12px)",
-          borderColor: "rgba(255,255,255,0.08)",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="flex divide-x" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+      {/* Barre de stats */}
+      <div className="relative z-20 bg-white/80 backdrop-blur-sm border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-wrap divide-x divide-gray-200">
             {[
-              { value: "500+", label: "Participants" },
-              { value: "15",   label: "Pays représentés" },
-              { value: "4",    label: "Thématiques" },
+              { value: "200+", label: "Participants" },
+              { value: "8",    label: "Pays UEMOA" },
+              { value: "4",    label: "Thématiques stratégiques" },
               { value: "3",    label: "Jours d'échanges" },
+              { value: null,   label: "Rencontres B2B", accent: true },
             ].map((s, i) => (
-              <div
-                key={i}
-                className="flex-1 px-6 py-5 flex flex-col gap-0.5"
-                style={{ borderColor: "rgba(255,255,255,0.08)" }}
-              >
-                <div
-                  className="text-3xl font-heading font-black leading-none"
-                  style={{ color: "#d4aa3a" }}
-                >
-                  {s.value}
-                </div>
-                <div
-                  className="text-xs font-medium mt-1"
-                  style={{ color: "rgba(255,255,255,0.42)" }}
-                >
-                  {s.label}
+              <div key={i} className="flex items-center gap-3 px-6 py-4 flex-1 min-w-36">
+                <div>
+                  {s.value && (
+                    <div className="text-2xl font-heading font-black text-gold-500 leading-none">
+                      {s.value}
+                    </div>
+                  )}
+                  <div className={`text-xs font-medium mt-0.5 ${s.accent ? "text-forest-600 font-semibold text-sm" : "text-gray-500"}`}>
+                    {s.label}
+                  </div>
                 </div>
               </div>
             ))}
@@ -268,113 +128,69 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Scroll indicator ── */}
-      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 scroll-bounce hidden md:block">
-        <ChevronDown
-          className="w-5 h-5"
-          style={{ color: "rgba(255,255,255,0.25)" }}
-        />
-      </div>
-
-      {/* ── Keyframe animations ── */}
       <style jsx>{`
-        .hero-badge {
-          animation: fadeIn 0.6s ease both;
-          animation-delay: 0.1s;
+        .hero-slide-up {
+          animation: slideUp 0.9s cubic-bezier(0.2, 0.65, 0.3, 0.9) 0.3s both;
         }
-        .hero-eyebrow {
-          animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-          animation-delay: 0.2s;
+        .hero-fade {
+          animation: fadeIn 1s ease 0.7s both;
         }
-        .hero-title {
-          animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-          animation-delay: 0.3s;
-        }
-        .hero-sep {
-          animation: fadeIn 0.6s ease both;
-          animation-delay: 0.6s;
-        }
-        .hero-desc {
-          animation: fadeIn 0.6s ease both;
-          animation-delay: 0.7s;
-        }
-        .hero-chips {
-          animation: fadeIn 0.6s ease both;
-          animation-delay: 0.85s;
-        }
-        .hero-ctas {
-          animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-          animation-delay: 0.9s;
-        }
-        .hero-stats {
-          animation: fadeIn 0.5s ease both;
-          animation-delay: 1.1s;
-        }
-        .scroll-bounce {
-          animation: scrollBounce 2s ease-in-out infinite;
-          animation-delay: 2s;
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(40px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeIn {
           from { opacity: 0; }
           to   { opacity: 1; }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(32px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes scrollBounce {
-          0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.25; }
-          50%       { transform: translateX(-50%) translateY(6px); opacity: 0.50; }
         }
       `}</style>
     </section>
   );
 }
 
-// ─── Three.js canvas — bright additive particles on dark bg ─────────────────
+// ─── Three.js canvas ──────────────────────────────────────────────────────────
 function EnergyCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
-    const w = mountRef.current.clientWidth || window.innerWidth * 0.5;
-    const h = mountRef.current.clientHeight || window.innerHeight;
-
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(65, w / h, 0.1, 1000);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(w, h);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     mountRef.current.appendChild(renderer.domElement);
 
+    const mouse = new THREE.Vector2(0, 0);
     const clock  = new THREE.Clock();
-    const mouse  = new THREE.Vector2(0, 0);
 
-    const particleCount      = 45000;
-    const positions          = new Float32Array(particleCount * 3);
-    const originalPositions  = new Float32Array(particleCount * 3);
-    const colors             = new Float32Array(particleCount * 3);
-    const velocities         = new Float32Array(particleCount * 3);
+    const particleCount = 40000;
+    const positions         = new Float32Array(particleCount * 3);
+    const originalPositions = new Float32Array(particleCount * 3);
+    const colors            = new Float32Array(particleCount * 3);
+    const velocities        = new Float32Array(particleCount * 3);
 
-    const knot = new THREE.TorusKnotGeometry(1.9, 0.58, 280, 36);
+    const knot = new THREE.TorusKnotGeometry(1.8, 0.55, 250, 32);
     const base = knot.attributes.position;
 
     for (let i = 0; i < particleCount; i++) {
       const vi = i % base.count;
-      const x  = base.getX(vi), y = base.getY(vi), z = base.getZ(vi);
+      const x = base.getX(vi), y = base.getY(vi), z = base.getZ(vi);
+
       positions[i*3]   = originalPositions[i*3]   = x;
       positions[i*3+1] = originalPositions[i*3+1] = y;
       positions[i*3+2] = originalPositions[i*3+2] = z;
 
+      // Palette fond clair : vert forêt profond + or soutenu + vert émeraude
       const t = Math.random();
       const c = new THREE.Color();
-      if (t < 0.50)      c.setRGB(0.08, 0.82 + Math.random() * 0.18, 0.28); // vert lumineux
-      else if (t < 0.78) c.setRGB(0.92 + Math.random() * 0.08, 0.72 + Math.random() * 0.18, 0.08); // or brillant
-      else               c.setRGB(0.06, 0.60 + Math.random() * 0.30, 0.90); // cyan-émeraude
+      if (t < 0.50)      c.setRGB(0.04, 0.18 + Math.random()*0.12, 0.06); // vert forêt profond
+      else if (t < 0.78) c.setRGB(0.48 + Math.random()*0.14, 0.34 + Math.random()*0.10, 0.02); // or foncé
+      else               c.setRGB(0.03, 0.36 + Math.random()*0.14, 0.15); // vert émeraude soutenu
       colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
     }
 
@@ -382,17 +198,18 @@ function EnergyCanvas() {
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geo.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
 
-    // AdditiveBlending = particules lumineuses qui brillent sur fond sombre
+    // NormalBlending indispensable sur fond clair (AdditiveBlending = invisible sur blanc)
     const mat = new THREE.PointsMaterial({
-      size: 0.028,
+      size: 0.022,
       vertexColors: true,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.88,
       depthWrite: false,
     });
 
     const points = new THREE.Points(geo, mat);
+    points.position.x = 2.8;
     scene.add(points);
 
     const onMouseMove = (e: MouseEvent) => {
@@ -414,27 +231,24 @@ function EnergyCanvas() {
         const vel = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz]);
 
         const d = cur.distanceTo(mw);
-        if (d < 1.6) vel.add(new THREE.Vector3().subVectors(cur, mw).normalize().multiplyScalar((1.6 - d) * 0.009));
-        vel.add(new THREE.Vector3().subVectors(ori, cur).multiplyScalar(0.0018));
-        vel.multiplyScalar(0.93);
+        if (d < 1.5) vel.add(new THREE.Vector3().subVectors(cur, mw).normalize().multiplyScalar((1.5-d)*0.008));
+        vel.add(new THREE.Vector3().subVectors(ori, cur).multiplyScalar(0.0015));
+        vel.multiplyScalar(0.94);
 
         positions[ix] += vel.x; positions[iy] += vel.y; positions[iz] += vel.z;
         velocities[ix] = vel.x; velocities[iy] = vel.y; velocities[iz] = vel.z;
       }
       geo.attributes.position.needsUpdate = true;
-      points.rotation.y = elapsed * 0.07;
-      points.rotation.x = Math.sin(elapsed * 0.035) * 0.18;
+      points.rotation.y = elapsed * 0.06;
+      points.rotation.x = Math.sin(elapsed * 0.03) * 0.15;
       renderer.render(scene, camera);
     };
     animate();
 
     const onResize = () => {
-      if (!mountRef.current) return;
-      const nw = mountRef.current.clientWidth;
-      const nh = mountRef.current.clientHeight;
-      camera.aspect = nw / nh;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(nw, nh);
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", onResize);
 
@@ -447,5 +261,5 @@ function EnergyCanvas() {
     };
   }, []);
 
-  return <div ref={mountRef} className="w-full h-full" />;
+  return <div ref={mountRef} className="absolute inset-0 z-0" />;
 }
