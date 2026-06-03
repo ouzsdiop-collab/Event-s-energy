@@ -167,11 +167,42 @@ export default function Hero() {
 }
 
 // ─── Stats bar avec count-up ─────────────────────────────────────────────────
+const StatIcons = {
+  participants: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+      <circle cx="9" cy="7" r="3"/><circle cx="17" cy="8" r="2.5"/>
+      <path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M22 20c0-2.5-2-4.5-5-5.2"/>
+    </svg>
+  ),
+  globe: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 3c-2.5 3-4 5.5-4 9s1.5 6 4 9"/><path d="M12 3c2.5 3 4 5.5 4 9s-1.5 6-4 9"/>
+      <path d="M3.6 9h16.8M3.6 15h16.8"/>
+    </svg>
+  ),
+  themes: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+      <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+      <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+      <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+      <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+    </svg>
+  ),
+  days: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+      <rect x="3" y="5" width="18" height="16" rx="2"/>
+      <path d="M3 10h18M8 3v4M16 3v4"/>
+      <circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/>
+    </svg>
+  ),
+};
+
 const stats = [
-  { target: 200, suffix: "+", label: "Participants attendus", icon: "👥" },
-  { target: 8,   suffix: "",  label: "Pays de l'espace UEMOA", icon: "🌍" },
-  { target: 4,   suffix: "",  label: "Thématiques stratégiques", icon: "📋" },
-  { target: 3,   suffix: "",  label: "Jours d'échanges intenses", icon: "📅" },
+  { target: 200, suffix: "+", label: "Participants attendus",    icon: StatIcons.participants },
+  { target: 8,   suffix: "",  label: "Pays de l'espace UEMOA",  icon: StatIcons.globe },
+  { target: 4,   suffix: "",  label: "Thématiques stratégiques", icon: StatIcons.themes },
+  { target: 3,   suffix: "",  label: "Jours d'échanges intenses",icon: StatIcons.days },
 ];
 
 function StatsBar() {
@@ -224,8 +255,8 @@ function StatsBar() {
               `}
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              {/* Icône */}
-              <span className="text-xl mb-2 opacity-60">{s.icon}</span>
+              {/* Icône SVG */}
+              <div className="mb-3 text-forest-600 opacity-50">{s.icon}</div>
 
               {/* Chiffre animé */}
               <div
