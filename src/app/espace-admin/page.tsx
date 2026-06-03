@@ -751,21 +751,13 @@ export default function EspaceAdminPage() {
 
         {/* ── Sidebar ── */}
         <aside
-          className="shrink-0 flex flex-col transition-all duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:inset-auto lg:z-auto"
+          className={`shrink-0 flex flex-col transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:inset-auto lg:z-auto ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
           style={{
             width: sidebarOpen ? 224 : 62,
             backgroundColor: "#0f2d1f",
             borderRight: "1px solid rgba(255,255,255,0.06)",
-            transform: mobileSidebarOpen ? "translateX(0)" : undefined,
           }}
-          data-mobile-open={mobileSidebarOpen}
         >
-          <style>{`
-            @media (max-width: 1023px) {
-              aside[data-mobile-open="false"] { transform: translateX(-100%); }
-              aside[data-mobile-open="true"]  { transform: translateX(0); }
-            }
-          `}</style>
 
           <div className="flex items-center justify-between px-4 py-5"
             style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
