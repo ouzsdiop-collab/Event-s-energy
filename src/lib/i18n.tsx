@@ -99,7 +99,7 @@ const T = {
       eyebrow: "À PROPOS",
       title1: "PRÉSENTATION",
       title2: "DE L'ÉVÉNEMENT",
-      intro: "La première plateforme régionale dédiée au développement du gaz naturel en Afrique de l'Ouest francophone — une rencontre stratégique entre décideurs publics, investisseurs et opérateurs du secteur.",
+      intro: "La première plateforme régionale dédiée au développement du gaz naturel en Afrique de l'Ouest francophone · une rencontre stratégique entre décideurs publics, investisseurs et opérateurs du secteur.",
       edition: "1ère Édition",
       contextLabel: "CONTEXTE & JUSTIFICATION",
       contextTitle: "Un marché gazier régional en construction",
@@ -187,7 +187,7 @@ const T = {
       // Step 1
       passTitle: "Votre pass",
       passes: [
-        { label: "Pass 3 jours — Complet", price: "350 000 XOF", desc: "Accès intégral aux 3 journées, panels, tables rondes et dîner officiel" },
+        { label: "Pass 3 jours · Complet", price: "350 000 XOF", desc: "Accès intégral aux 3 journées, panels, tables rondes et dîner officiel" },
         { label: "Pass 1 jour", price: "150 000 XOF", desc: "Accès à une journée de votre choix" },
         { label: "Espace exposition", price: "800 000 XOF", desc: "Stand exposant + 2 pass complets inclus" },
       ],
@@ -345,7 +345,7 @@ const T = {
       eyebrow: "ABOUT",
       title1: "EVENT",
       title2: "OVERVIEW",
-      intro: "The first regional platform dedicated to the development of natural gas in Francophone West Africa — a strategic meeting between public decision-makers, investors and sector operators.",
+      intro: "The first regional platform dedicated to the development of natural gas in Francophone West Africa · a strategic meeting between public decision-makers, investors and sector operators.",
       edition: "1st Edition",
       contextLabel: "CONTEXT & RATIONALE",
       contextTitle: "A regional gas market under construction",

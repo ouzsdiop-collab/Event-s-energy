@@ -46,7 +46,7 @@ const SESSIONS = [
   { id: "S05", titre: "Transition énergétique & gaz naturel",jour: "J2", heure: "09:00", type: "Conférence",  statut: "Confirmé",   intervenant: "IRENA" },
   { id: "S06", titre: "Cadres réglementaires nationaux",     jour: "J2", heure: "11:00", type: "Panel",       statut: "En attente", intervenant: "Ministères ×5" },
   { id: "S07", titre: "Table ronde investisseurs privés",    jour: "J2", heure: "14:30", type: "Table ronde", statut: "Confirmé",   intervenant: "CEOs secteur privé" },
-  { id: "S08", titre: "Visite technique — Port de Cotonou",  jour: "J2", heure: "16:30", type: "Terrain",     statut: "En cours",   intervenant: "PAC Bénin" },
+  { id: "S08", titre: "Visite technique · Port de Cotonou",  jour: "J2", heure: "16:30", type: "Terrain",     statut: "En cours",   intervenant: "PAC Bénin" },
   { id: "S09", titre: "Résolutions & clôture",               jour: "J3", heure: "10:00", type: "Plénière",    statut: "Confirmé",   intervenant: "Comité organisateur" },
 ];
 
@@ -265,7 +265,7 @@ function SectionOverview() {
     <div className="space-y-8">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
         <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Vue d'ensemble</h2>
-        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Tableau de bord — données simulées</p>
+        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Tableau de bord · données simulées</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -385,7 +385,7 @@ function SectionParticipants() {
                         style={{ backgroundColor: s.bg, color: s.text }}>{s.icon}{p.statut}</span>
                     </td>
                     <td className="px-4 py-3 font-semibold tabular-nums" style={{ color: p.montant ? "#0f2d1f" : "rgba(15,45,31,0.30)" }}>
-                      {p.montant ? fmtFCFA(p.montant) : "—"}
+                      {p.montant ? fmtFCFA(p.montant) : "-"}
                     </td>
                     <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.45)" }}>{p.date}</td>
                   </tr>
@@ -411,7 +411,7 @@ function SectionPaiements() {
     <div className="space-y-6">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
         <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Paiements & Revenus</h2>
-        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Analyse financière en FCFA — données simulées</p>
+        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Analyse financière en FCFA · données simulées</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -529,7 +529,7 @@ function SectionProgramme() {
           style={{ animationDelay: `${60 + ji * 80}ms` }}>
           <div className="px-6 py-4" style={{ backgroundColor: "#0f2d1f" }}>
             <p className="text-sm font-bold" style={{ color: "#c49a30" }}>
-              {jour === "J1" ? "Jour 1 — 3 février 2027" : jour === "J2" ? "Jour 2 — 4 février 2027" : "Jour 3 — 5 février 2027"}
+              {jour === "J1" ? "Jour 1 · 3 février 2027" : jour === "J2" ? "Jour 2 · 4 février 2027" : "Jour 3 · 5 février 2027"}
             </p>
           </div>
           <div className="divide-y" style={{ borderColor: "rgba(36,100,68,0.07)" }}>
@@ -565,7 +565,7 @@ function SectionProgramme() {
 
 function SectionCommunications() {
   const [tab, setTab]       = useState<"compose"|"sent">("compose");
-  const [subject, setSubject] = useState("Confirmation d'inscription — SOAFGANG 2027");
+  const [subject, setSubject] = useState("Confirmation d'inscription · SOAFGANG 2027");
   const [body, setBody]     = useState(`Bonjour {prenom},
 
 Nous avons bien reçu votre inscription au Salon Ouest Africain Francophone sur le Gaz Naturel (SOAFGANG), 1ère édition, qui se tiendra du 3 au 5 février 2027 au Sofitel Cotonou Marina, Bénin.
@@ -655,8 +655,8 @@ Le Comité d'Organisation SOAFGANG 2027`);
         ) : (
           <div className="divide-y" style={{ borderColor: "rgba(36,100,68,0.07)" }}>
             {[
-              { sujet: "Bienvenue — Confirmation d'inscription", dest: "Tous (15)",      date: "2026-12-12" },
-              { sujet: "Rappel paiement — Pass Exposant",        dest: "Exposants (4)",  date: "2026-12-05" },
+              { sujet: "Bienvenue · Confirmation d'inscription", dest: "Tous (15)",      date: "2026-12-12" },
+              { sujet: "Rappel paiement · Pass Exposant",        dest: "Exposants (4)",  date: "2026-12-05" },
               { sujet: "Programme préliminaire SOAFGANG 2027",   dest: "Confirmés (11)", date: "2026-11-28" },
             ].map((e, i) => (
               <div key={i} className="px-6 py-4 flex items-center gap-4 hover:bg-[#f9fbfa] transition-colors">
@@ -736,7 +736,7 @@ export default function EspaceAdminPage() {
         style={{ backgroundColor: "#0f2d1f", borderBottom: "1px solid rgba(196,154,48,0.20)" }}>
         <Eye className="w-4 h-4 shrink-0" style={{ color: "#c49a30" }} />
         <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>
-          <span className="font-bold" style={{ color: "#c49a30" }}>Espace démo — </span>
+          <span className="font-bold" style={{ color: "#c49a30" }}>Espace démo · </span>
           Ce tableau de bord illustre les fonctionnalités d'administration envisagées pour SOAFGANG 2027. Toutes les données affichées sont fictives et à titre démonstratif.
         </p>
       </div>

@@ -124,9 +124,9 @@ export default function InscriptionPage() {
                 </div>
                 <div className="px-6 py-4 space-y-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                   {[
-                    [form.prenom && form.nom ? `${form.civilite} ${form.prenom} ${form.nom}` : "—", ins.participantLabel],
-                    [form.organisation || "—", ins.orgLabel],
-                    [form.categorie || "—", ins.catLabel],
+                    [form.prenom && form.nom ? `${form.civilite} ${form.prenom} ${form.nom}` : "-", ins.participantLabel],
+                    [form.organisation || "-", ins.orgLabel],
+                    [form.categorie || "-", ins.catLabel],
                   ].map(([val, lbl]) => (
                     <div key={lbl}>
                       <p className="text-[10px] uppercase tracking-wide mb-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>{lbl}</p>
