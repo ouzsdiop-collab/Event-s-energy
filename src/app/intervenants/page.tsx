@@ -34,7 +34,7 @@ const SPEAKERS: Speaker[] = [
     org: "République du Bénin",
     country: "Bénin", flag: "🇧🇯",
     topic: "Harmonisation des cadres réglementaires UEMOA",
-    image: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=800&q=80",
     confirmed: true,
   },
   {
@@ -64,7 +64,7 @@ const SPEAKERS: Speaker[] = [
     org: "BOAD",
     country: "Sénégal", flag: "🇸🇳",
     topic: "Financement structuré de projets gaziers",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=800&q=80",
     confirmed: true,
   },
   {
@@ -74,7 +74,7 @@ const SPEAKERS: Speaker[] = [
     org: "NNPC Gas Marketing Ltd.",
     country: "Nigeria", flag: "🇳🇬",
     topic: "Marchés régionaux du gaz naturel",
-    image: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1542909168-82c3e7fdcd5f?w=800&q=80",
     confirmed: true,
   },
   {
@@ -84,7 +84,7 @@ const SPEAKERS: Speaker[] = [
     org: "TotalEnergies",
     country: "Sénégal", flag: "🇸🇳",
     topic: "Investissement privé dans la chaîne de valeur",
-    image: "https://images.unsplash.com/photo-1580518324671-c2f0833a3af3?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&q=80",
     confirmed: true,
   },
   {
@@ -94,7 +94,7 @@ const SPEAKERS: Speaker[] = [
     org: "CEDEAO",
     country: "Ghana", flag: "🇬🇭",
     topic: "Intégration régionale des réseaux gaziers",
-    image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1528892952291-009c663ce843?w=800&q=80",
     confirmed: true,
   },
   {
@@ -104,7 +104,7 @@ const SPEAKERS: Speaker[] = [
     org: "Ghana National Gas Company",
     country: "Ghana", flag: "🇬🇭",
     topic: "Valorisation du gaz associé",
-    image: "https://images.unsplash.com/photo-1614583224978-f05ce51ef5fa?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=800&q=80",
     confirmed: false,
   },
   {
@@ -114,7 +114,7 @@ const SPEAKERS: Speaker[] = [
     org: "IFC — Groupe Banque Mondiale",
     country: "Mali", flag: "🇲🇱",
     topic: "Transition énergétique & standards ESG",
-    image: "https://images.unsplash.com/photo-1623605931891-d5b95ee98459?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1618498082410-b4aa22193b9e?w=800&q=80",
     confirmed: false,
   },
 ];
