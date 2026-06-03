@@ -104,7 +104,7 @@ export default function SpeakersSection() {
   }, []);
 
   return (
-    <section className="py-24 px-4 bg-[#f7faf8] relative overflow-hidden">
+    <section className="py-24 px-4 bg-[#f7faf8] relative overflow-hidden" style={{ borderTop: "1px solid rgba(0,0,0,0.04)" }}>
       {/* Background texture */}
       <div
         className="absolute inset-0 opacity-[0.03]"
