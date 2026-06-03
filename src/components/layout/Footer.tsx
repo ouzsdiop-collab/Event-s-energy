@@ -76,21 +76,23 @@ export default function Footer() {
   }, [isVisible]);
 
   return (
-    <footer ref={footerRef} className="relative flex flex-col w-full overflow-hidden select-none"
-      style={{ backgroundColor: "#0a1f14" }}>
+    <footer ref={footerRef} className="relative flex flex-col w-full overflow-hidden select-none">
 
-      {/* ── CTA Banner ── */}
-      <div className="relative py-16 px-4 text-center">
-        <div className="absolute top-0 left-0 right-0 h-px"
-          style={{ background: "linear-gradient(to right, transparent, rgba(196,154,48,0.4) 30%, rgba(212,170,58,0.6) 50%, rgba(196,154,48,0.4) 70%, transparent)" }} />
+      {/* ── CTA Banner — fond légèrement surélevé avec vignette radiale ── */}
+      <div className="relative py-16 px-4 text-center"
+        style={{ backgroundColor: "#132b1c", backgroundImage: "radial-gradient(ellipse 70% 120% at 50% 50%, rgba(36,100,68,0.18) 0%, transparent 70%)" }}>
 
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(196,154,48,0.7)" }}>
+        {/* Ligne dorée supérieure */}
+        <div className="absolute top-0 left-0 right-0 h-[1.5px]"
+          style={{ background: "linear-gradient(to right, transparent, #c49a30 25%, #e8c96a 50%, #c49a30 75%, transparent)" }} />
+
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-4" style={{ color: "#c49a30" }}>
           1ère Édition &nbsp;·&nbsp; Cotonou, Bénin &nbsp;·&nbsp; 3–5 Février 2027
         </p>
         <h2 className="text-2xl md:text-3xl font-heading font-black text-white mb-3 max-w-2xl mx-auto leading-tight">
           Participez à la construction d&apos;un avenir gazier intégré et durable.
         </h2>
-        <p className="mb-7 max-w-md mx-auto text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.40)" }}>
+        <p className="mb-7 max-w-md mx-auto text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
           Rejoignez les décideurs, investisseurs et experts du secteur à Cotonou en février 2027.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -104,33 +106,21 @@ export default function Footer() {
           </Link>
           <Link href="/devenir-sponsor"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5"
-            style={{ border: "1px solid rgba(196,154,48,0.25)", color: "rgba(212,170,58,0.8)" }}>
+            style={{ border: "1px solid rgba(196,154,48,0.4)", color: "#d4aa3a" }}>
             Devenir sponsor
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         </div>
+
+        {/* Ligne de séparation bas */}
+        <div className="absolute bottom-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.06) 80%, transparent)" }} />
       </div>
 
-      {/* ── Partners ── */}
-      <div className="py-5 px-4 border-y" style={{ backgroundColor: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
-        <p className="text-center text-[10px] font-bold uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>
-          Partenaires &amp; Sponsors
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-6 max-w-5xl mx-auto">
-          {["UEMOA", "Afreximbank", "BAD", "IFC", "BOAD", "TotalEnergies", "Petronas", "NNPC", "bp"].map((p) => (
-            <span key={p} className="font-bold text-sm cursor-default transition-colors duration-200"
-              style={{ color: "rgba(255,255,255,0.25)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#c49a30")}
-              onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-            >{p}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Main links ── */}
-      <div className="py-14 px-4">
+      {/* ── Main links — fond le plus sombre ── */}
+      <div className="py-14 px-4" style={{ backgroundColor: "#071810" }}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
 
           {/* Brand */}
@@ -222,7 +212,7 @@ export default function Footer() {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="px-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="px-4" style={{ backgroundColor: "#071810", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 py-4">
           <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
             © 2027 Salon Ouest Africain Francophone sur le Gaz Naturel – Tous droits réservés
@@ -240,7 +230,7 @@ export default function Footer() {
       </div>
 
       {/* ── Wave animation ── */}
-      <div aria-hidden="true" style={{ overflow: "hidden", height: 80, position: "relative" }}>
+      <div aria-hidden="true" style={{ overflow: "hidden", height: 80, position: "relative", backgroundColor: "#071810" }}>
         {Array.from({ length: barCount }).map((_, i) => {
           const progress = i / (barCount - 1);
           const alpha = Math.sin(progress * Math.PI);
