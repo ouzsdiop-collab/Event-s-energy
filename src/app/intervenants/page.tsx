@@ -44,7 +44,7 @@ const SPEAKERS: Speaker[] = [
     org: "Afreximbank",
     country: "Guinée", flag: "🇬🇳",
     topic: "Mobilisation des capitaux privés",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
+    image: "",
     confirmed: true,
   },
   {
@@ -54,7 +54,7 @@ const SPEAKERS: Speaker[] = [
     org: "APPO — Africa Petroleum Producers' Organization",
     country: "Niger", flag: "🇳🇪",
     topic: "Souveraineté énergétique africaine",
-    image: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=800&q=80",
+    image: "",
     confirmed: true,
   },
   {
@@ -64,7 +64,7 @@ const SPEAKERS: Speaker[] = [
     org: "BOAD",
     country: "Sénégal", flag: "🇸🇳",
     topic: "Financement structuré de projets gaziers",
-    image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=800&q=80",
+    image: "",
     confirmed: true,
   },
   {
@@ -84,7 +84,7 @@ const SPEAKERS: Speaker[] = [
     org: "TotalEnergies",
     country: "Sénégal", flag: "🇸🇳",
     topic: "Investissement privé dans la chaîne de valeur",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&q=80",
+    image: "",
     confirmed: true,
   },
   {
@@ -94,7 +94,7 @@ const SPEAKERS: Speaker[] = [
     org: "CEDEAO",
     country: "Ghana", flag: "🇬🇭",
     topic: "Intégration régionale des réseaux gaziers",
-    image: "https://images.unsplash.com/photo-1528892952291-009c663ce843?w=800&q=80",
+    image: "",
     confirmed: true,
   },
   {
@@ -284,11 +284,23 @@ export default function IntervenantsPage() {
             transition: "opacity 0.2s ease",
           }}
         >
-          <img
-            src={activeSpeaker.image}
-            alt={activeSpeaker.name}
-            className="w-full h-56 object-cover object-top"
-          />
+          {activeSpeaker.image ? (
+            <img
+              src={activeSpeaker.image}
+              alt={activeSpeaker.name}
+              className="w-full h-56 object-cover object-top"
+            />
+          ) : (
+            <div className="w-full h-56 flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #1e5238 0%, #0f2d1f 100%)" }}>
+              <span className="font-heading font-black text-5xl" style={{
+                background: "linear-gradient(135deg, rgba(196,154,48,0.7), rgba(212,170,58,0.5))",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}>
+                {activeSpeaker.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+              </span>
+            </div>
+          )}
           <div className="p-4" style={{ backgroundColor: "#0f2d1f" }}>
             <div className="flex items-center justify-between mb-2">
               <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold"
@@ -445,7 +457,19 @@ function SpeakerRow({
       {isMobile && isActive && (
         <div className="overflow-hidden pb-5 px-4">
           <div className="rounded-xl overflow-hidden relative aspect-video">
-            <img src={data.image} alt={data.name} className="w-full h-full object-cover object-top" />
+            {data.image ? (
+              <img src={data.image} alt={data.name} className="w-full h-full object-cover object-top" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, #1e5238 0%, #0f2d1f 100%)" }}>
+                <span className="font-heading font-black text-6xl" style={{
+                  background: "linear-gradient(135deg, rgba(196,154,48,0.7), rgba(212,170,58,0.5))",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                }}>
+                  {data.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)}
+                </span>
+              </div>
+            )}
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,31,20,0.88) 0%, transparent 55%)" }} />
             <div className="absolute bottom-3 left-3 right-3">
               <p className="text-xs font-semibold text-white mb-1">{data.org}</p>
