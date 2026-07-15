@@ -6,7 +6,7 @@ import {
   Bell, ChevronRight, Search, Download, Eye,
   CheckCircle2, XCircle, Clock, TrendingUp,
   Globe, Mic, Send, Menu, X, ArrowUpRight,
-  Image, Newspaper, Handshake, UserPlus, Trash2, Pencil, Upload, Plus, FileText,
+  Image, Newspaper, Handshake, UserPlus, Trash2, Pencil, Upload, Plus, FileText, Settings,
 } from "lucide-react";
 import { supabase, type Speaker, type GalleryImage, type Article, type Partner, type Registration, type PartnershipRequest, type PressRequest } from "@/lib/supabase";
 
@@ -67,6 +67,7 @@ const PASS_COLORS: Record<PassType, string> = {
 
 const NAV_SECTIONS = [
   { id: "overview",          label: "Vue d'ensemble",   icon: LayoutDashboard },
+  { id: "parametres",        label: "Paramètres site",  icon: Settings },
   { id: "participants",      label: "Participants",      icon: Users },
   { id: "paiements",         label: "Paiements",         icon: CreditCard },
   { id: "pointage",          label: "QR & Pointage",     icon: CheckCircle2 },
@@ -797,42 +798,89 @@ function SectionPartenaires() {
 
 // ─── Sections existantes ──────────────────────────────────────────────────────
 function SectionOverview() {
-  const confirmed = PARTICIPANTS.filter(p => p.statut === "confirmé" || p.statut === "VIP").length;
-  const revenue = PARTICIPANTS.filter(p => p.statut !== "annulé").reduce((a, p) => a + p.montant, 0);
-  const passBreakdown = (["Conférencier","Exposant","Professionnel","Institutionnel"] as PassType[]).map(p => ({ label: p, value: PARTICIPANTS.filter(x => x.pass === p).length, color: PASS_COLORS[p] }));
+  const [stats, setStats] = useState({ total: 0, confirmed: 0, sessions: 0, countries: 0, partnerReqs: 0, pressReqs: 0 });
+  const [passBreakdown, setPassBreakdown] = useState<{ label: string; value: number; color: string }[]>([]);
+  const [countryBreakdown, setCountryBreakdown] = useState<{ pays: string; count: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const [regRes, sessRes, partRes, pressRes] = await Promise.all([
+        supabase.from("registrations").select("status, pays, pass_type"),
+        supabase.from("programme_sessions").select("id", { count: "exact", head: true }),
+        supabase.from("partnership_requests").select("id", { count: "exact", head: true }).eq("status", "nouveau"),
+        supabase.from("press_requests").select("id", { count: "exact", head: true }).eq("status", "nouveau"),
+      ]);
+      const regs = regRes.data ?? [];
+      const confirmed = regs.filter(r => r.status === "confirmé").length;
+      const countries = Array.from(new Set(regs.map(r => r.pays).filter(Boolean))).length;
+      const passCounts: Record<string, number> = {};
+      regs.forEach(r => { if (r.pass_type) passCounts[r.pass_type] = (passCounts[r.pass_type] || 0) + 1; });
+      const PASS_C: Record<string, string> = { "Conférencier": "#c49a30", "Exposant": "#246444", "Professionnel": "#1e5238", "Institutionnel": "#0f2d1f" };
+      setPassBreakdown(Object.entries(passCounts).map(([label, value]) => ({ label, value, color: PASS_C[label] || "#246444" })));
+      const countryCounts: Record<string, number> = {};
+      regs.forEach(r => { if (r.pays) countryCounts[r.pays] = (countryCounts[r.pays] || 0) + 1; });
+      setCountryBreakdown(Object.entries(countryCounts).map(([pays, count]) => ({ pays, count })).sort((a,b) => b.count - a.count).slice(0, 10));
+      setStats({ total: regs.length, confirmed, sessions: sessRes.count ?? 0, countries, partnerReqs: partRes.count ?? 0, pressReqs: pressRes.count ?? 0 });
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const maxCountry = Math.max(1, ...countryBreakdown.map(c => c.count));
+
   return (
     <div className="space-y-8">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
         <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Vue d'ensemble</h2>
-        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Tableau de bord · données simulées</p>
+        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>
+          {loading ? "Chargement des données…" : "Tableau de bord · données Supabase en temps réel"}
+        </p>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard label="Inscrits totaux"     rawValue={PARTICIPANTS.length} sub={`${confirmed} confirmés`}  icon={Users}        accent="#246444" delay={0} />
-        <KPICard label="Revenus générés"     rawValue={revenue}             sub="hors conférenciers"         icon={TrendingUp}   accent="#c49a30" delay={80} isMoney />
-        <KPICard label="Sessions planifiées" rawValue={SESSIONS.length}     sub="sur 3 jours"                icon={CalendarDays} accent="#1e5238" delay={160} />
-        <KPICard label="Pays représentés"    rawValue={PAYS_DATA.length}    sub="dont 1 international"       icon={Globe}        accent="#0f2d1f" delay={240} />
+        <KPICard label="Inscrits totaux"     rawValue={stats.total}      sub={`${stats.confirmed} confirmés`}       icon={Users}        accent="#246444" delay={0} />
+        <KPICard label="Sessions au programme" rawValue={stats.sessions} sub="sur 3 jours"                           icon={CalendarDays} accent="#1e5238" delay={80} />
+        <KPICard label="Pays représentés"    rawValue={stats.countries}  sub="d'inscrits"                            icon={Globe}        accent="#0f2d1f" delay={160} />
+        <KPICard label="Demandes en attente" rawValue={stats.partnerReqs + stats.pressReqs} sub={`${stats.partnerReqs} part. · ${stats.pressReqs} presse`} icon={Bell} accent="#c49a30" delay={240} />
       </div>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "100ms" }}>
-          <p className="text-xs font-bold uppercase tracking-[0.15em] mb-4" style={{ color: "#c49a30" }}>Inscriptions / jour (J1–J18)</p>
-          <SVGBarChart data={TIMELINE} />
+          <p className="text-xs font-bold uppercase tracking-[0.15em] mb-4" style={{ color: "#c49a30" }}>Répartition par pass</p>
+          {passBreakdown.length > 0
+            ? <DonutChart data={passBreakdown} />
+            : <p className="text-xs text-center py-8" style={{ color: "rgba(15,45,31,0.30)" }}>Aucune inscription</p>
+          }
         </div>
         <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "180ms" }}>
-          <p className="text-xs font-bold uppercase tracking-[0.15em] mb-4" style={{ color: "#c49a30" }}>Répartition par pass</p>
-          <DonutChart data={passBreakdown} />
+          <p className="text-xs font-bold uppercase tracking-[0.15em] mb-5" style={{ color: "#c49a30" }}>Inscrits par pays</p>
+          {countryBreakdown.length > 0
+            ? <div className="space-y-3">
+                {countryBreakdown.map((c, i) => (
+                  <div key={c.pays} className="flex items-center gap-3">
+                    <span className="text-xs w-28 shrink-0 truncate" style={{ color: "rgba(15,45,31,0.65)" }}>{c.pays}</span>
+                    <AnimBar pct={(c.count / maxCountry) * 100} color="#246444" delay={i * 50} />
+                    <span className="text-xs font-semibold w-5 text-right shrink-0" style={{ color: "#0f2d1f" }}>{c.count}</span>
+                  </div>
+                ))}
+              </div>
+            : <p className="text-xs text-center py-8" style={{ color: "rgba(15,45,31,0.30)" }}>Aucune donnée</p>
+          }
         </div>
       </div>
-      <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "240ms" }}>
-        <p className="text-xs font-bold uppercase tracking-[0.15em] mb-5" style={{ color: "#c49a30" }}>Participants par pays</p>
-        <div className="space-y-3">
-          {[...PAYS_DATA].sort((a,b) => b.count - a.count).map((p, i) => (
-            <div key={p.pays} className="flex items-center gap-3">
-              <span className="text-xs w-28 shrink-0" style={{ color: "rgba(15,45,31,0.65)" }}>{p.pays}</span>
-              <AnimBar pct={(p.count / Math.max(...PAYS_DATA.map(x => x.count))) * 100} color="#246444" delay={i * 60} />
-              <span className="text-xs font-semibold w-6 text-right" style={{ color: "#0f2d1f" }}>{p.count}</span>
+      {/* Quick links */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 admin-card" style={{ animationDelay: "260ms" }}>
+        {[
+          { label: "Nouvelles inscriptions",       count: stats.total,       color: "#246444" },
+          { label: "Demandes partenariat à traiter", count: stats.partnerReqs, color: "#c49a30" },
+          { label: "Accréditations presse",         count: stats.pressReqs,   color: "#1e5238" },
+        ].map(item => (
+          <div key={item.label} className="bg-white rounded-xl p-4 flex items-center gap-3" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: item.color + "15" }}>
+              <span className="font-heading font-black text-lg" style={{ color: item.color }}>{item.count}</span>
             </div>
-          ))}
-        </div>
+            <p className="text-xs font-medium leading-tight" style={{ color: "rgba(15,45,31,0.60)" }}>{item.label}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1795,6 +1843,180 @@ function SectionInscriptions() {
   );
 }
 
+// ─── Section Paramètres du site ──────────────────────────────────────────────
+type SiteSettings = {
+  event_date: string;
+  event_location: string;
+  stat_participants: string;
+  stat_countries: string;
+  stat_sessions: string;
+  banner_active: boolean;
+  banner_text: string;
+  banner_type: "info" | "warning" | "success";
+  registrations_open: boolean;
+};
+
+const DEFAULT_SETTINGS: SiteSettings = {
+  event_date: "3–5 Février 2027",
+  event_location: "Cotonou, Bénin",
+  stat_participants: "500+",
+  stat_countries: "15",
+  stat_sessions: "20+",
+  banner_active: false,
+  banner_text: "",
+  banner_type: "info",
+  registrations_open: true,
+};
+
+function SectionParametres() {
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("*").eq("id", "main").single()
+      .then(({ data }) => {
+        if (data) setSettings({ ...DEFAULT_SETTINGS, ...data });
+        setLoading(false);
+      });
+  }, []);
+
+  const s = (k: keyof SiteSettings, v: string | boolean) =>
+    setSettings(p => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    await supabase.from("site_settings").upsert({ id: "main", ...settings });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  const BANNER_COLORS = {
+    info:    { bg: "rgba(36,100,68,0.10)",  text: "#246444",  label: "Info (vert)" },
+    warning: { bg: "rgba(196,154,48,0.12)", text: "#9a7320",  label: "Alerte (or)" },
+    success: { bg: "rgba(30,82,56,0.10)",   text: "#1e5238",  label: "Succès (forêt)" },
+  };
+
+  if (loading) return <div className="py-16 text-center text-sm" style={{ color: "rgba(15,45,31,0.35)" }}>Chargement…</div>;
+
+  return (
+    <div className="space-y-6 admin-card">
+      {/* Bannière d'alerte */}
+      <div className="bg-white rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div className="px-6 py-5 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+          <div>
+            <h3 className="font-heading font-black text-base" style={{ color: "#0f2d1f" }}>Bannière d'alerte</h3>
+            <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Affichée sur toutes les pages du site si activée</p>
+          </div>
+          {/* Toggle */}
+          <button onClick={() => s("banner_active", !settings.banner_active)}
+            className="relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0"
+            style={{ backgroundColor: settings.banner_active ? "#246444" : "rgba(15,45,31,0.15)" }}>
+            <span className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+              style={{ transform: settings.banner_active ? "translateX(24px)" : "translateX(0)" }} />
+          </button>
+        </div>
+        {/* Preview */}
+        {settings.banner_active && settings.banner_text && (
+          <div className="px-6 py-3 text-xs font-semibold" style={{ backgroundColor: BANNER_COLORS[settings.banner_type].bg, color: BANNER_COLORS[settings.banner_type].text }}>
+            📢 {settings.banner_text}
+          </div>
+        )}
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Message</label>
+            <input value={settings.banner_text} onChange={e => s("banner_text", e.target.value)}
+              placeholder="Ex : Les inscriptions ferment le 31 janvier 2027."
+              className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wide block mb-2" style={{ color: "rgba(15,45,31,0.45)" }}>Style</label>
+            <div className="flex gap-2 flex-wrap">
+              {(["info","warning","success"] as const).map(t => (
+                <button key={t} onClick={() => s("banner_type", t)}
+                  className="px-3 py-1.5 rounded-full text-[11px] font-semibold border-2 transition-all"
+                  style={{
+                    backgroundColor: BANNER_COLORS[t].bg,
+                    color: BANNER_COLORS[t].text,
+                    borderColor: settings.banner_type === t ? BANNER_COLORS[t].text : "transparent",
+                  }}>
+                  {BANNER_COLORS[t].label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Infos de l'événement */}
+      <div className="bg-white rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+          <h3 className="font-heading font-black text-base" style={{ color: "#0f2d1f" }}>Informations de l'événement</h3>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Affichées dans le header et la page d'accueil</p>
+        </div>
+        <div className="p-6 grid sm:grid-cols-2 gap-4">
+          {([
+            { key: "event_date",     label: "Date de l'événement",  placeholder: "3–5 Février 2027" },
+            { key: "event_location", label: "Lieu",                  placeholder: "Cotonou, Bénin" },
+          ] as const).map(f => (
+            <div key={f.key}>
+              <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>{f.label}</label>
+              <input value={settings[f.key]} onChange={e => s(f.key, e.target.value)} placeholder={f.placeholder}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Compteurs home */}
+      <div className="bg-white rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+          <h3 className="font-heading font-black text-base" style={{ color: "#0f2d1f" }}>Compteurs page d'accueil</h3>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Chiffres clés affichés dans la section hero</p>
+        </div>
+        <div className="p-6 grid sm:grid-cols-3 gap-4">
+          {([
+            { key: "stat_participants", label: "Participants attendus", placeholder: "500+" },
+            { key: "stat_countries",    label: "Pays représentés",      placeholder: "15" },
+            { key: "stat_sessions",     label: "Sessions / ateliers",   placeholder: "20+" },
+          ] as const).map(f => (
+            <div key={f.key}>
+              <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>{f.label}</label>
+              <input value={settings[f.key]} onChange={e => s(f.key, e.target.value)} placeholder={f.placeholder}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none font-mono" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Inscriptions ouvertes */}
+      <div className="bg-white rounded-2xl p-6 flex items-center justify-between gap-4" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div>
+          <p className="text-sm font-bold" style={{ color: "#0f2d1f" }}>Inscriptions ouvertes</p>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Si désactivé, le bouton S'inscrire mène vers une page "bientôt disponible"</p>
+        </div>
+        <button onClick={() => s("registrations_open", !settings.registrations_open)}
+          className="relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0"
+          style={{ backgroundColor: settings.registrations_open ? "#246444" : "rgba(15,45,31,0.15)" }}>
+          <span className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+            style={{ transform: settings.registrations_open ? "translateX(24px)" : "translateX(0)" }} />
+        </button>
+      </div>
+
+      {/* Save */}
+      <div className="flex items-center gap-3">
+        <button onClick={handleSave} disabled={saving}
+          className="btn-primary text-sm font-bold px-6 py-3 rounded-xl disabled:opacity-60 inline-flex items-center gap-2">
+          {saving ? "Enregistrement…" : saved ? "✓ Enregistré !" : "Enregistrer les paramètres"}
+        </button>
+        {saved && <span className="text-xs" style={{ color: "#246444" }}>Les modifications seront visibles après redéploiement ou rechargement.</span>}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function EspaceAdminPage() {
   const [active, setActive] = useState("overview");
@@ -1820,6 +2042,7 @@ export default function EspaceAdminPage() {
 
   const section: Record<string, React.ReactNode> = {
     overview:        <SectionOverview />,
+    parametres:      <SectionParametres />,
     participants:    <SectionParticipants />,
     paiements:       <SectionPaiements />,
     pointage:        <SectionPointage />,

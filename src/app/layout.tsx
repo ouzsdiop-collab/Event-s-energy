@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MockupBanner from "@/components/MockupBanner";
+import AlertBanner from "@/components/AlertBanner";
 import { LangProvider } from "@/lib/i18n";
 import { TransitionProvider } from "@/lib/transition";
 import { Analytics } from "@vercel/analytics/react";
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LangProvider>
           <TransitionProvider>
             <MockupBanner />
+            <AlertBanner />
             <Navbar />
             <main>{children}</main>
             <Footer />
