@@ -29,6 +29,7 @@ export default function BadgePage() {
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const badgeRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
   useEffect(() => {
     supabase.from("registrations").select("*").eq("reference", ref).maybeSingle()
@@ -111,6 +112,20 @@ export default function BadgePage() {
           #badge-printable { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); }
           .no-print { display: none !important; }
         }
+        .print-modal-open #badge-print-a6,
+        .print-modal-open #badge-print-a6 * { visibility: visible; }
+        @media print {
+          body.print-modal-open * { visibility: hidden; }
+          body.print-modal-open #badge-print-a6,
+          body.print-modal-open #badge-print-a6 * { visibility: visible; }
+          body.print-modal-open #badge-print-a6 {
+            position: fixed; top: 0; left: 0;
+            width: 105mm; height: 148mm;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+        @page { size: A6 portrait; margin: 0; }
       `}</style>
 
       <div className="min-h-screen py-12 px-4" style={{ backgroundColor: "#f0f4f2" }}>
@@ -224,6 +239,12 @@ export default function BadgePage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
               Imprimer
             </button>
+            <button onClick={() => setShowPrintModal(true)}
+              className="flex items-center justify-center gap-2 font-semibold text-sm py-3.5 px-5 rounded-xl transition-all duration-200 hover:scale-[1.02]"
+              style={{ border: "1px solid rgba(196,154,48,0.40)", color: "#c49a30", backgroundColor: "white" }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              Version impression
+            </button>
           </div>
 
           <p className="text-center text-[10px] mt-5 no-print" style={{ color: "rgba(15,45,31,0.30)" }}>
@@ -231,6 +252,155 @@ export default function BadgePage() {
           </p>
         </div>
       </div>
+
+      {/* Modal impression A6 */}
+      {showPrintModal && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center no-print"
+          style={{ backgroundColor: "rgba(7,24,16,0.85)", backdropFilter: "blur(6px)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowPrintModal(false); }}
+        >
+          {/* Badge A6 */}
+          <div
+            id="badge-print-a6"
+            style={{
+              width: "105mm",
+              height: "148mm",
+              backgroundColor: "white",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "sans-serif",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
+              borderRadius: "4px",
+            }}
+          >
+            {/* Header 40% */}
+            <div style={{
+              flex: "0 0 40%",
+              background: "linear-gradient(160deg, #071810, #0f2d1f)",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0 8mm",
+              overflow: "hidden",
+            }}>
+              {/* motif diagonal doré */}
+              <div style={{
+                position: "absolute", inset: 0, opacity: 0.06,
+                backgroundImage: "repeating-linear-gradient(45deg, #c49a30 0px, #c49a30 1px, transparent 1px, transparent 12px)",
+              }} />
+              <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+                {/* Avatar */}
+                <div style={{
+                  width: 52, height: 52, borderRadius: "50%",
+                  background: `linear-gradient(135deg, ${pass.bg}, #0f2d1f)`,
+                  border: "2px solid rgba(196,154,48,0.45)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  margin: "0 auto 5mm",
+                  fontSize: 20, fontWeight: 900,
+                  color: pass.bg === "#0f2d1f" ? "#c49a30" : pass.color,
+                }}>
+                  {initials(reg.prenom, reg.nom)}
+                </div>
+                {/* Nom */}
+                <div style={{ color: "white", fontWeight: 900, fontSize: 18, lineHeight: 1.15 }}>
+                  {reg.prenom} {reg.nom}
+                </div>
+                <div style={{ color: "rgba(255,255,255,0.50)", fontSize: 11, marginTop: 3 }}>
+                  {reg.fonction}
+                </div>
+              </div>
+            </div>
+
+            {/* Bandeau pass */}
+            <div style={{
+              backgroundColor: pass.bg,
+              color: pass.color,
+              textAlign: "center",
+              padding: "2.5mm 0",
+              fontWeight: 900,
+              fontSize: 10,
+              letterSpacing: "0.25em",
+              flexShrink: 0,
+            }}>
+              {pass.label}
+            </div>
+
+            {/* Infos 2x2 */}
+            <div style={{ padding: "4mm 6mm", flexShrink: 0 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2mm" }}>
+                {[
+                  { label: "Organisation", value: reg.organisation },
+                  { label: "Pays", value: reg.pays },
+                  { label: "Catégorie", value: reg.categorie },
+                  { label: "Référence", value: reg.reference, mono: true },
+                ].map(({ label, value, mono }) => (
+                  <div key={label} style={{
+                    borderRadius: 4,
+                    padding: "2mm 2.5mm",
+                    backgroundColor: "rgba(36,100,68,0.04)",
+                    border: "1px solid rgba(36,100,68,0.07)",
+                  }}>
+                    <div style={{ fontSize: 7, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(15,45,31,0.35)", marginBottom: 1 }}>{label}</div>
+                    <div style={{ fontSize: 9, fontWeight: 600, color: "#0f2d1f", fontFamily: mono ? "monospace" : undefined }}>{value || "—"}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Séparation */}
+            <div style={{ height: 1, margin: "0 6mm", background: "linear-gradient(to right, rgba(36,100,68,0.15), rgba(196,154,48,0.10), transparent)", flexShrink: 0 }} />
+
+            {/* QR Code */}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "3mm 0" }}>
+              {qrDataUrl && (
+                <div style={{ padding: 8, borderRadius: 8, backgroundColor: "white", border: "1px solid rgba(36,100,68,0.10)", boxShadow: "0 2px 8px rgba(10,28,18,0.06)" }}>
+                  <img src={qrDataUrl} alt="QR Code" width={110} height={110} />
+                </div>
+              )}
+              <div style={{ fontSize: 7, color: "rgba(15,45,31,0.30)", marginTop: "2mm", fontFamily: "monospace", textAlign: "center" }}>
+                Scanner à l&apos;accueil · {reg.reference}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              backgroundColor: "#f9fbfa",
+              borderTop: "1px solid rgba(36,100,68,0.08)",
+              padding: "2.5mm 6mm",
+              textAlign: "center",
+              flexShrink: 0,
+            }}>
+              <div style={{ fontSize: 7, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(15,45,31,0.30)" }}>
+                SOAFGN 2027 · Cotonou, Bénin · 3–5 Février 2027 · Sofitel Marina
+              </div>
+            </div>
+          </div>
+
+          {/* Contrôles sous le badge */}
+          <div className="flex gap-3 mt-6 items-center">
+            <button
+              onClick={() => { document.body.classList.add("print-modal-open"); window.print(); document.body.classList.remove("print-modal-open"); }}
+              style={{ backgroundColor: "#c49a30", color: "#0f2d1f", fontWeight: 700, fontSize: 14, padding: "10px 22px", borderRadius: 10, border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+              Imprimer ce badge
+            </button>
+            <button
+              onClick={() => setShowPrintModal(false)}
+              style={{ backgroundColor: "rgba(255,255,255,0.10)", color: "white", fontWeight: 600, fontSize: 14, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.18)", cursor: "pointer" }}
+            >
+              Fermer
+            </button>
+          </div>
+          <p style={{ color: "rgba(255,255,255,0.30)", fontSize: 10, marginTop: 10 }}>
+            Format A6 · 105×148mm · Optimisé impression couleur
+          </p>
+        </div>
+      )}
     </>
   );
 }

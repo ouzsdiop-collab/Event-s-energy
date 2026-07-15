@@ -1522,42 +1522,98 @@ function SectionDemandePresse() {
 // ─── Section QR Codes & Pointage ──────────────────────────────────────────────
 function SectionPointage() {
   const [search, setSearch] = useState("");
-  const [checkedIn, setCheckedIn] = useState<Record<string, boolean>>({});
-  const [checkedInAt, setCheckedInAt] = useState<Record<string, string>>({});
-  const [qrModal, setQrModal] = useState<typeof PARTICIPANTS[0] | null>(null);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const filtered = PARTICIPANTS.filter(p =>
-    [p.nom, p.prenom, p.organisation, p.id].join(" ").toLowerCase().includes(search.toLowerCase())
-  );
+  const load = useCallback(async () => {
+    setLoading(true);
+    const [regRes, settingsRes] = await Promise.all([
+      supabase.from("registrations").select("id, prenom, nom, organisation, reference, pass_type, checked_in, checked_in_at, status").order("checked_in_at", { ascending: false, nullsFirst: false }),
+      supabase.from("site_settings").select("pointage_token").eq("id", "main").single(),
+    ]);
+    if (regRes.data) setRegistrations(regRes.data as unknown as Registration[]);
+    if (settingsRes.data?.pointage_token) setToken(settingsRes.data.pointage_token);
+    setLoading(false);
+  }, []);
 
-  const handleCheckIn = (id: string) => {
-    const now = new Date().toISOString();
-    setCheckedIn(c => ({ ...c, [id]: true }));
-    setCheckedInAt(a => ({ ...a, [id]: now }));
+  useEffect(() => { load(); }, [load]);
+
+  const generateToken = async () => {
+    setGenerating(true);
+    const newToken = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
+    await supabase.from("site_settings").upsert({ id: "main", pointage_token: newToken });
+    setToken(newToken);
+    setGenerating(false);
   };
 
-  useEffect(() => {
-    if (!qrModal || !qrCanvasRef.current) return;
-    const url = `${window.location.origin}/badge/${qrModal.id}`;
-    import("qrcode").then(QRCode => {
-      QRCode.toCanvas(qrCanvasRef.current!, url, {
-        width: 200, margin: 2,
-        color: { dark: "#0f2d1f", light: "#ffffff" },
-      });
-    });
-  }, [qrModal]);
+  const pointageUrl = token ? `${typeof window !== "undefined" ? window.location.origin : ""}/pointage/${token}` : null;
 
-  const presentCount = Object.values(checkedIn).filter(Boolean).length;
+  const copyLink = () => {
+    if (!pointageUrl) return;
+    navigator.clipboard.writeText(pointageUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const filtered = registrations.filter(r =>
+    [r.nom, r.prenom, r.organisation, r.reference].join(" ").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const presentCount = registrations.filter(r => r.checked_in).length;
+  const total = registrations.length;
 
   return (
     <div className="space-y-5 admin-card">
+
+      {/* Lien de pointage staff */}
+      <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Lien de pointage staff</h2>
+            <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Partagez ce lien au personnel d'accueil — scanner QR ou saisie manuelle</p>
+          </div>
+          {!token && (
+            <button onClick={generateToken} disabled={generating} className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg btn-primary shrink-0 disabled:opacity-60">
+              <Plus className="w-3.5 h-3.5" /> {generating ? "Génération…" : "Générer le lien"}
+            </button>
+          )}
+        </div>
+
+        {token && pointageUrl ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 p-3 rounded-xl" style={{ backgroundColor: "rgba(36,100,68,0.04)", border: "1px solid rgba(36,100,68,0.12)" }}>
+              <p className="flex-1 text-xs font-mono truncate" style={{ color: "#0f2d1f" }}>{pointageUrl}</p>
+              <button onClick={copyLink} className="shrink-0 text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all"
+                style={{ backgroundColor: copied ? "rgba(36,100,68,0.12)" : "#0f2d1f", color: copied ? "#246444" : "#c49a30" }}>
+                {copied ? "Copié ✓" : "Copier"}
+              </button>
+              <a href={pointageUrl} target="_blank" rel="noreferrer" className="shrink-0 text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all hover:bg-gray-50"
+                style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>
+                Ouvrir
+              </a>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>Ce lien donne accès uniquement au pointage, pas à l'administration</p>
+              <button onClick={generateToken} disabled={generating} className="text-[10px] font-semibold transition-colors hover:underline" style={{ color: "rgba(15,45,31,0.40)" }}>
+                {generating ? "…" : "Regénérer"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs py-4 text-center" style={{ color: "rgba(15,45,31,0.35)" }}>Aucun lien généré — cliquez sur "Générer le lien" pour créer le lien de pointage staff</p>
+        )}
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Participants attendus", value: PARTICIPANTS.length, color: "#246444" },
+          { label: "Inscrits attendus", value: total, color: "#246444" },
           { label: "Présents pointés", value: presentCount, color: "#c49a30" },
-          { label: "En attente", value: PARTICIPANTS.length - presentCount, color: "rgba(15,45,31,0.40)" },
+          { label: "Pas encore arrivés", value: total - presentCount, color: "rgba(15,45,31,0.40)" },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-xl p-4 text-center shadow-sm" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
             <div className="font-heading font-black text-2xl mb-1" style={{ color: s.color }}>{s.value}</div>
@@ -1566,88 +1622,60 @@ function SectionPointage() {
         ))}
       </div>
 
+      {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
         <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
-          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Contrôle d'accès & QR Codes</h2>
+          <h2 className="font-heading font-black text-lg" style={{ color: "#0f2d1f" }}>Suivi des présences</h2>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(15,45,31,0.30)" }} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Nom, ID…" className="text-xs pl-8 pr-3 py-2 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Nom, réf…" className="text-xs pl-8 pr-3 py-2 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs min-w-[680px]">
-            <thead>
-              <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
-                {["ID","Participant","Organisation","Pass","Présence","QR / Pointer"].map(h => (
-                  <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p, i) => {
-                const isIn = checkedIn[p.id];
-                const inAt = checkedInAt[p.id];
-                return (
-                  <tr key={p.id} className="table-row-anim" style={{ borderBottom: "1px solid rgba(36,100,68,0.06)", animationDelay: `${i * 30}ms`, backgroundColor: isIn ? "rgba(36,100,68,0.025)" : undefined }}>
-                    <td className="px-4 py-3 font-mono text-[10px]" style={{ color: "rgba(15,45,31,0.45)" }}>{p.id}</td>
-                    <td className="px-4 py-3 font-semibold" style={{ color: "#0f2d1f" }}>{p.prenom} {p.nom}</td>
-                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{p.organisation}</td>
+        {loading ? (
+          <div className="py-12 text-center text-sm" style={{ color: "rgba(15,45,31,0.35)" }}>Chargement…</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs min-w-[680px]">
+              <thead>
+                <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+                  {["Référence","Participant","Organisation","Pass","Présence","Heure"].map(h => (
+                    <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((r, i) => (
+                  <tr key={r.id} className="table-row-anim" style={{ borderBottom: "1px solid rgba(36,100,68,0.06)", animationDelay: `${i * 25}ms`, backgroundColor: r.checked_in ? "rgba(36,100,68,0.02)" : undefined }}>
+                    <td className="px-4 py-3 font-mono text-[10px]" style={{ color: "rgba(15,45,31,0.45)" }}>{r.reference}</td>
+                    <td className="px-4 py-3 font-semibold" style={{ color: "#0f2d1f" }}>{r.prenom} {r.nom}</td>
+                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{r.organisation}</td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: PASS_COLORS[p.pass] }}>
-                        {p.pass}
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: (PASS_COLORS[r.pass_type as PassType] ?? "#246444") + "20", color: PASS_COLORS[r.pass_type as PassType] ?? "#246444" }}>
+                        {r.pass_type}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {isIn ? (
-                        <div>
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>
-                            <CheckCircle2 className="w-3 h-3" /> Pointé
-                          </span>
-                          {inAt && <p className="text-[9px] mt-0.5" style={{ color: "rgba(15,45,31,0.35)" }}>{new Date(inAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>}
-                        </div>
+                      {r.checked_in ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>
+                          <CheckCircle2 className="w-3 h-3" /> Présent
+                        </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(234,179,8,0.12)", color: "#a16207" }}>
-                          <Clock className="w-3 h-3" /> En attente
+                          <Clock className="w-3 h-3" /> Attendu
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => setQrModal(p)} className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-forest-50" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>
-                          QR
-                        </button>
-                        {!isIn && (
-                          <button onClick={() => handleCheckIn(p.id)} className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg text-white transition-colors hover:opacity-80" style={{ backgroundColor: "#246444" }}>
-                            Pointer ✓
-                          </button>
-                        )}
-                      </div>
+                    <td className="px-4 py-3 text-[10px]" style={{ color: "rgba(15,45,31,0.45)" }}>
+                      {r.checked_in_at ? new Date(r.checked_in_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "—"}
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* QR Modal */}
-      {qrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={() => setQrModal(null)}>
-          <div className="bg-white rounded-2xl p-7 shadow-2xl text-center max-w-xs w-full mx-4" onClick={e => e.stopPropagation()}>
-            <p className="font-heading font-black text-lg mb-0.5" style={{ color: "#0f2d1f" }}>{qrModal.prenom} {qrModal.nom}</p>
-            <p className="text-xs mb-1" style={{ color: "rgba(15,45,31,0.50)" }}>{qrModal.organisation}</p>
-            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white inline-block mb-5" style={{ backgroundColor: PASS_COLORS[qrModal.pass] }}>{qrModal.pass}</span>
-            <div className="flex justify-center mb-3">
-              <canvas ref={qrCanvasRef} className="rounded-xl" />
-            </div>
-            <p className="text-[9px] font-mono mb-4" style={{ color: "rgba(15,45,31,0.35)" }}>{qrModal.id}</p>
-            <p className="text-[10px] mb-4" style={{ color: "rgba(15,45,31,0.45)" }}>Ce QR ouvre la page badge sur n'importe quel téléphone</p>
-            <button onClick={() => setQrModal(null)} className="text-xs font-semibold text-gray-400 hover:text-gray-600 transition-colors">Fermer</button>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

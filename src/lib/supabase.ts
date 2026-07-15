@@ -82,6 +82,8 @@ export type Registration = {
   status: "en_attente" | "confirmé" | "annulé";
   needs_invitation_letter: boolean;
   created_at: string;
+  checked_in: boolean;
+  checked_in_at: string | null;
 };
 
 export type PartnershipRequest = {
