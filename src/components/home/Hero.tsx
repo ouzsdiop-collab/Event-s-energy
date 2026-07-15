@@ -55,7 +55,7 @@ export default function Hero() {
             {/* Supertitle — label secondaire, discret mais lisible */}
             <span
               className="block font-semibold uppercase tracking-[0.20em] mb-3"
-              style={{ fontSize: "clamp(0.55rem, 1.8vw, 0.72rem)", color: "rgba(36,100,68,0.55)", lineHeight: 1 }}
+              style={{ fontSize: "clamp(0.62rem, 1.8vw, 0.78rem)", color: "rgba(36,100,68,0.75)", lineHeight: 1 }}
             >
               {h.supertitle}
             </span>
