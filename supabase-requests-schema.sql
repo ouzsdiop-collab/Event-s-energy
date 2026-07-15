@@ -16,16 +16,19 @@ create table if not exists partnership_requests (
 
 -- Demandes d'accréditation presse (depuis /presse)
 create table if not exists press_requests (
-  id          uuid primary key default gen_random_uuid(),
-  name        text not null,
-  media       text not null,
-  role        text not null,
-  email       text not null,
-  phone       text,
-  media_type  text not null,
-  coverage    text,
-  status      text not null default 'nouveau',
-  created_at  timestamptz default now()
+  id                  uuid primary key default gen_random_uuid(),
+  name                text not null,
+  media               text not null,
+  role                text not null,
+  email               text not null,
+  phone               text,
+  country             text,
+  media_type          text not null,
+  coverage            text,
+  press_card_url      text,
+  mission_letter_url  text,
+  status              text not null default 'nouveau',
+  created_at          timestamptz default now()
 );
 
 -- Participants (pour QR codes et pointage — les mêmes que les maquettes mais en vrai)

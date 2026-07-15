@@ -81,8 +81,11 @@ export type PressRequest = {
   role: string;
   email: string;
   phone: string | null;
+  country: string;
   media_type: string;
   coverage: string | null;
+  press_card_url: string | null;
+  mission_letter_url: string | null;
   status: "nouveau" | "approuvé" | "refusé";
   created_at: string;
 };

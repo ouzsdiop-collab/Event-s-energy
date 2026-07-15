@@ -1244,7 +1244,7 @@ function SectionDemandePresse() {
           <table className="w-full text-xs min-w-[750px]">
             <thead>
               <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
-                {["Date","Nom","Média","Type","Email","Téléphone","Statut","Action"].map(h => (
+                {["Date","Nom","Média","Pays","Email","Dossier","Statut","Action"].map(h => (
                   <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
                 ))}
               </tr>
@@ -1257,12 +1257,29 @@ function SectionDemandePresse() {
                     <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(15,45,31,0.50)" }}>{new Date(r.created_at).toLocaleDateString("fr-FR")}</td>
                     <td className="px-4 py-3 font-semibold" style={{ color: "#0f2d1f" }}>
                       <div>{r.name}</div>
-                      <div className="text-[10px] font-normal" style={{ color: "rgba(15,45,31,0.45)" }}>{r.role}</div>
+                      <div className="text-[10px] font-normal" style={{ color: "rgba(15,45,31,0.45)" }}>{r.role} · {r.media_type}</div>
                     </td>
                     <td className="px-4 py-3 font-medium" style={{ color: "rgba(15,45,31,0.75)" }}>{r.media}</td>
-                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.55)" }}>{r.media_type}</td>
-                    <td className="px-4 py-3"><a href={`mailto:${r.email}`} className="text-forest-600 hover:underline">{r.email}</a></td>
-                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.55)" }}>{r.phone || "—"}</td>
+                    <td className="px-4 py-3 text-[11px]" style={{ color: "rgba(15,45,31,0.55)" }}>{r.country || "—"}</td>
+                    <td className="px-4 py-3"><a href={`mailto:${r.email}`} className="text-forest-600 hover:underline text-[11px]">{r.email}</a></td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col gap-1">
+                        {r.mission_letter_url ? (
+                          <a href={r.mission_letter_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded hover:opacity-80 transition-opacity" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Mission
+                          </a>
+                        ) : (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: "rgba(220,38,38,0.08)", color: "#b91c1c" }}>⚠ Lettre manquante</span>
+                        )}
+                        {r.press_card_url && (
+                          <a href={r.press_card_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded hover:opacity-80 transition-opacity" style={{ backgroundColor: "rgba(196,154,48,0.12)", color: "#9a7320" }}>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2"/></svg>
+                            Carte presse
+                          </a>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: s.bg, color: s.text }}>{s.label}</span>
                     </td>

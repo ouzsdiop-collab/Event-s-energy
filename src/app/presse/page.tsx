@@ -61,17 +61,62 @@ const coverageTypes = [
   { icon: "📂", title: "Centre de presse", desc: "Un espace presse dédié avec Wi-Fi haut débit, prises électriques et salle de montage est disponible au Sofitel pendant toute la durée du salon." },
 ];
 
+const coverageOptions = [
+  "Article / Reportage écrit",
+  "Reportage photo",
+  "Reportage vidéo / TV",
+  "Interview(s) d'intervenants",
+  "Live streaming",
+  "Podcast / Audio",
+  "Couverture en direct (réseaux sociaux)",
+  "Autre",
+];
+
+const countryList = [
+  "Bénin","Burkina Faso","Cameroun","Côte d'Ivoire","Gabon","Guinée","Guinée-Bissau",
+  "Mali","Mauritanie","Niger","République du Congo","Sénégal","Tchad","Togo",
+  "Ghana","Nigeria","Sierra Leone","Liberia","Gambie",
+  "France","Belgique","Suisse","Canada","Maroc","Tunisie","Algérie",
+  "Autre",
+];
+
+async function uploadDoc(file: File, folder: string): Promise<string | null> {
+  const path = `${folder}/${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
+  const { error } = await supabase.storage.from("soafgang-media").upload(path, file, { upsert: false });
+  if (error) return null;
+  const { data } = supabase.storage.from("soafgang-media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
 export default function PressePage() {
-  const [form, setForm] = useState({ name: "", media: "", role: "", email: "", phone: "", type: "", coverage: "" });
+  const [form, setForm] = useState({
+    name: "", media: "", role: "", email: "", phone: "",
+    country: "", type: "", coverage: [] as string[], other_coverage: "",
+  });
+  const [presseFile, setPresseFile] = useState<File | null>(null);
+  const [missionFile, setMissionFile] = useState<File | null>(null);
   const [status, setStatus] = useState<AccredFormState>("idle");
+
+  const toggleCoverage = (val: string) => {
+    setForm(f => ({
+      ...f,
+      coverage: f.coverage.includes(val) ? f.coverage.filter(c => c !== val) : [...f.coverage, val],
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
+    const [presseUrl, missionUrl] = await Promise.all([
+      presseFile ? uploadDoc(presseFile, "press/cartes") : Promise.resolve(null),
+      missionFile ? uploadDoc(missionFile, "press/missions") : Promise.resolve(null),
+    ]);
     await supabase.from("press_requests").insert({
       name: form.name, media: form.media, role: form.role,
       email: form.email, phone: form.phone || null,
-      media_type: form.type, coverage: form.coverage || null,
+      country: form.country, media_type: form.type,
+      coverage: form.coverage.join(", ") + (form.other_coverage ? ` / ${form.other_coverage}` : ""),
+      press_card_url: presseUrl, mission_letter_url: missionUrl,
       status: "nouveau",
     });
     setStatus("sent");
@@ -214,56 +259,127 @@ export default function PressePage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <h3 className="font-heading font-bold text-gray-900 text-lg mb-2">Demande envoyée</h3>
-                      <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">Votre demande d'accréditation a été transmise à notre équipe presse. Vous recevrez une réponse sous 5 jours ouvrés.</p>
-                      <button onClick={() => setStatus("idle")} className="mt-6 text-sm font-semibold text-forest-600 hover:text-forest-800 transition-colors">
+                      <h3 className="font-heading font-bold text-gray-900 text-lg mb-2">Dossier soumis</h3>
+                      <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">Votre demande d'accréditation a été transmise. Notre équipe presse examine votre dossier et vous répond sous 5 jours ouvrés.</p>
+                      <button onClick={() => { setStatus("idle"); setPresseFile(null); setMissionFile(null); setForm({ name:"", media:"", role:"", email:"", phone:"", country:"", type:"", coverage:[], other_coverage:"" }); }} className="mt-6 text-sm font-semibold text-forest-600 hover:text-forest-800 transition-colors">
                         Nouvelle demande
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                      {/* Identité */}
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Nom complet <span className="text-red-400">*</span></label>
-                          <input required type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nom et prénom" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                          <input required type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Prénom Nom" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Fonction / Rôle <span className="text-red-400">*</span></label>
-                          <input required type="text" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} placeholder="Journaliste, Photographe..." className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Fonction <span className="text-red-400">*</span></label>
+                          <input required type="text" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} placeholder="Journaliste, Photographe, Caméraman…" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Organe de presse / Média <span className="text-red-400">*</span></label>
-                        <input required type="text" value={form.media} onChange={e => setForm(f => ({ ...f, media: e.target.value }))} placeholder="Nom du média ou de l'agence" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Type de média <span className="text-red-400">*</span></label>
-                        <select required value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all bg-white text-gray-700">
-                          <option value="">Sélectionnez</option>
-                          {mediaTypes.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                      </div>
+
+                      {/* Média */}
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Organe de presse / Média <span className="text-red-400">*</span></label>
+                          <input required type="text" value={form.media} onChange={e => setForm(f => ({ ...f, media: e.target.value }))} placeholder="Nom du média ou de l'agence" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Type de média <span className="text-red-400">*</span></label>
+                          <select required value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all bg-white text-gray-700">
+                            <option value="">Sélectionnez</option>
+                            {mediaTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Contact */}
+                      <div className="grid sm:grid-cols-3 gap-4">
+                        <div>
                           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email professionnel <span className="text-red-400">*</span></label>
-                          <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="votre@media.com" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                          <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="vous@media.com" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-gray-700 mb-1.5">Téléphone</label>
-                          <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+221 XX XXX XX XX" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                          <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+229 XX XXX XXX" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Pays / Nationalité <span className="text-red-400">*</span></label>
+                          <select required value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all bg-white text-gray-700">
+                            <option value="">Sélectionnez</option>
+                            {countryList.map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
                         </div>
                       </div>
+
+                      {/* Type de couverture */}
                       <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Type de couverture envisagée</label>
-                        <textarea rows={3} value={form.coverage} onChange={e => setForm(f => ({ ...f, coverage: e.target.value }))} placeholder="Décrivez brièvement ce que vous souhaitez couvrir (interviews, sessions plénières, reportage, etc.)" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all resize-none placeholder:text-gray-300" />
+                        <label className="block text-xs font-semibold text-gray-700 mb-2">Type de couverture envisagée <span className="text-red-400">*</span></label>
+                        <div className="flex flex-wrap gap-2">
+                          {coverageOptions.map(opt => (
+                            <button key={opt} type="button" onClick={() => toggleCoverage(opt)}
+                              className="text-xs px-3 py-1.5 rounded-full border transition-all duration-150"
+                              style={{ backgroundColor: form.coverage.includes(opt) ? "#246444" : "#fff", color: form.coverage.includes(opt) ? "#fff" : "#6b7280", borderColor: form.coverage.includes(opt) ? "#246444" : "#e5e7eb" }}>
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+                        {form.coverage.includes("Autre") && (
+                          <input type="text" value={form.other_coverage} onChange={e => setForm(f => ({ ...f, other_coverage: e.target.value }))} placeholder="Précisez…" className="mt-2 w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                        )}
                       </div>
-                      <button type="submit" disabled={status === "sending"} className="w-full font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-60" style={{ backgroundColor: "#246444", color: "#fff" }}>
+
+                      {/* Documents */}
+                      <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: "rgba(15,45,31,0.03)", border: "1px solid rgba(36,100,68,0.10)" }}>
+                        <p className="text-xs font-bold text-gray-700">Documents du dossier</p>
+
+                        {/* Carte de presse */}
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                            Carte de presse <span className="text-gray-400 font-normal">(PDF ou image — si disponible)</span>
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer group">
+                            <div className="flex-1 flex items-center gap-2.5 border-2 border-dashed rounded-lg px-4 py-3 transition-colors group-hover:border-forest-300" style={{ borderColor: presseFile ? "#246444" : "#e5e7eb", backgroundColor: presseFile ? "rgba(36,100,68,0.04)" : "#fff" }}>
+                              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: presseFile ? "#246444" : "#9ca3af" }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                              <span className="text-xs" style={{ color: presseFile ? "#246444" : "#9ca3af" }}>{presseFile ? presseFile.name : "Choisir un fichier (PDF, JPG, PNG · max 5 Mo)"}</span>
+                            </div>
+                            <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => setPresseFile(e.target.files?.[0] || null)} />
+                          </label>
+                        </div>
+
+                        {/* Lettre de mission */}
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                            Lettre de mission / d'assignation <span className="text-red-400">*</span> <span className="text-gray-400 font-normal">(PDF)</span>
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer group">
+                            <div className="flex-1 flex items-center gap-2.5 border-2 border-dashed rounded-lg px-4 py-3 transition-colors group-hover:border-forest-300" style={{ borderColor: missionFile ? "#246444" : "#e5e7eb", backgroundColor: missionFile ? "rgba(36,100,68,0.04)" : "#fff" }}>
+                              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: missionFile ? "#246444" : "#9ca3af" }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                              <span className="text-xs" style={{ color: missionFile ? "#246444" : "#9ca3af" }}>{missionFile ? missionFile.name : "Lettre signée par la rédaction (PDF · max 5 Mo)"}</span>
+                            </div>
+                            <input type="file" accept=".pdf" className="hidden" onChange={e => setMissionFile(e.target.files?.[0] || null)} />
+                          </label>
+                        </div>
+
+                        <p className="text-[10px] text-gray-400">Les freelances sans carte de presse doivent impérativement fournir une lettre de mission signée par leur commanditaire.</p>
+                      </div>
+
+                      <button type="submit" disabled={status === "sending" || !missionFile || form.coverage.length === 0}
+                        className="w-full font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: "#246444", color: "#fff" }}>
                         {status === "sending" ? (
-                          <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Envoi en cours...</>
+                          <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Envoi du dossier…</>
                         ) : (
-                          <>Soumettre ma demande d'accréditation<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></>
+                          <>Soumettre mon dossier d'accréditation <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></>
                         )}
                       </button>
+                      {(!missionFile || form.coverage.length === 0) && (
+                        <p className="text-[11px] text-center text-gray-400">
+                          {!missionFile && "Lettre de mission requise · "}
+                          {form.coverage.length === 0 && "Sélectionnez au moins un type de couverture"}
+                        </p>
+                      )}
                     </form>
                   )}
                 </div>
