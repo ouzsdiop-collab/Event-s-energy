@@ -35,9 +35,9 @@ const mediaTypes = [
 ];
 
 const kitFiles = [
-  { name: "Communiqué de presse — Lancement SOAFGANG 2027", type: "PDF", size: "420 Ko", icon: "📄" },
+  { name: "Communiqué de presse — Lancement SOAFGN 2027", type: "PDF", size: "420 Ko", icon: "📄" },
   { name: "Dossier de presse complet", type: "PDF", size: "2,1 Mo", icon: "📋" },
-  { name: "Logo SOAFGANG 2027 — Pack HD", type: "ZIP", size: "8,4 Mo", icon: "🎨" },
+  { name: "Logo SOAFGN 2027 — Pack HD", type: "ZIP", size: "8,4 Mo", icon: "🎨" },
   { name: "Visuels officiels — Bannières & Affiches", type: "ZIP", size: "14,2 Mo", icon: "🖼️" },
   { name: "Fiche événement — 1 page", type: "PDF", size: "280 Ko", icon: "📌" },
   { name: "Biographies des intervenants confirmés", type: "PDF", size: "1,8 Mo", icon: "👤" },
@@ -57,7 +57,7 @@ const coverageTypes = [
   { icon: "🎤", title: "Interviews exclusives", desc: "Des créneaux d'interviews avec les intervenants clés peuvent être planifiés à la demande. Disponibilités limitées — contactez notre attachée de presse." },
   { icon: "📸", title: "Espace photographes", desc: "Un espace photographe dédié est prévu dans les salles de conférence et lors des séquences protocolaires. Accréditation obligatoire." },
   { icon: "🎥", title: "Plateau TV / Radio", desc: "Un plateau technique est mis à disposition des équipes TV et radio accréditées pour les prises de son et interviews face caméra." },
-  { icon: "📡", title: "Live streaming", desc: "Les sessions plénières seront diffusées en direct sur le site officiel et la chaîne YouTube du SOAFGANG. Les médias peuvent reprendre le flux." },
+  { icon: "📡", title: "Live streaming", desc: "Les sessions plénières seront diffusées en direct sur le site officiel et la chaîne YouTube du SOAFGN. Les médias peuvent reprendre le flux." },
   { icon: "📂", title: "Centre de presse", desc: "Un espace presse dédié avec Wi-Fi haut débit, prises électriques et salle de montage est disponible au Sofitel pendant toute la durée du salon." },
 ];
 
@@ -137,7 +137,7 @@ export default function PressePage() {
             Presse & Accréditation
           </h1>
           <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-xl mb-10">
-            Le SOAFGANG 2027 accueille les journalistes, photographes et équipes audiovisuelles souhaitant couvrir la première édition du Salon Ouest Africain Francophone sur le Gaz Naturel.
+            Le SOAFGN 2027 accueille les journalistes, photographes et équipes audiovisuelles souhaitant couvrir la première édition du Salon Ouest Africain Francophone sur le Gaz Naturel.
           </p>
           <div className="flex flex-wrap gap-3">
             <a href="#accreditation" className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:bg-white/5" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.70)" }}>

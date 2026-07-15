@@ -118,7 +118,7 @@ export default function BadgePage() {
 
           {/* Header page */}
           <div className="text-center mb-8 no-print">
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] mb-1" style={{ color: "#c49a30" }}>SOAFGANG 2027</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] mb-1" style={{ color: "#c49a30" }}>SOAFGN 2027</p>
             <h1 className="font-heading font-black text-2xl" style={{ color: "#0f2d1f" }}>Votre badge officiel</h1>
             <p className="text-sm mt-1" style={{ color: "rgba(15,45,31,0.45)" }}>Présentez ce badge à l'accueil le jour de l'événement</p>
           </div>
@@ -143,7 +143,7 @@ export default function BadgePage() {
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <div className="w-px h-4" style={{ backgroundColor: "rgba(196,154,48,0.4)" }} />
                   <div className="text-center">
-                    <p className="font-heading font-black text-[13px] tracking-widest" style={{ color: "#c49a30" }}>SOAFGANG</p>
+                    <p className="font-heading font-black text-[13px] tracking-widest" style={{ color: "#c49a30" }}>SOAFGN</p>
                     <p className="text-[8px] font-semibold tracking-[0.2em]" style={{ color: "rgba(196,154,48,0.55)" }}>2027 · COTONOU</p>
                   </div>
                   <div className="w-px h-4" style={{ backgroundColor: "rgba(196,154,48,0.4)" }} />
@@ -227,7 +227,7 @@ export default function BadgePage() {
           </div>
 
           <p className="text-center text-[10px] mt-5 no-print" style={{ color: "rgba(15,45,31,0.30)" }}>
-            Ce badge est personnel et non transférable · SOAFGANG 2027
+            Ce badge est personnel et non transférable · SOAFGN 2027
           </p>
         </div>
       </div>

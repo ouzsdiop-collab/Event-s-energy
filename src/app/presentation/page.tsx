@@ -150,7 +150,7 @@ export default function PresentationPage() {
             </span>
           </h1>
           <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-xl mx-auto mb-10">
-            Ce document présente les fonctionnalités, les pages et le potentiel de développement de cette maquette web interactive réalisée pour le SOAFGANG 2027.
+            Ce document présente les fonctionnalités, les pages et le potentiel de développement de cette maquette web interactive réalisée pour le SOAFGN 2027.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <TransitionLink href="/" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
@@ -176,7 +176,7 @@ export default function PresentationPage() {
             <div className="w-10 h-[3px] bg-gold-400 rounded-full mb-6" />
             <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-600 leading-relaxed">
               <p>
-                Cette maquette est un prototype web interactif haute fidélité conçu pour illustrer le potentiel digital du <strong className="text-gray-800">Salon Ouest Africain Francophone sur le Gaz Naturel (SOAFGANG) 2027</strong>. Elle représente ce que pourrait être le site officiel de l'événement, une fois développé en production.
+                Cette maquette est un prototype web interactif haute fidélité conçu pour illustrer le potentiel digital du <strong className="text-gray-800">Salon Ouest Africain Francophone sur le Gaz Naturel (SOAFGN) 2027</strong>. Elle représente ce que pourrait être le site officiel de l'événement, une fois développé en production.
               </p>
               <p>
                 Elle permet aux parties prenantes de naviguer sur l'ensemble des pages, de tester les fonctionnalités interactives et d'évaluer l'identité visuelle avant tout engagement de développement. Elle n'est pas connectée à une base de données réelle : les données affichées sont des exemples représentatifs.

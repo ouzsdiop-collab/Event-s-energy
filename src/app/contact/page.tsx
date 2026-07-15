@@ -222,7 +222,7 @@ export default function ContactPage() {
                           {form.lettre && <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                         </div>
                       </div>
-                      <span className="text-xs text-gray-500 leading-relaxed">Je souhaite recevoir une lettre d'invitation officielle du SOAFGANG 2027 pour faciliter l'obtention de mon visa.</span>
+                      <span className="text-xs text-gray-500 leading-relaxed">Je souhaite recevoir une lettre d'invitation officielle du SOAFGN 2027 pour faciliter l'obtention de mon visa.</span>
                     </label>
 
                     <button

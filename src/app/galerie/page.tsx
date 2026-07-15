@@ -109,7 +109,7 @@ export default function GaleriePage() {
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-gold-400">Galerie</span>
           </div>
           <h1 className="font-heading font-black text-white mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", lineHeight: 1.05 }}>
-            L'univers du SOAFGANG
+            L'univers du SOAFGN
           </h1>
           <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-xl">
             Le lieu, l'ambiance, les sessions et les moments forts du premier salon gazier francophone d'Afrique de l'Ouest.

@@ -1236,8 +1236,8 @@ function SectionProgramme() {
 
 function SectionCommunications() {
   const [tab, setTab] = useState<"compose"|"sent">("compose");
-  const [subject, setSubject] = useState("Confirmation d'inscription · SOAFGANG 2027");
-  const [body, setBody] = useState(`Bonjour {prenom},\n\nNous avons bien reçu votre inscription au SOAFGANG 2027.\n\nVotre pass : {pass}\nStatut : {statut}\n\nCordialement,\nLe Comité d'Organisation SOAFGANG 2027`);
+  const [subject, setSubject] = useState("Confirmation d'inscription · SOAFGN 2027");
+  const [body, setBody] = useState(`Bonjour {prenom},\n\nNous avons bien reçu votre inscription au SOAFGN 2027.\n\nVotre pass : {pass}\nStatut : {statut}\n\nCordialement,\nLe Comité d'Organisation SOAFGN 2027`);
   return (
     <div className="space-y-6">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
@@ -1676,11 +1676,11 @@ function printInvitationLetter(r: Registration) {
   @media print { button { display: none; } }
 </style></head><body>
 <div class="header">
-  <div class="logo-block"><div class="title">SOAFGANG 2027</div><div class="sub">Sommet Africain du Gaz Naturel</div></div>
+  <div class="logo-block"><div class="title">SOAFGN 2027</div><div class="sub">Sommet Africain du Gaz Naturel</div></div>
   <div class="ref"><div>Réf. : <strong>${r.reference}</strong></div><div>Cotonou, le ${today}</div></div>
 </div>
 <h2>LETTRE D'INVITATION OFFICIELLE</h2>
-<p>Le Comité d'Organisation du <span class="highlight">Sommet Africain du Gaz Naturel (SOAFGANG 2027)</span> a l'honneur de convier :</p>
+<p>Le Comité d'Organisation du <span class="highlight">Sommet Africain du Gaz Naturel (SOAFGN 2027)</span> a l'honneur de convier :</p>
 <div class="badge-box">
   <div class="badge-row"><span class="badge-label">Nom complet</span><span class="badge-val">${r.civilite} ${r.prenom} ${r.nom}</span></div>
   <div class="badge-row"><span class="badge-label">Fonction</span><span class="badge-val">${r.fonction}</span></div>
@@ -1690,12 +1690,12 @@ function printInvitationLetter(r: Registration) {
   <div class="badge-row"><span class="badge-label">Pass</span><span class="badge-val">${r.pass_type}</span></div>
   <div class="badge-row"><span class="badge-label">Réf. inscription</span><span class="badge-val">${r.reference}</span></div>
 </div>
-<p>à participer au <span class="highlight">1er Sommet Africain du Gaz Naturel (SOAFGANG 2027)</span>, qui se tiendra les <span class="highlight">15, 16 et 17 mars 2027</span> au <span class="highlight">Palais des Congrès de Cotonou, Bénin</span>.</p>
+<p>à participer au <span class="highlight">1er Sommet Africain du Gaz Naturel (SOAFGN 2027)</span>, qui se tiendra les <span class="highlight">15, 16 et 17 mars 2027</span> au <span class="highlight">Palais des Congrès de Cotonou, Bénin</span>.</p>
 <p>Cet événement réunira les décideurs politiques, les opérateurs énergétiques, les investisseurs et les experts du secteur gazier de la région ouest-africaine autour d'un programme de haut niveau axé sur les enjeux de transition énergétique, d'infrastructure et de financement.</p>
 <p>La présente lettre vaut invitation officielle et peut être utilisée pour toutes démarches administratives nécessaires, notamment l'obtention de visa.</p>
 <p style="margin-top:40px;">Nous vous prions d'agréer, ${r.civilite} ${r.nom}, l'expression de notre considération distinguée.</p>
-<p style="margin-top:32px;"><strong>Le Comité d'Organisation</strong><br>SOAFGANG 2027 – Cotonou, Bénin<br><em>contact@soafgang2027.org</em></p>
-<div class="footer">SOAFGANG 2027 · Palais des Congrès de Cotonou · contact@soafgang2027.org · Ce document est officiel et non cessible.</div>
+<p style="margin-top:32px;"><strong>Le Comité d'Organisation</strong><br>SOAFGN 2027 – Cotonou, Bénin<br><em>contact@soafgang2027.org</em></p>
+<div class="footer">SOAFGN 2027 · Palais des Congrès de Cotonou · contact@soafgang2027.org · Ce document est officiel et non cessible.</div>
 <script>window.onload=()=>window.print();</script>
 </body></html>`);
   win.document.close();
@@ -2271,7 +2271,7 @@ export default function EspaceAdminPage() {
         <aside className={`shrink-0 flex flex-col transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:inset-auto lg:z-auto ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
           style={{ width: sidebarOpen ? 224 : 62, backgroundColor: "#0f2d1f", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center justify-between px-4 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-            {sidebarOpen && <div><p className="text-xs font-black tracking-widest uppercase" style={{ color: "#c49a30" }}>Admin</p><p className="text-[10px]" style={{ color: "rgba(255,255,255,0.30)" }}>SOAFGANG 2027</p></div>}
+            {sidebarOpen && <div><p className="text-xs font-black tracking-widest uppercase" style={{ color: "#c49a30" }}>Admin</p><p className="text-[10px]" style={{ color: "rgba(255,255,255,0.30)" }}>SOAFGN 2027</p></div>}
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors ml-auto">
               {sidebarOpen ? <X className="w-4 h-4" style={{ color: "rgba(255,255,255,0.50)" }} /> : <Menu className="w-4 h-4" style={{ color: "rgba(255,255,255,0.50)" }} />}
             </button>
@@ -2328,7 +2328,7 @@ export default function EspaceAdminPage() {
               </button>
               <div>
                 <p className="text-sm font-black" style={{ color: "#0f2d1f" }}>{NAV_SECTIONS.find(n => n.id === active)?.label}</p>
-                <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>SOAFGANG 2027 · Espace Administration</p>
+                <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>SOAFGN 2027 · Espace Administration</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

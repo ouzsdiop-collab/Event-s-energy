@@ -27,7 +27,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
   const router   = useRouter();
   const [phase, setPhase]   = useState<Phase>("idle");
   const [label, setLabel]   = useState("");
-  const [subLabel, setSubLabel] = useState("SOAFGANG · 2027");
+  const [subLabel, setSubLabel] = useState("SOAFGN · 2027");
   const busy = useRef(false);
 
   const navigate = useCallback((href: string, customLabel?: string) => {
@@ -37,7 +37,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
     const route  = ROUTE_LABELS[href];
     const text   = customLabel ?? route?.fr ?? "";
     setLabel(text);
-    setSubLabel("SOAFGANG · 2027");
+    setSubLabel("SOAFGN · 2027");
     setPhase("in");
 
     // After panel slides in → navigate + brief hold → slide out

@@ -118,7 +118,7 @@ export default function ActualitesPage() {
           </div>
           <h1 className="font-heading font-black text-white mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", lineHeight: 1.05 }}>Actualités</h1>
           <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-xl">
-            Suivez toutes les annonces, confirmations d'intervenants, partenariats et informations pratiques liées au SOAFGANG 2027.
+            Suivez toutes les annonces, confirmations d'intervenants, partenariats et informations pratiques liées au SOAFGN 2027.
           </p>
         </div>
         <div className="h-[2px]" style={{ background: "linear-gradient(to right, transparent, #c49a30 25%, #e8c96a 50%, #c49a30 75%, transparent)" }} />
@@ -135,7 +135,7 @@ export default function ActualitesPage() {
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex-1">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-4" style={{ backgroundColor: "#f0f6f2" }}>📬</div>
                   <h3 className="font-heading font-bold text-gray-900 mb-2">Restez informé</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed mb-5">Recevez les annonces exclusives du SOAFGANG 2027 directement dans votre boîte mail.</p>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-5">Recevez les annonces exclusives du SOAFGN 2027 directement dans votre boîte mail.</p>
                   {subscribed ? (
                     <div className="text-center py-4">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: "rgba(36,100,68,0.08)" }}>

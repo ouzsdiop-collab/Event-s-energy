@@ -41,7 +41,7 @@ const airlines = [
 ];
 
 const hotels = [
-  { name: "Sofitel Cotonou Marina Hotel & Spa", stars: 5, dist: "Lieu de l'événement", price: "150 000 – 250 000 FCFA / nuit", note: "Tarif négocié pour les participants — mentionner SOAFGANG 2027 à la réservation", highlight: true },
+  { name: "Sofitel Cotonou Marina Hotel & Spa", stars: 5, dist: "Lieu de l'événement", price: "150 000 – 250 000 FCFA / nuit", note: "Tarif négocié pour les participants — mentionner SOAFGN 2027 à la réservation", highlight: true },
   { name: "Azalaï Hôtel de la Plage", stars: 4, dist: "3 km du Sofitel", price: "60 000 – 95 000 FCFA / nuit", note: "Navette disponible sur demande", highlight: false },
   { name: "Golden Tulip Le Diplomate", stars: 4, dist: "5 km du Sofitel", price: "55 000 – 85 000 FCFA / nuit", note: "Proche du centre des affaires", highlight: false },
   { name: "Hôtel du Lac", stars: 3, dist: "4 km du Sofitel", price: "35 000 – 55 000 FCFA / nuit", note: "Rapport qualité/prix apprécié", highlight: false },
@@ -258,7 +258,7 @@ export default function InformationsPratiquesPage() {
                     <span className="text-lg shrink-0">📋</span>
                     <div>
                       <p className="text-sm font-semibold text-gray-800 mb-1">Lettre d'invitation officielle</p>
-                      <p className="text-sm text-gray-500 leading-relaxed">Une lettre d'invitation officielle du SOAFGANG 2027 peut être fournie sur demande pour faciliter l'obtention du visa. Contactez-nous après votre inscription.</p>
+                      <p className="text-sm text-gray-500 leading-relaxed">Une lettre d'invitation officielle du SOAFGN 2027 peut être fournie sur demande pour faciliter l'obtention du visa. Contactez-nous après votre inscription.</p>
                     </div>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export default function InformationsPratiquesPage() {
                 <span className="text-lg shrink-0">🏷️</span>
                 <div>
                   <p className="text-sm font-semibold text-gray-800 mb-1">Tarif préférentiel Sofitel</p>
-                  <p className="text-sm text-gray-500 leading-relaxed">Un bloc de chambres a été réservé au Sofitel Cotonou Marina à tarif négocié pour les participants du SOAFGANG 2027. Mentionnez le code <strong className="text-gray-700">SOAFGANG2027</strong> lors de votre réservation. Disponibilité limitée — réservez dès que possible.</p>
+                  <p className="text-sm text-gray-500 leading-relaxed">Un bloc de chambres a été réservé au Sofitel Cotonou Marina à tarif négocié pour les participants du SOAFGN 2027. Mentionnez le code <strong className="text-gray-700">SOAFGN2027</strong> lors de votre réservation. Disponibilité limitée — réservez dès que possible.</p>
                 </div>
               </div>
             </div>

@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY ?? "re_placeholder");
 // L'email expéditeur — à changer quand le domaine est configuré dans Resend
 // En mode test, Resend autorise uniquement l'envoi depuis onboarding@resend.dev
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-const FROM_NAME  = "SOAFGANG 2027";
+const FROM_NAME  = "SOAFGN 2027";
 
 function emailHtml({
   prenom, nom, reference, passType, organisation, badgeUrl,
@@ -19,7 +19,7 @@ function emailHtml({
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmation d'inscription — SOAFGANG 2027</title>
+  <title>Confirmation d'inscription — SOAFGN 2027</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f0f4f2;font-family:Georgia,serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f2;padding:40px 16px;">
@@ -28,7 +28,7 @@ function emailHtml({
 
         <!-- Header -->
         <tr><td style="background:linear-gradient(160deg,#071810,#0f2d1f);border-radius:16px 16px 0 0;padding:40px 40px 32px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.22em;color:#c49a30;text-transform:uppercase;">SOAFGANG 2027</p>
+          <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.22em;color:#c49a30;text-transform:uppercase;">SOAFGN 2027</p>
           <p style="margin:0 0 24px;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.15em;">Cotonou, Bénin · 3–5 Février 2027</p>
           <div style="width:52px;height:52px;background:rgba(36,100,68,0.35);border:2px solid rgba(196,154,48,0.40);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
             <span style="font-size:22px;">✓</span>
@@ -106,7 +106,7 @@ function emailHtml({
 
         <!-- Footer -->
         <tr><td style="background:#f9fbfa;border-radius:0 0 16px 16px;border-top:1px solid rgba(36,100,68,0.08);padding:24px 40px;text-align:center;">
-          <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:rgba(15,45,31,0.35);letter-spacing:0.15em;text-transform:uppercase;">SOAFGANG 2027</p>
+          <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:rgba(15,45,31,0.35);letter-spacing:0.15em;text-transform:uppercase;">SOAFGN 2027</p>
           <p style="margin:0;font-size:10px;color:rgba(15,45,31,0.25);">Sofitel Cotonou Marina · 3–5 Février 2027 · Organisé par NTAB ENERGY SARL</p>
         </td></tr>
 
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
   const { error } = await resend.emails.send({
     from: `${FROM_NAME} <${FROM_EMAIL}>`,
     to: email,
-    subject: `Confirmation d'inscription — SOAFGANG 2027 · ${reference}`,
+    subject: `Confirmation d'inscription — SOAFGN 2027 · ${reference}`,
     html: emailHtml({ prenom, nom, reference, passType, organisation, badgeUrl }),
   });
 
