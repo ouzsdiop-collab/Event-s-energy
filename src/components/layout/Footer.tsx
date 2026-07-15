@@ -63,6 +63,7 @@ export default function Footer() {
 
   const legalLinks = [
     { href: "/contact", label: "Contact" },
+    { href: "/presse", label: lang === "en" ? "Press" : "Presse" },
     { href: "#", label: f.legal },
     { href: "#", label: f.privacy },
   ];
