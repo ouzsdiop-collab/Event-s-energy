@@ -49,6 +49,7 @@ export default function Footer() {
     { href: "/", label: lang === "en" ? "Home" : "Accueil" },
     { href: "/a-propos", label: lang === "en" ? "About" : "À propos" },
     { href: "/programme", label: f.links.programme },
+    { href: "/actualites", label: lang === "en" ? "News" : "Actualités" },
     { href: "/inscription", label: lang === "en" ? "Register" : "S'inscrire" },
   ];
 
