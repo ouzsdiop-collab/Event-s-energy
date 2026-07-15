@@ -3,21 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const speakers = [
-  { name: "Amadou Hott",        title: "Envoyé spécial Président BAD, Power Africa",     titleEn: "Special Envoy, AfDB President, Power Africa",          country: "Sénégal",  countryEn: "Senegal",  flag: "🇸🇳", bg: "1e5238" },
-  { name: "Amina Benkhadra",    title: "Directrice exécutive, African Energy Chamber",   titleEn: "Executive Director, African Energy Chamber",            country: "Maroc",    countryEn: "Morocco",  flag: "🇲🇦", bg: "163d2a" },
-  { name: "Wole Ogunsanya",     title: "CEO, NNPC Gas Marketing Ltd.",                   titleEn: "CEO, NNPC Gas Marketing Ltd.",                          country: "Nigeria",  countryEn: "Nigeria",  flag: "🇳🇬", bg: "246444" },
-  { name: "Romuald Wadagni",    title: "Ancien Ministre de l'Économie et des Finances",  titleEn: "Former Minister of Economy and Finance",                country: "Bénin",    countryEn: "Benin",    flag: "🇧🇯", bg: "1e5238" },
-  { name: "Mahaman Laouan Gaya",title: "Secrétaire Général, APPO",                       titleEn: "Secretary General, APPO",                               country: "Niger",    countryEn: "Niger",    flag: "🇳🇪", bg: "163d2a" },
-  { name: "Fatoumata Bah",      title: "VP Énergie, Afreximbank",                        titleEn: "VP Energy, Afreximbank",                                country: "Guinée",   countryEn: "Guinea",   flag: "🇬🇳", bg: "246444" },
-  { name: "Cheikh Tidiane Mbaye",title: "Dir. Stratégie, TotalEnergies Afrique",         titleEn: "Head of Strategy, TotalEnergies Africa",                country: "Sénégal",  countryEn: "Senegal",  flag: "🇸🇳", bg: "1e5238" },
-  { name: "Kassimu Issa",       title: "Commissaire Énergie, CEDEAO",                    titleEn: "Energy Commissioner, ECOWAS",                           country: "Ghana",    countryEn: "Ghana",    flag: "🇬🇭", bg: "163d2a" },
+  { name: "Amadou Hott",         title: "Envoyé spécial Président BAD, Power Africa",     titleEn: "Special Envoy, AfDB President, Power Africa",     country: "Sénégal", countryEn: "Senegal", flag: "🇸🇳", bg: "1e5238" },
+  { name: "Amina Benkhadra",     title: "Directrice exécutive, African Energy Chamber",   titleEn: "Executive Director, African Energy Chamber",       country: "Maroc",    countryEn: "Morocco", flag: "🇲🇦", bg: "163d2a" },
+  { name: "Wole Ogunsanya",      title: "CEO, NNPC Gas Marketing Ltd.",                   titleEn: "CEO, NNPC Gas Marketing Ltd.",                     country: "Nigeria",  countryEn: "Nigeria", flag: "🇳🇬", bg: "246444" },
+  { name: "Romuald Wadagni",     title: "Ancien Ministre de l'Économie et des Finances",  titleEn: "Former Minister of Economy and Finance",           country: "Bénin",    countryEn: "Benin",   flag: "🇧🇯", bg: "1e5238" },
+  { name: "Mahaman Laouan Gaya", title: "Secrétaire Général, APPO",                       titleEn: "Secretary General, APPO",                         country: "Niger",    countryEn: "Niger",   flag: "🇳🇪", bg: "163d2a" },
+  { name: "Fatoumata Bah",       title: "VP Énergie, Afreximbank",                        titleEn: "VP Energy, Afreximbank",                          country: "Guinée",   countryEn: "Guinea",  flag: "🇬🇳", bg: "246444" },
+  { name: "Cheikh Tidiane Mbaye",title: "Dir. Stratégie, TotalEnergies Afrique",          titleEn: "Head of Strategy, TotalEnergies Africa",          country: "Sénégal",  countryEn: "Senegal", flag: "🇸🇳", bg: "1e5238" },
+  { name: "Kassimu Issa",        title: "Commissaire Énergie, CEDEAO",                    titleEn: "Energy Commissioner, ECOWAS",                     country: "Ghana",    countryEn: "Ghana",   flag: "🇬🇭", bg: "163d2a" },
 ];
 
 function avatarUrl(name: string, bg: string) {
-  const encoded = encodeURIComponent(name);
-  return `https://ui-avatars.com/api/?name=${encoded}&background=${bg}&color=fff&size=200&bold=true&font-size=0.38`;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=fff&size=200&bold=true&font-size=0.38`;
 }
 
 export default function SpeakersSection() {
@@ -96,6 +96,7 @@ export default function SpeakersSection() {
             <div
               key={speaker.name}
               ref={(el) => { cardRefs.current[i] = el; }}
+              style={{ transitionDelay: visible[i] ? "0ms" : `${(i % 4) * 80}ms` }}
               className={`
                 group relative bg-white rounded-2xl p-5 border border-gray-100
                 shadow-sm hover:shadow-xl hover:shadow-forest-900/10
@@ -103,8 +104,17 @@ export default function SpeakersSection() {
                 transition-all duration-400 ease-out cursor-default
                 ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
               `}
-              style={{ transitionDelay: visible[i] ? "0ms" : `${(i % 4) * 80}ms` }}
             >
+              <GlowingEffect
+                spread={40}
+                glow={false}
+                disabled={false}
+                proximity={60}
+                inactiveZone={0.01}
+                borderWidth={2}
+                variant="forest"
+              />
+
               <div className="relative w-fit mx-auto mb-4">
                 <div
                   className="w-20 h-20 rounded-full p-[2.5px] transition-all duration-300 group-hover:p-[3px]"

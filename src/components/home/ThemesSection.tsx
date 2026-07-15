@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const ICONS = [
   (
@@ -99,13 +100,22 @@ export default function ThemesSection() {
               onMouseLeave={() => setHovered(null)}
               className={`
                 relative rounded-2xl overflow-hidden cursor-pointer
-                bg-gradient-to-br ${GRADIENTS[i]}
+                bg-gradient-to-br ${GRADIENTS[i]} border border-white/5
                 transition-all duration-500 ease-out
                 ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
                 ${hovered === i ? "-translate-y-2 shadow-2xl shadow-forest-900/30" : "shadow-lg shadow-forest-900/10"}
               `}
               style={{ minHeight: "280px" }}
             >
+              <GlowingEffect
+                spread={50}
+                glow={false}
+                disabled={false}
+                proximity={80}
+                inactiveZone={0.01}
+                borderWidth={2}
+                variant="forest"
+              />
               <div
                 className="absolute inset-0 opacity-[0.04]"
                 style={{
