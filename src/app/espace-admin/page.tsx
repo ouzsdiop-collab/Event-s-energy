@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   LayoutDashboard, Users, CreditCard, CalendarDays, Mail,
   Bell, ChevronRight, Search, Download, Eye,
   CheckCircle2, XCircle, Clock, TrendingUp,
   Globe, Mic, Send, Menu, X, ArrowUpRight,
+  Image, Newspaper, Handshake, UserPlus, Trash2, Pencil, Upload, Plus,
 } from "lucide-react";
+import { supabase, type Speaker, type GalleryImage, type Article, type Partner } from "@/lib/supabase";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Statut = "confirmé" | "en attente" | "annulé" | "VIP";
@@ -19,7 +21,6 @@ interface Participant {
   statut: Statut; montant: number; methode: PayMethod; date: string;
 }
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
 const PARTICIPANTS: Participant[] = [
   { id: "P001", nom: "Ouédraogo", prenom: "Kofi",      email: "k.ouedraogo@energygh.com",  organisation: "Ghana Energy Corp",    pays: "Ghana",         pass: "Exposant",      statut: "confirmé",   montant: 1_500_000, methode: "Virement bancaire", date: "2026-11-03" },
   { id: "P002", nom: "Diallo",    prenom: "Mariama",   email: "m.diallo@petroguin.com",     organisation: "PetroGuinée",          pays: "Guinée",        pass: "Conférencier",  statut: "confirmé",   montant: 0,         methode: "Virement bancaire", date: "2026-11-07" },
@@ -31,11 +32,6 @@ const PARTICIPANTS: Participant[] = [
   { id: "P008", nom: "Sow",       prenom: "Fatoumata", email: "f.sow@ong-energie.org",      organisation: "ONG Énergie Propre",   pays: "Sénégal",       pass: "Professionnel", statut: "en attente", montant: 1_000_000, methode: "Mobile Money",      date: "2026-11-25" },
   { id: "P009", nom: "Zongo",     prenom: "Emmanuel",  email: "e.zongo@gazoduc.bf",         organisation: "Gazoduc Burkina",      pays: "Burkina Faso",  pass: "Professionnel", statut: "confirmé",   montant: 1_000_000, methode: "Virement bancaire", date: "2026-11-28" },
   { id: "P010", nom: "Coulibaly", prenom: "Seydou",    email: "s.coulibaly@ntab.ml",        organisation: "NTAB Energy Mali",     pays: "Mali",          pass: "Conférencier",  statut: "VIP",        montant: 0,         methode: "Virement bancaire", date: "2026-12-01" },
-  { id: "P011", nom: "Agbodjan",  prenom: "Kossi",     email: "k.agbodjan@ceet.tg",         organisation: "CEET Togo",            pays: "Togo",          pass: "Institutionnel",statut: "confirmé",   montant: 750_000,   methode: "Virement bancaire", date: "2026-12-03" },
-  { id: "P012", nom: "Hounkpatin",prenom: "Séraphine", email: "s.hounkpatin@sogbee.bj",    organisation: "SOGBEE Bénin",         pays: "Bénin",         pass: "Professionnel", statut: "annulé",     montant: 1_000_000, methode: "Carte bancaire",    date: "2026-12-05" },
-  { id: "P013", nom: "Sylla",     prenom: "Boubacar",  email: "b.sylla@minmines.gn",        organisation: "Min. Mines Guinée",    pays: "Guinée",        pass: "Institutionnel",statut: "en attente", montant: 750_000,   methode: "Mobile Money",      date: "2026-12-08" },
-  { id: "P014", nom: "Dembélé",   prenom: "Oumar",     email: "o.dembele@gazmali.ml",       organisation: "GazMali S.A.",         pays: "Mali",          pass: "Exposant",      statut: "confirmé",   montant: 1_500_000, methode: "Virement bancaire", date: "2026-12-10" },
-  { id: "P015", nom: "Fofana",    prenom: "Aminata",   email: "a.fofana@worldbank.org",     organisation: "Banque Mondiale",      pays: "International", pass: "Conférencier",  statut: "VIP",        montant: 0,         methode: "Virement bancaire", date: "2026-12-12" },
 ];
 
 const SESSIONS = [
@@ -46,12 +42,10 @@ const SESSIONS = [
   { id: "S05", titre: "Transition énergétique & gaz naturel",jour: "J2", heure: "09:00", type: "Conférence",  statut: "Confirmé",   intervenant: "IRENA" },
   { id: "S06", titre: "Cadres réglementaires nationaux",     jour: "J2", heure: "11:00", type: "Panel",       statut: "En attente", intervenant: "Ministères ×5" },
   { id: "S07", titre: "Table ronde investisseurs privés",    jour: "J2", heure: "14:30", type: "Table ronde", statut: "Confirmé",   intervenant: "CEOs secteur privé" },
-  { id: "S08", titre: "Visite technique · Port de Cotonou",  jour: "J2", heure: "16:30", type: "Terrain",     statut: "En cours",   intervenant: "PAC Bénin" },
-  { id: "S09", titre: "Résolutions & clôture",               jour: "J3", heure: "10:00", type: "Plénière",    statut: "Confirmé",   intervenant: "Comité organisateur" },
+  { id: "S08", titre: "Résolutions & clôture",               jour: "J3", heure: "10:00", type: "Plénière",    statut: "Confirmé",   intervenant: "Comité organisateur" },
 ];
 
 const TIMELINE = [3, 5, 7, 4, 9, 12, 15, 11, 18, 22, 20, 25, 30, 28, 35, 40, 38, 45];
-
 const PAYS_DATA = [
   { pays: "Sénégal", count: 42 }, { pays: "Côte d'Ivoire", count: 38 },
   { pays: "Bénin", count: 35 },   { pays: "Burkina Faso", count: 28 },
@@ -60,7 +54,6 @@ const PAYS_DATA = [
   { pays: "International", count: 31 },
 ];
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 const STATUT_STYLE: Record<Statut, { bg: string; text: string; icon: React.ReactNode }> = {
   "confirmé":   { bg: "rgba(36,100,68,0.10)",  text: "#246444", icon: <CheckCircle2 className="w-3 h-3" /> },
   "VIP":        { bg: "rgba(196,154,48,0.15)", text: "#b8890a", icon: <CheckCircle2 className="w-3 h-3" /> },
@@ -69,36 +62,32 @@ const STATUT_STYLE: Record<Statut, { bg: string; text: string; icon: React.React
 };
 
 const PASS_COLORS: Record<PassType, string> = {
-  "Conférencier":   "#c49a30",
-  "Exposant":       "#246444",
-  "Professionnel":  "#1e5238",
-  "Institutionnel": "#0f2d1f",
+  "Conférencier": "#c49a30", "Exposant": "#246444", "Professionnel": "#1e5238", "Institutionnel": "#0f2d1f",
 };
 
 const NAV_SECTIONS = [
-  { id: "overview",       label: "Vue d'ensemble", icon: LayoutDashboard },
-  { id: "participants",   label: "Participants",    icon: Users },
-  { id: "paiements",      label: "Paiements",       icon: CreditCard },
-  { id: "programme",      label: "Programme",       icon: CalendarDays },
-  { id: "communications", label: "Communications",  icon: Mail },
+  { id: "overview",       label: "Vue d'ensemble",  icon: LayoutDashboard },
+  { id: "participants",   label: "Participants",     icon: Users },
+  { id: "paiements",      label: "Paiements",        icon: CreditCard },
+  { id: "programme",      label: "Programme",        icon: CalendarDays },
+  { id: "communications", label: "Communications",   icon: Mail },
+  { id: "intervenants",   label: "Intervenants",     icon: Mic },
+  { id: "galerie",        label: "Galerie",          icon: Image },
+  { id: "articles",       label: "Actualités",       icon: Newspaper },
+  { id: "partenaires_cm", label: "Partenaires",      icon: Handshake },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function fmtFCFA(n: number) {
-  return n.toLocaleString("fr-FR") + " FCFA";
-}
+function fmtFCFA(n: number) { return n.toLocaleString("fr-FR") + " FCFA"; }
 function fmtFCFAShort(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".0","") + " M FCFA";
-  if (n >= 1_000)     return (n / 1_000).toFixed(0) + " k FCFA";
+  if (n >= 1_000) return (n / 1_000).toFixed(0) + " k FCFA";
   return n + " FCFA";
 }
 
-// ─── Animated counter ─────────────────────────────────────────────────────────
 function useCounter(target: number, duration = 1200) {
   const [value, setValue] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
-
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => {
       if (e.isIntersecting && !started.current) {
@@ -106,8 +95,7 @@ function useCounter(target: number, duration = 1200) {
         const start = performance.now();
         const tick = (now: number) => {
           const p = Math.min((now - start) / duration, 1);
-          const ease = 1 - Math.pow(1 - p, 3);
-          setValue(Math.round(ease * target));
+          setValue(Math.round((1 - Math.pow(1 - p, 3)) * target));
           if (p < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
@@ -117,33 +105,23 @@ function useCounter(target: number, duration = 1200) {
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [target, duration]);
-
   return { value, ref };
 }
 
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
 function KPICard({ label, value, rawValue, sub, icon: Icon, accent, delay = 0, isMoney = false }: {
   label: string; value?: string; rawValue?: number; sub: string;
   icon: React.ElementType; accent: string; delay?: number; isMoney?: boolean;
 }) {
   const { value: counted, ref } = useCounter(rawValue ?? 0, 1100);
-  const display = rawValue !== undefined
-    ? (isMoney ? fmtFCFAShort(counted) : counted.toLocaleString("fr-FR"))
-    : value ?? "";
-
+  const display = rawValue !== undefined ? (isMoney ? fmtFCFAShort(counted) : counted.toLocaleString("fr-FR")) : value ?? "";
   return (
-    <div ref={ref}
-      className="admin-card bg-white rounded-2xl border border-gray-100 p-6 flex items-start gap-4"
-      style={{ animationDelay: `${delay}ms` }}>
-      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300"
-        style={{ backgroundColor: accent + "18" }}>
+    <div ref={ref} className="admin-card bg-white rounded-2xl border border-gray-100 p-6 flex items-start gap-4" style={{ animationDelay: `${delay}ms` }}>
+      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: accent + "18" }}>
         <Icon className="w-5 h-5" style={{ color: accent }} />
       </div>
       <div className="min-w-0">
         <p className="text-xs font-medium mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>{label}</p>
-        <p className="font-heading font-black text-2xl leading-none tabular-nums" style={{ color: "#0f2d1f" }}>
-          {display}
-        </p>
+        <p className="font-heading font-black text-2xl leading-none tabular-nums" style={{ color: "#0f2d1f" }}>{display}</p>
         <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "rgba(15,45,31,0.40)" }}>
           <ArrowUpRight className="w-3 h-3" style={{ color: accent }} />{sub}
         </p>
@@ -152,21 +130,16 @@ function KPICard({ label, value, rawValue, sub, icon: Icon, accent, delay = 0, i
   );
 }
 
-// ─── SVG Bar Chart with animated bars ────────────────────────────────────────
 function SVGBarChart({ data }: { data: number[] }) {
   const [revealed, setRevealed] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setRevealed(true); obs.disconnect(); }
-    }, { threshold: 0.2 });
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setRevealed(true); obs.disconnect(); } }, { threshold: 0.2 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
-
   const max = Math.max(...data);
   const w = 520, h = 120, barW = 18, gap = 9;
-
   return (
     <div ref={ref}>
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height: 120 }}>
@@ -174,17 +147,12 @@ function SVGBarChart({ data }: { data: number[] }) {
           const barH = (v / max) * (h - 20);
           const x = i * (barW + gap) + 10;
           const y = h - barH - 4;
-          const isLast = i === data.length - 1;
           return (
             <g key={i}>
-              <rect x={x} y={revealed ? y : h - 4} width={barW}
-                height={revealed ? barH : 0} rx={3}
-                fill={isLast ? "#c49a30" : "#246444"} opacity={0.85}
+              <rect x={x} y={revealed ? y : h - 4} width={barW} height={revealed ? barH : 0} rx={3}
+                fill={i === data.length - 1 ? "#c49a30" : "#246444"} opacity={0.85}
                 style={{ transition: `y 0.6s cubic-bezier(0.34,1.56,0.64,1) ${i * 30}ms, height 0.6s cubic-bezier(0.34,1.56,0.64,1) ${i * 30}ms` }} />
-              {i % 3 === 0 && (
-                <text x={x + barW / 2} y={h} textAnchor="middle"
-                  fontSize={7} fill="rgba(15,45,31,0.35)">{i + 1}</text>
-              )}
+              {i % 3 === 0 && <text x={x + barW / 2} y={h} textAnchor="middle" fontSize={7} fill="rgba(15,45,31,0.35)">{i + 1}</text>}
             </g>
           );
         })}
@@ -193,10 +161,9 @@ function SVGBarChart({ data }: { data: number[] }) {
   );
 }
 
-// ─── Donut chart ──────────────────────────────────────────────────────────────
 function DonutChart({ data }: { data: { label: string; value: number; color: string }[] }) {
   const total = data.reduce((a, b) => a + b.value, 0);
-  const r = 44, cx = 60, cy = 60, stroke = 18;
+  const r = 44, cx = 60, cy = 60;
   let cumulative = 0;
   const arcs = data.map((d) => {
     const pct = d.value / total;
@@ -210,11 +177,8 @@ function DonutChart({ data }: { data: { label: string; value: number; color: str
   return (
     <div className="flex items-center gap-6">
       <svg viewBox="0 0 120 120" style={{ width: 120, height: 120, flexShrink: 0 }}>
-        {arcs.map((a, i) => (
-          <path key={i} d={a.path} fill={a.color} opacity={0.88}
-            className="donut-arc" style={{ animationDelay: `${i * 80}ms` }} />
-        ))}
-        <circle cx={cx} cy={cy} r={r - stroke} fill="white" />
+        {arcs.map((a, i) => <path key={i} d={a.path} fill={a.color} opacity={0.88} className="donut-arc" style={{ animationDelay: `${i * 80}ms` }} />)}
+        <circle cx={cx} cy={cy} r={r - 18} fill="white" />
         <text x={cx} y={cy - 4} textAnchor="middle" fontSize={11} fontWeight="700" fill="#0f2d1f">{total}</text>
         <text x={cx} y={cy + 9} textAnchor="middle" fontSize={7} fill="rgba(15,45,31,0.45)">participants</text>
       </svg>
@@ -222,9 +186,7 @@ function DonutChart({ data }: { data: { label: string; value: number; color: str
         {arcs.map((a, i) => (
           <div key={i} className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: a.color }} />
-            <span className="text-xs" style={{ color: "rgba(15,45,31,0.65)" }}>
-              {a.label} <span className="font-semibold" style={{ color: "#0f2d1f" }}>{a.value}</span>
-            </span>
+            <span className="text-xs" style={{ color: "rgba(15,45,31,0.65)" }}>{a.label} <span className="font-semibold" style={{ color: "#0f2d1f" }}>{a.value}</span></span>
           </div>
         ))}
       </div>
@@ -232,74 +194,640 @@ function DonutChart({ data }: { data: { label: string; value: number; color: str
   );
 }
 
-// ─── Animated progress bar ────────────────────────────────────────────────────
 function AnimBar({ pct, color, delay = 0 }: { pct: number; color: string; delay?: number }) {
   const [w, setW] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        setTimeout(() => setW(pct), delay);
-        obs.disconnect();
-      }
-    }, { threshold: 0.3 });
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setTimeout(() => setW(pct), delay); obs.disconnect(); } }, { threshold: 0.3 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [pct, delay]);
   return (
-    <div ref={ref} className="h-2 rounded-full" style={{ backgroundColor: "rgba(36,100,68,0.08)" }}>
+    <div ref={ref} className="h-2 rounded-full flex-1" style={{ backgroundColor: "rgba(36,100,68,0.08)" }}>
       <div className="h-2 rounded-full" style={{ width: `${w}%`, backgroundColor: color, transition: "width 0.8s cubic-bezier(0.34,1.2,0.64,1)" }} />
     </div>
   );
 }
 
-// ─── Sections ─────────────────────────────────────────────────────────────────
+// ─── Photo Crop Widget ────────────────────────────────────────────────────────
+function FocalPointPicker({ url, focalX, focalY, onChange }: { url: string; focalX: number; focalY: number; onChange: (x: number, y: number) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    onChange(Math.round(x * 100) / 100, Math.round(y * 100) / 100);
+  }, [onChange]);
+
+  return (
+    <div className="space-y-2">
+      <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(15,45,31,0.45)" }}>
+        Point focal · Cliquez sur la zone à centrer
+      </p>
+      <div ref={containerRef} className="relative cursor-crosshair rounded-xl overflow-hidden border border-gray-200" style={{ height: 200 }} onClick={handleClick}>
+        <img src={url} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: `${focalX * 100}% ${focalY * 100}%` }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1))" }} />
+        <div className="absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{ left: `${focalX * 100}%`, top: `${focalY * 100}%` }}>
+          <div className="w-full h-full rounded-full border-2 border-white shadow-lg" style={{ backgroundColor: "rgba(196,154,48,0.6)" }} />
+        </div>
+      </div>
+      <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.35)" }}>
+        Position : X {Math.round(focalX * 100)}% · Y {Math.round(focalY * 100)}%
+      </p>
+    </div>
+  );
+}
+
+// ─── Upload helper ────────────────────────────────────────────────────────────
+async function uploadFile(file: File, path: string): Promise<string | null> {
+  const { data, error } = await supabase.storage.from("soafgang-media").upload(path, file, { upsert: true });
+  if (error || !data) return null;
+  const { data: urlData } = supabase.storage.from("soafgang-media").getPublicUrl(data.path);
+  return urlData.publicUrl;
+}
+
+// ─── Section Intervenants (CMS) ───────────────────────────────────────────────
+function SectionIntervenants() {
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editTarget, setEditTarget] = useState<Speaker | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ name: "", title_fr: "", title_en: "", country_fr: "", country_en: "", flag: "🌍", confirmed: true, order_index: 0 });
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [focalX, setFocalX] = useState(0.5);
+  const [focalY, setFocalY] = useState(0.5);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("speakers").select("*").order("order_index");
+    if (data) setSpeakers(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openNew = () => {
+    setEditTarget(null);
+    setForm({ name: "", title_fr: "", title_en: "", country_fr: "", country_en: "", flag: "🌍", confirmed: true, order_index: speakers.length + 1 });
+    setPhotoFile(null); setPhotoPreview(null); setFocalX(0.5); setFocalY(0.5);
+    setShowForm(true);
+  };
+
+  const openEdit = (s: Speaker) => {
+    setEditTarget(s);
+    setForm({ name: s.name, title_fr: s.title_fr, title_en: s.title_en || "", country_fr: s.country_fr, country_en: s.country_en || "", flag: s.flag, confirmed: s.confirmed, order_index: s.order_index });
+    setPhotoFile(null); setPhotoPreview(s.photo_url); setFocalX(s.photo_focal_x ?? 0.5); setFocalY(s.photo_focal_y ?? 0.5);
+    setShowForm(true);
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setFocalX(0.5); setFocalY(0.5);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    let photo_url = editTarget?.photo_url || null;
+    if (photoFile) {
+      const path = `speakers/${Date.now()}-${photoFile.name}`;
+      photo_url = await uploadFile(photoFile, path);
+    }
+    const payload = { ...form, photo_url, photo_focal_x: focalX, photo_focal_y: focalY };
+    if (editTarget) {
+      await supabase.from("speakers").update(payload).eq("id", editTarget.id);
+    } else {
+      await supabase.from("speakers").insert(payload);
+    }
+    setSaving(false);
+    setShowForm(false);
+    load();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer cet intervenant ?")) return;
+    await supabase.from("speakers").delete().eq("id", id);
+    load();
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between admin-card" style={{ animationDelay: "0ms" }}>
+        <div>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Intervenants</h2>
+          <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{speakers.length} intervenant(s) · données en direct depuis Supabase</p>
+        </div>
+        <button onClick={openNew} className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg btn-primary">
+          <UserPlus className="w-3.5 h-3.5" /> Ajouter
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5 admin-card" style={{ animationDelay: "0ms" }}>
+          <h3 className="font-heading font-bold text-base" style={{ color: "#0f2d1f" }}>{editTarget ? "Modifier" : "Nouvel intervenant"}</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            {([["name","Nom complet *"],["title_fr","Titre (FR) *"],["title_en","Titre (EN)"],["country_fr","Pays (FR) *"],["country_en","Pays (EN)"],["flag","Drapeau emoji"]] as [keyof typeof form, string][]).map(([key, label]) => (
+              <div key={key}>
+                <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>{label}</label>
+                <input value={String(form[key])} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20 transition-shadow"
+                  style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+            ))}
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Ordre d'affichage</label>
+              <input type="number" value={form.order_index} onChange={e => setForm(f => ({ ...f, order_index: Number(e.target.value) }))}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            </div>
+            <div className="flex items-center gap-3 pt-5">
+              <input type="checkbox" id="confirmed" checked={form.confirmed} onChange={e => setForm(f => ({ ...f, confirmed: e.target.checked }))} className="rounded" />
+              <label htmlFor="confirmed" className="text-xs font-medium" style={{ color: "#0f2d1f" }}>Intervenant confirmé</label>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider block mb-2" style={{ color: "rgba(15,45,31,0.45)" }}>Photo</label>
+            <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold px-4 py-2 rounded-lg border transition-colors hover:bg-[#f4f7f5]"
+              style={{ borderColor: "rgba(36,100,68,0.25)", color: "#246444" }}>
+              <Upload className="w-3.5 h-3.5" /> Choisir une photo
+              <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+            </label>
+          </div>
+
+          {photoPreview && (
+            <FocalPointPicker url={photoPreview} focalX={focalX} focalY={focalY}
+              onChange={(x, y) => { setFocalX(x); setFocalY(y); }} />
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 text-xs font-semibold px-5 py-2.5 rounded-lg btn-primary disabled:opacity-60">
+              {saving ? "Enregistrement…" : "Enregistrer"}
+            </button>
+            <button onClick={() => setShowForm(false)} className="text-xs font-medium px-4 py-2.5 rounded-lg border transition-colors hover:bg-gray-50"
+              style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>Annuler</button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {loading ? <p className="text-xs text-gray-400 col-span-2 py-8 text-center">Chargement…</p> :
+          speakers.map((s, i) => (
+            <div key={s.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow admin-card" style={{ animationDelay: `${i * 40}ms` }}>
+              <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "rgba(196,154,48,0.30)" }}>
+                {s.photo_url
+                  ? <img src={s.photo_url} alt={s.name} className="w-full h-full object-cover" style={{ objectPosition: `${(s.photo_focal_x ?? 0.5) * 100}% ${(s.photo_focal_y ?? 0.5) * 100}%` }} />
+                  : <div className="w-full h-full flex items-center justify-center text-xs font-black" style={{ backgroundColor: "#1e5238", color: "#c49a30" }}>{s.name.split(" ").map(w => w[0]).join("").slice(0, 2)}</div>
+                }
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate" style={{ color: "#0f2d1f" }}>{s.name}</p>
+                <p className="text-xs truncate" style={{ color: "rgba(15,45,31,0.55)" }}>{s.title_fr}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs">{s.flag} {s.country_fr}</span>
+                  {s.confirmed && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>✓ Confirmé</span>}
+                </div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => openEdit(s)} className="p-2 rounded-lg hover:bg-gray-50 transition-colors"><Pencil className="w-4 h-4" style={{ color: "#246444" }} /></button>
+                <button onClick={() => handleDelete(s.id)} className="p-2 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4 text-red-400" /></button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  );
+}
+
+// ─── Section Galerie (CMS) ───────────────────────────────────────────────────
+function SectionGalerie() {
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [editTarget, setEditTarget] = useState<GalleryImage | null>(null);
+  const [focalX, setFocalX] = useState(0.5);
+  const [focalY, setFocalY] = useState(0.5);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("gallery_images").select("*").order("order_index");
+    if (data) setImages(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    for (const file of files) {
+      const path = `gallery/${Date.now()}-${file.name}`;
+      const url = await uploadFile(file, path);
+      if (url) await supabase.from("gallery_images").insert({ url, focal_x: 0.5, focal_y: 0.5, published: true, order_index: images.length + 1 });
+    }
+    setUploading(false);
+    load();
+  };
+
+  const handleSaveFocal = async () => {
+    if (!editTarget) return;
+    await supabase.from("gallery_images").update({ focal_x: focalX, focal_y: focalY }).eq("id", editTarget.id);
+    setEditTarget(null);
+    load();
+  };
+
+  const handleTogglePublish = async (img: GalleryImage) => {
+    await supabase.from("gallery_images").update({ published: !img.published }).eq("id", img.id);
+    load();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer cette image ?")) return;
+    await supabase.from("gallery_images").delete().eq("id", id);
+    load();
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between admin-card" style={{ animationDelay: "0ms" }}>
+        <div>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Galerie</h2>
+          <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{images.length} image(s) · Cliquez sur une image pour ajuster le point focal</p>
+        </div>
+        <label className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg btn-primary cursor-pointer">
+          <Upload className="w-3.5 h-3.5" /> {uploading ? "Upload…" : "Ajouter des photos"}
+          <input type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" disabled={uploading} />
+        </label>
+      </div>
+
+      {editTarget && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 admin-card" style={{ animationDelay: "0ms" }}>
+          <h3 className="font-heading font-bold text-base" style={{ color: "#0f2d1f" }}>Ajuster le point focal</h3>
+          <FocalPointPicker url={editTarget.url} focalX={focalX} focalY={focalY} onChange={(x, y) => { setFocalX(x); setFocalY(y); }} />
+          <div className="flex gap-3">
+            <button onClick={handleSaveFocal} className="text-xs font-semibold px-5 py-2.5 rounded-lg btn-primary">Enregistrer</button>
+            <button onClick={() => setEditTarget(null)} className="text-xs font-medium px-4 py-2.5 rounded-lg border hover:bg-gray-50 transition-colors" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>Annuler</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? <p className="text-xs text-gray-400 py-8 text-center">Chargement…</p> : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {images.map((img, i) => (
+            <div key={img.id} className="group relative rounded-xl overflow-hidden border border-gray-100 admin-card" style={{ animationDelay: `${i * 30}ms`, aspectRatio: "4/3" }}>
+              <img src={img.url} alt="" className="w-full h-full object-cover" style={{ objectPosition: `${(img.focal_x ?? 0.5) * 100}% ${(img.focal_y ?? 0.5) * 100}%` }} />
+              {!img.published && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-[10px] font-bold text-white bg-black/60 px-2 py-1 rounded">Masqué</span></div>}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-end justify-between p-2 opacity-0 group-hover:opacity-100">
+                <button onClick={() => { setEditTarget(img); setFocalX(img.focal_x ?? 0.5); setFocalY(img.focal_y ?? 0.5); }}
+                  className="text-[10px] font-bold bg-white text-gray-800 px-2 py-1 rounded-lg">Point focal</button>
+                <div className="flex gap-1">
+                  <button onClick={() => handleTogglePublish(img)} className="p-1.5 rounded-lg bg-white/90 hover:bg-white transition-colors">
+                    <Eye className="w-3.5 h-3.5" style={{ color: img.published ? "#246444" : "#9ca3af" }} />
+                  </button>
+                  <button onClick={() => handleDelete(img.id)} className="p-1.5 rounded-lg bg-white/90 hover:bg-red-50 transition-colors">
+                    <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Section Articles (CMS) ──────────────────────────────────────────────────
+function SectionArticles() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editTarget, setEditTarget] = useState<Article | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ title_fr: "", excerpt_fr: "", category: "annonce" as Article["category"], published: false, featured: false, read_time: 3 });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("articles").select("*").order("published_at", { ascending: false });
+    if (data) setArticles(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openNew = () => {
+    setEditTarget(null);
+    setForm({ title_fr: "", excerpt_fr: "", category: "annonce", published: false, featured: false, read_time: 3 });
+    setShowForm(true);
+  };
+
+  const openEdit = (a: Article) => {
+    setEditTarget(a);
+    setForm({ title_fr: a.title_fr, excerpt_fr: a.excerpt_fr, category: a.category, published: a.published, featured: a.featured, read_time: a.read_time });
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    if (editTarget) {
+      await supabase.from("articles").update(form).eq("id", editTarget.id);
+    } else {
+      await supabase.from("articles").insert({ ...form, published_at: new Date().toISOString() });
+    }
+    setSaving(false);
+    setShowForm(false);
+    load();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer cet article ?")) return;
+    await supabase.from("articles").delete().eq("id", id);
+    load();
+  };
+
+  const categoryLabels: Record<string, string> = { annonce: "Communiqué", partenariat: "Partenariats", programme: "Programme", presse: "Presse", logistique: "Organisation" };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between admin-card" style={{ animationDelay: "0ms" }}>
+        <div>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Actualités</h2>
+          <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{articles.length} article(s)</p>
+        </div>
+        <button onClick={openNew} className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg btn-primary">
+          <Plus className="w-3.5 h-3.5" /> Nouvel article
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 admin-card" style={{ animationDelay: "0ms" }}>
+          <h3 className="font-heading font-bold text-base" style={{ color: "#0f2d1f" }}>{editTarget ? "Modifier" : "Nouvel article"}</h3>
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Titre *</label>
+            <input value={form.title_fr} onChange={e => setForm(f => ({ ...f, title_fr: e.target.value }))}
+              className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+              style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Extrait *</label>
+            <textarea value={form.excerpt_fr} onChange={e => setForm(f => ({ ...f, excerpt_fr: e.target.value }))} rows={3}
+              className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none resize-none focus:ring-2 focus:ring-[#246444]/20"
+              style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Catégorie</label>
+              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value as Article["category"] }))}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                {Object.entries(categoryLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Temps de lecture (min)</label>
+              <input type="number" value={form.read_time} onChange={e => setForm(f => ({ ...f, read_time: Number(e.target.value) }))}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            </div>
+          </div>
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={form.published} onChange={e => setForm(f => ({ ...f, published: e.target.checked }))} />
+              <span className="text-xs font-medium" style={{ color: "#0f2d1f" }}>Publié</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} />
+              <span className="text-xs font-medium" style={{ color: "#0f2d1f" }}>À la une</span>
+            </label>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={handleSave} disabled={saving} className="text-xs font-semibold px-5 py-2.5 rounded-lg btn-primary disabled:opacity-60">
+              {saving ? "Enregistrement…" : "Enregistrer"}
+            </button>
+            <button onClick={() => setShowForm(false)} className="text-xs font-medium px-4 py-2.5 rounded-lg border hover:bg-gray-50 transition-colors" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>Annuler</button>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {loading ? <p className="text-xs text-gray-400 py-8 text-center">Chargement…</p> :
+          articles.map((a, i) => (
+            <div key={a.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-start gap-4 hover:shadow-sm transition-shadow admin-card" style={{ animationDelay: `${i * 40}ms` }}>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>{categoryLabels[a.category]}</span>
+                  {a.featured && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(196,154,48,0.12)", color: "#9a7320" }}>À la une</span>}
+                  {!a.published && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Brouillon</span>}
+                </div>
+                <p className="text-sm font-semibold line-clamp-1" style={{ color: "#0f2d1f" }}>{a.title_fr}</p>
+                <p className="text-xs mt-1 line-clamp-1" style={{ color: "rgba(15,45,31,0.45)" }}>{a.excerpt_fr}</p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => openEdit(a)} className="p-2 rounded-lg hover:bg-gray-50 transition-colors"><Pencil className="w-4 h-4" style={{ color: "#246444" }} /></button>
+                <button onClick={() => handleDelete(a.id)} className="p-2 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4 text-red-400" /></button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  );
+}
+
+// ─── Section Partenaires (CMS) ───────────────────────────────────────────────
+function SectionPartenaires() {
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editTarget, setEditTarget] = useState<Partner | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: "", tier: "or" as Partner["tier"], website_url: "", order_index: 0, published: true });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("partners").select("*").order("order_index");
+    if (data) setPartners(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openNew = () => {
+    setEditTarget(null);
+    setForm({ name: "", tier: "or", website_url: "", order_index: partners.length + 1, published: true });
+    setLogoFile(null); setLogoPreview(null); setShowForm(true);
+  };
+
+  const openEdit = (p: Partner) => {
+    setEditTarget(p);
+    setForm({ name: p.name, tier: p.tier, website_url: p.website_url || "", order_index: p.order_index, published: p.published });
+    setLogoFile(null); setLogoPreview(p.logo_url); setShowForm(true);
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    let logo_url = editTarget?.logo_url || null;
+    if (logoFile) {
+      const path = `partners/${Date.now()}-${logoFile.name}`;
+      logo_url = await uploadFile(logoFile, path);
+    }
+    const payload = { ...form, logo_url };
+    if (editTarget) {
+      await supabase.from("partners").update(payload).eq("id", editTarget.id);
+    } else {
+      await supabase.from("partners").insert(payload);
+    }
+    setSaving(false);
+    setShowForm(false);
+    load();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Supprimer ce partenaire ?")) return;
+    await supabase.from("partners").delete().eq("id", id);
+    load();
+  };
+
+  const tierColors: Record<string, string> = { platine: "#c49a30", or: "#b8892a", argent: "#6b7280", institutionnel: "#246444" };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between admin-card" style={{ animationDelay: "0ms" }}>
+        <div>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Partenaires</h2>
+          <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{partners.length} partenaire(s)</p>
+        </div>
+        <button onClick={openNew} className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg btn-primary">
+          <Plus className="w-3.5 h-3.5" /> Ajouter
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 admin-card" style={{ animationDelay: "0ms" }}>
+          <h3 className="font-heading font-bold text-base" style={{ color: "#0f2d1f" }}>{editTarget ? "Modifier" : "Nouveau partenaire"}</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            {([["name","Nom *"],["website_url","Site web"]] as [keyof typeof form, string][]).map(([key, label]) => (
+              <div key={key}>
+                <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>{label}</label>
+                <input value={String(form[key])} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                  style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+            ))}
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Tier</label>
+              <select value={form.tier} onChange={e => setForm(f => ({ ...f, tier: e.target.value as Partner["tier"] }))}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                {["platine","or","argent","institutionnel"].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Ordre</label>
+              <input type="number" value={form.order_index} onChange={e => setForm(f => ({ ...f, order_index: Number(e.target.value) }))}
+                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            </div>
+          </div>
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider block mb-2" style={{ color: "rgba(15,45,31,0.45)" }}>Logo</label>
+            <div className="flex items-center gap-4">
+              <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold px-4 py-2 rounded-lg border transition-colors hover:bg-[#f4f7f5]"
+                style={{ borderColor: "rgba(36,100,68,0.25)", color: "#246444" }}>
+                <Upload className="w-3.5 h-3.5" /> Choisir un logo
+                <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" />
+              </label>
+              {logoPreview && <img src={logoPreview} alt="logo" className="h-10 w-auto object-contain rounded border border-gray-100" />}
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={handleSave} disabled={saving} className="text-xs font-semibold px-5 py-2.5 rounded-lg btn-primary disabled:opacity-60">
+              {saving ? "Enregistrement…" : "Enregistrer"}
+            </button>
+            <button onClick={() => setShowForm(false)} className="text-xs font-medium px-4 py-2.5 rounded-lg border hover:bg-gray-50 transition-colors" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>Annuler</button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid md:grid-cols-2 gap-3">
+        {loading ? <p className="text-xs text-gray-400 py-8 text-center col-span-2">Chargement…</p> :
+          partners.map((p, i) => (
+            <div key={p.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4 admin-card" style={{ animationDelay: `${i * 40}ms` }}>
+              <div className="w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100 shrink-0">
+                {p.logo_url
+                  ? <img src={p.logo_url} alt={p.name} className="w-full h-full object-contain p-1" />
+                  : <span className="text-xs font-black" style={{ color: tierColors[p.tier] }}>{p.name.slice(0, 2)}</span>
+                }
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold" style={{ color: "#0f2d1f" }}>{p.name}</p>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: tierColors[p.tier] + "15", color: tierColors[p.tier] }}>
+                  {p.tier.charAt(0).toUpperCase() + p.tier.slice(1)}
+                </span>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => openEdit(p)} className="p-2 rounded-lg hover:bg-gray-50 transition-colors"><Pencil className="w-4 h-4" style={{ color: "#246444" }} /></button>
+                <button onClick={() => handleDelete(p.id)} className="p-2 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4 text-red-400" /></button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  );
+}
+
+// ─── Sections existantes ──────────────────────────────────────────────────────
 function SectionOverview() {
   const confirmed = PARTICIPANTS.filter(p => p.statut === "confirmé" || p.statut === "VIP").length;
-  const revenue   = PARTICIPANTS.filter(p => p.statut !== "annulé").reduce((a, p) => a + p.montant, 0);
-  const passBreakdown = (["Conférencier","Exposant","Professionnel","Institutionnel"] as PassType[]).map(p => ({
-    label: p, value: PARTICIPANTS.filter(x => x.pass === p).length, color: PASS_COLORS[p],
-  }));
-
+  const revenue = PARTICIPANTS.filter(p => p.statut !== "annulé").reduce((a, p) => a + p.montant, 0);
+  const passBreakdown = (["Conférencier","Exposant","Professionnel","Institutionnel"] as PassType[]).map(p => ({ label: p, value: PARTICIPANTS.filter(x => x.pass === p).length, color: PASS_COLORS[p] }));
   return (
     <div className="space-y-8">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
         <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Vue d'ensemble</h2>
         <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Tableau de bord · données simulées</p>
       </div>
-
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard label="Inscrits totaux"    rawValue={PARTICIPANTS.length} sub={`${confirmed} confirmés`}     icon={Users}       accent="#246444" delay={0} />
-        <KPICard label="Revenus générés"    rawValue={revenue}             sub="hors conférenciers"            icon={TrendingUp}  accent="#c49a30" delay={80}  isMoney />
-        <KPICard label="Sessions planifiées" rawValue={SESSIONS.length}    sub="sur 3 jours"                  icon={CalendarDays} accent="#1e5238" delay={160} />
-        <KPICard label="Pays représentés"   rawValue={PAYS_DATA.length}    sub="dont 1 international"         icon={Globe}       accent="#0f2d1f" delay={240} />
+        <KPICard label="Inscrits totaux"     rawValue={PARTICIPANTS.length} sub={`${confirmed} confirmés`}  icon={Users}        accent="#246444" delay={0} />
+        <KPICard label="Revenus générés"     rawValue={revenue}             sub="hors conférenciers"         icon={TrendingUp}   accent="#c49a30" delay={80} isMoney />
+        <KPICard label="Sessions planifiées" rawValue={SESSIONS.length}     sub="sur 3 jours"                icon={CalendarDays} accent="#1e5238" delay={160} />
+        <KPICard label="Pays représentés"    rawValue={PAYS_DATA.length}    sub="dont 1 international"       icon={Globe}        accent="#0f2d1f" delay={240} />
       </div>
-
       <div className="grid md:grid-cols-2 gap-6">
         <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "100ms" }}>
           <p className="text-xs font-bold uppercase tracking-[0.15em] mb-4" style={{ color: "#c49a30" }}>Inscriptions / jour (J1–J18)</p>
           <SVGBarChart data={TIMELINE} />
-          <p className="text-[10px] mt-2" style={{ color: "rgba(15,45,31,0.35)" }}>Barre dorée = dernier jour enregistré</p>
         </div>
         <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "180ms" }}>
           <p className="text-xs font-bold uppercase tracking-[0.15em] mb-4" style={{ color: "#c49a30" }}>Répartition par pass</p>
           <DonutChart data={passBreakdown} />
         </div>
       </div>
-
       <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "240ms" }}>
         <p className="text-xs font-bold uppercase tracking-[0.15em] mb-5" style={{ color: "#c49a30" }}>Participants par pays</p>
         <div className="space-y-3">
-          {[...PAYS_DATA].sort((a,b) => b.count - a.count).map((p, i) => {
-            const pct = (p.count / Math.max(...PAYS_DATA.map(x => x.count))) * 100;
-            return (
-              <div key={p.pays} className="flex items-center gap-3">
-                <span className="text-xs w-28 shrink-0" style={{ color: "rgba(15,45,31,0.65)" }}>{p.pays}</span>
-                <AnimBar pct={pct} color="#246444" delay={i * 60} />
-                <span className="text-xs font-semibold w-6 text-right" style={{ color: "#0f2d1f" }}>{p.count}</span>
-              </div>
-            );
-          })}
+          {[...PAYS_DATA].sort((a,b) => b.count - a.count).map((p, i) => (
+            <div key={p.pays} className="flex items-center gap-3">
+              <span className="text-xs w-28 shrink-0" style={{ color: "rgba(15,45,31,0.65)" }}>{p.pays}</span>
+              <AnimBar pct={(p.count / Math.max(...PAYS_DATA.map(x => x.count))) * 100} color="#246444" delay={i * 60} />
+              <span className="text-xs font-semibold w-6 text-right" style={{ color: "#0f2d1f" }}>{p.count}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -307,19 +835,15 @@ function SectionOverview() {
 }
 
 function SectionParticipants() {
-  const [search, setSearch]           = useState("");
+  const [search, setSearch] = useState("");
   const [filterStatut, setFilterStatut] = useState<Statut | "">("");
-  const [filterPays, setFilterPays]   = useState("");
-
+  const [filterPays, setFilterPays] = useState("");
   const filtered = useMemo(() => PARTICIPANTS.filter(p => {
     const q = search.toLowerCase();
-    const matchQ = !q || p.nom.toLowerCase().includes(q) || p.prenom.toLowerCase().includes(q)
-      || p.email.toLowerCase().includes(q) || p.organisation.toLowerCase().includes(q);
-    return matchQ && (!filterStatut || p.statut === filterStatut) && (!filterPays || p.pays === filterPays);
+    return (!q || p.nom.toLowerCase().includes(q) || p.prenom.toLowerCase().includes(q) || p.email.toLowerCase().includes(q))
+      && (!filterStatut || p.statut === filterStatut) && (!filterPays || p.pays === filterPays);
   }), [search, filterStatut, filterPays]);
-
   const pays = Array.from(new Set(PARTICIPANTS.map(p => p.pays))).sort();
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap admin-card" style={{ animationDelay: "0ms" }}>
@@ -331,7 +855,6 @@ function SectionParticipants() {
           <Download className="w-3.5 h-3.5" /> Exporter CSV
         </button>
       </div>
-
       <div className="flex gap-3 flex-wrap admin-card" style={{ animationDelay: "60ms" }}>
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(15,45,31,0.35)" }} />
@@ -340,19 +863,16 @@ function SectionParticipants() {
             style={{ borderColor: "rgba(36,100,68,0.20)", backgroundColor: "white" }} />
         </div>
         <select value={filterStatut} onChange={e => setFilterStatut(e.target.value as Statut | "")}
-          className="text-xs px-3 py-2.5 rounded-lg border outline-none"
-          style={{ borderColor: "rgba(36,100,68,0.20)", backgroundColor: "white", color: "#0f2d1f" }}>
+          className="text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)", backgroundColor: "white", color: "#0f2d1f" }}>
           <option value="">Tous les statuts</option>
           {(["confirmé","en attente","annulé","VIP"] as Statut[]).map(s => <option key={s} value={s}>{s}</option>)}
         </select>
         <select value={filterPays} onChange={e => setFilterPays(e.target.value)}
-          className="text-xs px-3 py-2.5 rounded-lg border outline-none"
-          style={{ borderColor: "rgba(36,100,68,0.20)", backgroundColor: "white", color: "#0f2d1f" }}>
+          className="text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)", backgroundColor: "white", color: "#0f2d1f" }}>
           <option value="">Tous les pays</option>
           {pays.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
       </div>
-
       <div className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ animationDelay: "120ms" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
@@ -370,23 +890,12 @@ function SectionParticipants() {
                   <tr key={p.id} className="table-row-anim hover:bg-[#f9fbfa] transition-colors"
                     style={{ borderTop: i > 0 ? "1px solid rgba(36,100,68,0.07)" : undefined, animationDelay: `${i * 40}ms` }}>
                     <td className="px-4 py-3 font-mono" style={{ color: "rgba(15,45,31,0.35)" }}>{p.id}</td>
-                    <td className="px-4 py-3">
-                      <div className="font-semibold" style={{ color: "#0f2d1f" }}>{p.prenom} {p.nom}</div>
-                      <div style={{ color: "rgba(15,45,31,0.45)" }}>{p.email}</div>
-                    </td>
+                    <td className="px-4 py-3"><div className="font-semibold" style={{ color: "#0f2d1f" }}>{p.prenom} {p.nom}</div><div style={{ color: "rgba(15,45,31,0.45)" }}>{p.email}</div></td>
                     <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{p.organisation}</td>
                     <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{p.pays}</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded-md font-semibold text-[10px]"
-                        style={{ backgroundColor: PASS_COLORS[p.pass] + "15", color: PASS_COLORS[p.pass] }}>{p.pass}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium text-[10px]"
-                        style={{ backgroundColor: s.bg, color: s.text }}>{s.icon}{p.statut}</span>
-                    </td>
-                    <td className="px-4 py-3 font-semibold tabular-nums" style={{ color: p.montant ? "#0f2d1f" : "rgba(15,45,31,0.30)" }}>
-                      {p.montant ? fmtFCFA(p.montant) : "-"}
-                    </td>
+                    <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-md font-semibold text-[10px]" style={{ backgroundColor: PASS_COLORS[p.pass] + "15", color: PASS_COLORS[p.pass] }}>{p.pass}</span></td>
+                    <td className="px-4 py-3"><span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium text-[10px]" style={{ backgroundColor: s.bg, color: s.text }}>{s.icon}{p.statut}</span></td>
+                    <td className="px-4 py-3 font-semibold tabular-nums" style={{ color: p.montant ? "#0f2d1f" : "rgba(15,45,31,0.30)" }}>{p.montant ? fmtFCFA(p.montant) : "-"}</td>
                     <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.45)" }}>{p.date}</td>
                   </tr>
                 );
@@ -400,34 +909,30 @@ function SectionParticipants() {
 }
 
 function SectionPaiements() {
-  const passes: PassType[]    = ["Conférencier","Exposant","Professionnel","Institutionnel"];
+  const passes: PassType[] = ["Conférencier","Exposant","Professionnel","Institutionnel"];
   const tarifs: Record<PassType, number> = { "Conférencier": 0, "Exposant": 1_500_000, "Professionnel": 1_000_000, "Institutionnel": 750_000 };
-  const methods: PayMethod[]  = ["Virement bancaire","Mobile Money","Carte bancaire"];
-
+  const methods: PayMethod[] = ["Virement bancaire","Mobile Money","Carte bancaire"];
   const totalRevenue = PARTICIPANTS.filter(p => p.statut !== "annulé").reduce((a, p) => a + p.montant, 0);
-  const pending      = PARTICIPANTS.filter(p => p.statut === "en attente").reduce((a, p) => a + p.montant, 0);
-
+  const pending = PARTICIPANTS.filter(p => p.statut === "en attente").reduce((a, p) => a + p.montant, 0);
   return (
     <div className="space-y-6">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
         <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Paiements & Revenus</h2>
-        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Analyse financière en FCFA · données simulées</p>
+        <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Analyse financière · données simulées</p>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <KPICard label="Revenus confirmés" rawValue={totalRevenue} sub="paiements reçus"      icon={TrendingUp}  accent="#246444" delay={0}   isMoney />
-        <KPICard label="En attente"        rawValue={pending}      sub="à encaisser"           icon={Clock}       accent="#c49a30" delay={80}  isMoney />
-        <KPICard label="Taux de conversion" value="80%"            sub="inscrits confirmés"    icon={CheckCircle2} accent="#1e5238" delay={160} />
+        <KPICard label="Revenus confirmés" rawValue={totalRevenue} sub="paiements reçus"   icon={TrendingUp}  accent="#246444" delay={0}   isMoney />
+        <KPICard label="En attente"        rawValue={pending}      sub="à encaisser"        icon={Clock}       accent="#c49a30" delay={80}  isMoney />
+        <KPICard label="Taux de conversion" value="80%"            sub="inscrits confirmés" icon={CheckCircle2} accent="#1e5238" delay={160} />
       </div>
-
       <div className="grid md:grid-cols-2 gap-6">
         <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "80ms" }}>
           <p className="text-xs font-bold uppercase tracking-[0.15em] mb-5" style={{ color: "#c49a30" }}>Revenus par type de pass</p>
           <div className="space-y-5">
             {passes.filter(p => tarifs[p] > 0).map((pass, i) => {
               const count = PARTICIPANTS.filter(x => x.pass === pass && x.statut !== "annulé").length;
-              const rev   = count * tarifs[pass];
-              const pct   = totalRevenue > 0 ? (rev / totalRevenue) * 100 : 0;
+              const rev = count * tarifs[pass];
+              const pct = totalRevenue > 0 ? (rev / totalRevenue) * 100 : 0;
               return (
                 <div key={pass}>
                   <div className="flex justify-between mb-1.5">
@@ -441,17 +946,15 @@ function SectionPaiements() {
             })}
           </div>
         </div>
-
         <div className="admin-card bg-white rounded-2xl border border-gray-100 p-6" style={{ animationDelay: "160ms" }}>
           <p className="text-xs font-bold uppercase tracking-[0.15em] mb-5" style={{ color: "#c49a30" }}>Méthodes de paiement</p>
           <div className="space-y-4">
             {methods.map((m, i) => {
               const count = PARTICIPANTS.filter(p => p.methode === m).length;
-              const pct   = (count / PARTICIPANTS.length) * 100;
               return (
                 <div key={m} className="flex items-center gap-3">
                   <span className="text-xs w-36 shrink-0" style={{ color: "rgba(15,45,31,0.65)" }}>{m}</span>
-                  <AnimBar pct={pct} color="#246444" delay={i * 100} />
+                  <AnimBar pct={(count / PARTICIPANTS.length) * 100} color="#246444" delay={i * 100} />
                   <span className="text-xs font-semibold w-6 text-right" style={{ color: "#0f2d1f" }}>{count}</span>
                 </div>
               );
@@ -459,57 +962,16 @@ function SectionPaiements() {
           </div>
         </div>
       </div>
-
-      <div className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ animationDelay: "240ms" }}>
-        <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(36,100,68,0.08)" }}>
-          <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "#c49a30" }}>Dernières transactions</p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr style={{ backgroundColor: "#f4f7f5" }}>
-                {["Participant","Pass","Montant","Méthode","Statut","Date"].map(h => (
-                  <th key={h} className="text-left px-4 py-3 font-semibold" style={{ color: "rgba(15,45,31,0.50)" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[...PARTICIPANTS].sort((a,b) => b.date.localeCompare(a.date)).slice(0,8).map((p, i) => {
-                const s = STATUT_STYLE[p.statut];
-                return (
-                  <tr key={p.id} className="table-row-anim hover:bg-[#f9fbfa] transition-colors"
-                    style={{ borderTop: i > 0 ? "1px solid rgba(36,100,68,0.07)" : undefined, animationDelay: `${i * 40}ms` }}>
-                    <td className="px-4 py-3 font-medium" style={{ color: "#0f2d1f" }}>{p.prenom} {p.nom}</td>
-                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{p.pass}</td>
-                    <td className="px-4 py-3 font-semibold tabular-nums" style={{ color: p.montant ? "#0f2d1f" : "rgba(15,45,31,0.35)" }}>
-                      {p.montant ? fmtFCFAShort(p.montant) : "Gratuit"}
-                    </td>
-                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.55)" }}>{p.methode}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium text-[10px]"
-                        style={{ backgroundColor: s.bg, color: s.text }}>{s.icon}{p.statut}</span>
-                    </td>
-                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.45)" }}>{p.date}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }
 
 function SectionProgramme() {
-  const typeColors: Record<string, string> = {
-    "Plénière": "#246444", "Conférence": "#1e5238", "Panel": "#c49a30",
-    "Workshop": "#0f2d1f", "Table ronde": "#7c5e10", "Terrain": "#4a7c59",
-  };
+  const typeColors: Record<string, string> = { "Plénière": "#246444", "Conférence": "#1e5238", "Panel": "#c49a30", "Workshop": "#0f2d1f", "Table ronde": "#7c5e10", "Terrain": "#4a7c59" };
   const statutColors: Record<string, { bg: string; text: string }> = {
-    "Confirmé":   { bg: "rgba(36,100,68,0.10)",  text: "#246444" },
-    "En cours":   { bg: "rgba(196,154,48,0.12)", text: "#b8890a" },
-    "En attente": { bg: "rgba(234,179,8,0.10)",  text: "#a16207" },
+    "Confirmé": { bg: "rgba(36,100,68,0.10)", text: "#246444" },
+    "En cours": { bg: "rgba(196,154,48,0.12)", text: "#b8890a" },
+    "En attente": { bg: "rgba(234,179,8,0.10)", text: "#a16207" },
   };
   return (
     <div className="space-y-6">
@@ -518,41 +980,29 @@ function SectionProgramme() {
           <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Gestion du Programme</h2>
           <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{SESSIONS.length} sessions sur 3 jours</p>
         </div>
-        <button className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg border transition-colors hover:bg-[#f4f7f5]"
-          style={{ borderColor: "rgba(36,100,68,0.25)", color: "#246444" }}>
-          + Ajouter une session
-        </button>
       </div>
-
       {["J1","J2","J3"].map((jour, ji) => (
-        <div key={jour} className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden"
-          style={{ animationDelay: `${60 + ji * 80}ms` }}>
+        <div key={jour} className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ animationDelay: `${60 + ji * 80}ms` }}>
           <div className="px-6 py-4" style={{ backgroundColor: "#0f2d1f" }}>
             <p className="text-sm font-bold" style={{ color: "#c49a30" }}>
               {jour === "J1" ? "Jour 1 · 3 février 2027" : jour === "J2" ? "Jour 2 · 4 février 2027" : "Jour 3 · 5 février 2027"}
             </p>
           </div>
           <div className="divide-y" style={{ borderColor: "rgba(36,100,68,0.07)" }}>
-            {SESSIONS.filter(s => s.jour === jour).map((session, i) => {
+            {SESSIONS.filter(s => s.jour === jour).map((session) => {
               const sc = statutColors[session.statut] || statutColors["En attente"];
-              const tc = typeColors[session.type]  || "#246444";
+              const tc = typeColors[session.type] || "#246444";
               return (
-                <div key={session.id}
-                  className="px-6 py-4 flex items-start gap-4 hover:bg-[#f9fbfa] transition-colors group">
-                  <span className="text-xs font-mono font-bold shrink-0 pt-0.5 w-10 group-hover:text-[#c49a30] transition-colors"
-                    style={{ color: "#c49a30" }}>{session.heure}</span>
+                <div key={session.id} className="px-6 py-4 flex items-start gap-4 hover:bg-[#f9fbfa] transition-colors group">
+                  <span className="text-xs font-mono font-bold shrink-0 pt-0.5 w-10" style={{ color: "#c49a30" }}>{session.heure}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 flex-wrap">
                       <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{session.titre}</p>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0"
-                        style={{ backgroundColor: tc + "15", color: tc }}>{session.type}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0" style={{ backgroundColor: tc + "15", color: tc }}>{session.type}</span>
                     </div>
-                    <p className="text-xs mt-1 flex items-center gap-1" style={{ color: "rgba(15,45,31,0.50)" }}>
-                      <Mic className="w-3 h-3" />{session.intervenant}
-                    </p>
+                    <p className="text-xs mt-1 flex items-center gap-1" style={{ color: "rgba(15,45,31,0.50)" }}><Mic className="w-3 h-3" />{session.intervenant}</p>
                   </div>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium shrink-0"
-                    style={{ backgroundColor: sc.bg, color: sc.text }}>{session.statut}</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium shrink-0" style={{ backgroundColor: sc.bg, color: sc.text }}>{session.statut}</span>
                 </div>
               );
             })}
@@ -564,112 +1014,48 @@ function SectionProgramme() {
 }
 
 function SectionCommunications() {
-  const [tab, setTab]       = useState<"compose"|"sent">("compose");
+  const [tab, setTab] = useState<"compose"|"sent">("compose");
   const [subject, setSubject] = useState("Confirmation d'inscription · SOAFGANG 2027");
-  const [body, setBody]     = useState(`Bonjour {prenom},
-
-Nous avons bien reçu votre inscription au Salon Ouest Africain Francophone sur le Gaz Naturel (SOAFGANG), 1ère édition, qui se tiendra du 3 au 5 février 2027 au Sofitel Cotonou Marina, Bénin.
-
-Votre pass : {pass}
-Statut : {statut}
-
-Nous vous ferons parvenir prochainement les détails pratiques (programme complet, accès, hébergement partenaires).
-
-Cordialement,
-Le Comité d'Organisation SOAFGANG 2027`);
-
-  const quickActions = [
-    { label: "Relance paiements en attente", count: 3, color: "#c49a30" },
-    { label: "Rappel logistique VIP",         count: 4, color: "#246444" },
-    { label: "Confirmation programme J1",     count: 12, color: "#1e5238" },
-    { label: "Convocation intervenants",      count: 5, color: "#0f2d1f" },
-  ];
-
+  const [body, setBody] = useState(`Bonjour {prenom},\n\nNous avons bien reçu votre inscription au SOAFGANG 2027.\n\nVotre pass : {pass}\nStatut : {statut}\n\nCordialement,\nLe Comité d'Organisation SOAFGANG 2027`);
   return (
     <div className="space-y-6">
       <div className="admin-card" style={{ animationDelay: "0ms" }}>
         <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Communications</h2>
         <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>Gestion des envois d'e-mails aux participants</p>
       </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        {quickActions.map((a, i) => (
-          <button key={a.label}
-            className="admin-card text-left flex items-center gap-4 bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-            style={{ animationDelay: `${i * 60}ms` }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm"
-              style={{ backgroundColor: a.color + "18", color: a.color }}>{a.count}</div>
-            <div>
-              <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{a.label}</p>
-              <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Cliquer pour composer</p>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      <div className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ animationDelay: "280ms" }}>
+      <div className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ animationDelay: "80ms" }}>
         <div className="flex border-b" style={{ borderColor: "rgba(36,100,68,0.10)" }}>
-          {[["compose","Composer un e-mail"],["sent","Historique des envois"]].map(([id, label]) => (
-            <button key={id} onClick={() => setTab(id as "compose"|"sent")}
-              className="px-6 py-3.5 text-xs font-semibold transition-colors"
+          {[["compose","Composer"],["sent","Historique"]].map(([id, label]) => (
+            <button key={id} onClick={() => setTab(id as "compose"|"sent")} className="px-6 py-3.5 text-xs font-semibold transition-colors"
               style={{ color: tab === id ? "#246444" : "rgba(15,45,31,0.45)", borderBottom: tab === id ? "2px solid #246444" : "2px solid transparent" }}>
               {label}
             </button>
           ))}
         </div>
-
         {tab === "compose" ? (
           <div className="p-6 space-y-4">
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Destinataires</label>
-              <div className="flex gap-2 flex-wrap">
-                {["Tous (15)","Confirmés (11)","En attente (3)","VIP (3)","Exposants (4)"].map(g => (
-                  <button key={g} className="text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors hover:bg-[#f4f7f5]"
-                    style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>{g}</button>
-                ))}
-              </div>
-            </div>
-            <div>
               <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Objet</label>
-              <input value={subject} onChange={e => setSubject(e.target.value)}
-                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20 transition-shadow"
-                style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              <input value={subject} onChange={e => setSubject(e.target.value)} className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
             </div>
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Corps du message</label>
-              <textarea value={body} onChange={e => setBody(e.target.value)} rows={9}
-                className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none resize-none font-mono focus:ring-2 focus:ring-[#246444]/20 transition-shadow"
-                style={{ borderColor: "rgba(36,100,68,0.20)" }} />
-              <p className="text-[10px] mt-1" style={{ color: "rgba(15,45,31,0.40)" }}>
-                Variables disponibles : {"{prenom}"}, {"{nom}"}, {"{pass}"}, {"{statut}"}, {"{organisation}"}
-              </p>
+              <textarea value={body} onChange={e => setBody(e.target.value)} rows={8} className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none resize-none font-mono focus:ring-2 focus:ring-[#246444]/20" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
             </div>
-            <div className="flex gap-3">
-              <button className="inline-flex items-center gap-2 text-xs font-semibold px-5 py-2.5 rounded-lg btn-primary">
-                <Send className="w-3.5 h-3.5" /> Envoyer
-              </button>
-              <button className="text-xs font-medium px-4 py-2.5 rounded-lg border transition-colors hover:bg-[#f4f7f5]"
-                style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>Aperçu</button>
-            </div>
+            <button className="inline-flex items-center gap-2 text-xs font-semibold px-5 py-2.5 rounded-lg btn-primary"><Send className="w-3.5 h-3.5" /> Envoyer</button>
           </div>
         ) : (
           <div className="divide-y" style={{ borderColor: "rgba(36,100,68,0.07)" }}>
-            {[
-              { sujet: "Bienvenue · Confirmation d'inscription", dest: "Tous (15)",      date: "2026-12-12" },
-              { sujet: "Rappel paiement · Pass Exposant",        dest: "Exposants (4)",  date: "2026-12-05" },
-              { sujet: "Programme préliminaire SOAFGANG 2027",   dest: "Confirmés (11)", date: "2026-11-28" },
-            ].map((e, i) => (
-              <div key={i} className="px-6 py-4 flex items-center gap-4 hover:bg-[#f9fbfa] transition-colors">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "rgba(36,100,68,0.08)" }}>
+            {[{ sujet: "Bienvenue · Confirmation d'inscription", dest: "Tous (15)", date: "2026-12-12" }].map((e, i) => (
+              <div key={i} className="px-6 py-4 flex items-center gap-4">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(36,100,68,0.08)" }}>
                   <Mail className="w-3.5 h-3.5" style={{ color: "#246444" }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold truncate" style={{ color: "#0f2d1f" }}>{e.sujet}</p>
                   <p className="text-[10px] mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>→ {e.dest} · {e.date}</p>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0"
-                  style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>Envoyé</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>Envoyé</span>
               </div>
             ))}
           </div>
@@ -681,162 +1067,119 @@ Le Comité d'Organisation SOAFGANG 2027`);
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function EspaceAdminPage() {
-  const [active, setActive]       = useState("overview");
+  const [active, setActive] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  const section = {
+  const section: Record<string, React.ReactNode> = {
     overview:       <SectionOverview />,
     participants:   <SectionParticipants />,
     paiements:      <SectionPaiements />,
     programme:      <SectionProgramme />,
     communications: <SectionCommunications />,
-  }[active];
+    intervenants:   <SectionIntervenants />,
+    galerie:        <SectionGalerie />,
+    articles:       <SectionArticles />,
+    partenaires_cm: <SectionPartenaires />,
+  };
+
+  const contentSections = ["intervenants","galerie","articles","partenaires_cm"];
 
   return (
     <div style={{ backgroundColor: "#f4f7f5", minHeight: "100vh" }}>
-
-      {/* Global styles */}
       <style>{`
-        @keyframes admin-in {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes donut-pop {
-          from { opacity: 0; transform: scale(0.85); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        @keyframes row-in {
-          from { opacity: 0; transform: translateX(-8px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        .admin-card {
-          animation: admin-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-        .donut-arc {
-          animation: donut-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-        }
-        .table-row-anim {
-          animation: row-in 0.35s ease both;
-        }
-        .btn-primary {
-          background-color: #246444;
-          color: white;
-          transition: background-color 0.2s, box-shadow 0.2s, transform 0.15s;
-        }
-        .btn-primary:hover {
-          background-color: #1e5238;
-          box-shadow: 0 4px 14px rgba(36,100,68,0.35);
-          transform: translateY(-1px);
-        }
-        .btn-primary:active { transform: translateY(0); }
+        @keyframes admin-in { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes donut-pop { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+        @keyframes row-in { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
+        .admin-card { animation: admin-in 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+        .donut-arc { animation: donut-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .table-row-anim { animation: row-in 0.35s ease both; }
+        .btn-primary { background-color:#246444; color:white; transition:background-color 0.2s,box-shadow 0.2s,transform 0.15s; }
+        .btn-primary:hover { background-color:#1e5238; box-shadow:0 4px 14px rgba(36,100,68,0.35); transform:translateY(-1px); }
+        .btn-primary:active { transform:translateY(0); }
       `}</style>
 
-      {/* Disclaimer banner */}
-      <div className="w-full px-4 py-3 flex items-center gap-3"
-        style={{ backgroundColor: "#0f2d1f", borderBottom: "1px solid rgba(196,154,48,0.20)" }}>
+      <div className="w-full px-4 py-3 flex items-center gap-3" style={{ backgroundColor: "#0f2d1f", borderBottom: "1px solid rgba(196,154,48,0.20)" }}>
         <Eye className="w-4 h-4 shrink-0" style={{ color: "#c49a30" }} />
-        <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.70)" }}>
-          <span className="font-bold" style={{ color: "#c49a30" }}>Espace démo · </span>
-          Ce tableau de bord illustre les fonctionnalités d'administration envisagées pour SOAFGANG 2027. Toutes les données affichées sont fictives et à titre démonstratif.
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.70)" }}>
+          <span className="font-bold" style={{ color: "#c49a30" }}>Espace admin · </span>
+          Données simulées pour participants/paiements/programme. Intervenants, galerie, articles et partenaires sont connectés à Supabase en temps réel.
         </p>
       </div>
 
       <div className="flex" style={{ minHeight: "calc(100vh - 49px)" }}>
+        {mobileSidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />}
 
-        {/* ── Mobile overlay backdrop ── */}
-        {mobileSidebarOpen && (
-          <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
-        )}
-
-        {/* ── Sidebar ── */}
-        <aside
-          className={`shrink-0 flex flex-col transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:inset-auto lg:z-auto ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
-          style={{
-            width: sidebarOpen ? 224 : 62,
-            backgroundColor: "#0f2d1f",
-            borderRight: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-
-          <div className="flex items-center justify-between px-4 py-5"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-            {sidebarOpen && (
-              <div>
-                <p className="text-xs font-black tracking-widest uppercase" style={{ color: "#c49a30" }}>Admin</p>
-                <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.30)" }}>SOAFGANG 2027</p>
-              </div>
-            )}
-            <button onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded-lg hover:bg-white/10 transition-colors ml-auto">
-              {sidebarOpen
-                ? <X    className="w-4 h-4" style={{ color: "rgba(255,255,255,0.50)" }} />
-                : <Menu className="w-4 h-4" style={{ color: "rgba(255,255,255,0.50)" }} />}
+        <aside className={`shrink-0 flex flex-col transition-transform duration-300 fixed inset-y-0 left-0 z-50 lg:relative lg:inset-auto lg:z-auto ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+          style={{ width: sidebarOpen ? 224 : 62, backgroundColor: "#0f2d1f", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center justify-between px-4 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+            {sidebarOpen && <div><p className="text-xs font-black tracking-widest uppercase" style={{ color: "#c49a30" }}>Admin</p><p className="text-[10px]" style={{ color: "rgba(255,255,255,0.30)" }}>SOAFGANG 2027</p></div>}
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors ml-auto">
+              {sidebarOpen ? <X className="w-4 h-4" style={{ color: "rgba(255,255,255,0.50)" }} /> : <Menu className="w-4 h-4" style={{ color: "rgba(255,255,255,0.50)" }} />}
             </button>
           </div>
 
-          <nav className="flex-1 py-4 space-y-0.5 px-2">
-            {NAV_SECTIONS.map(({ id, label, icon: Icon }) => {
-              const isActive = active === id;
-              return (
-                <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
-                  style={{
-                    backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent",
-                    color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)",
-                    transform: isActive ? "none" : undefined,
-                  }}>
-                  <Icon className="w-4 h-4 shrink-0" style={{ transition: "transform 0.2s" }} />
-                  {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
-                  {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
-                </button>
-              );
-            })}
+          <nav className="flex-1 py-4 px-2 overflow-y-auto">
+            {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Gestion événement</p>}
+            <div className="space-y-0.5 mb-4">
+              {NAV_SECTIONS.filter(n => !contentSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
+                const isActive = active === id;
+                return (
+                  <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
+                    style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
+                    {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
+                  </button>
+                );
+              })}
+            </div>
+            {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Contenu du site</p>}
+            <div className="space-y-0.5">
+              {NAV_SECTIONS.filter(n => contentSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
+                const isActive = active === id;
+                return (
+                  <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
+                    style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
+                    {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
+                  </button>
+                );
+              })}
+            </div>
           </nav>
 
           <div className="p-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0"
-                style={{ background: "linear-gradient(135deg, #246444, #c49a30)", color: "white" }}>NE</div>
-              {sidebarOpen && (
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold truncate" style={{ color: "rgba(255,255,255,0.80)" }}>NTAB Energy</p>
-                  <p className="text-[10px] truncate" style={{ color: "rgba(255,255,255,0.30)" }}>Administrateur</p>
-                </div>
-              )}
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0" style={{ background: "linear-gradient(135deg, #246444, #c49a30)", color: "white" }}>NE</div>
+              {sidebarOpen && <div className="min-w-0"><p className="text-xs font-semibold truncate" style={{ color: "rgba(255,255,255,0.80)" }}>NTAB Energy</p><p className="text-[10px] truncate" style={{ color: "rgba(255,255,255,0.30)" }}>Administrateur</p></div>}
             </div>
           </div>
         </aside>
 
-        {/* ── Content ── */}
         <div className="flex-1 flex flex-col min-w-0">
-
-          {/* Top bar */}
-          <header className="flex items-center justify-between px-6 py-4 bg-white border-b"
-            style={{ borderColor: "rgba(36,100,68,0.10)" }}>
+          <header className="flex items-center justify-between px-6 py-4 bg-white border-b" style={{ borderColor: "rgba(36,100,68,0.10)" }}>
             <div className="flex items-center">
               <button className="lg:hidden mr-3 p-2 rounded-lg hover:bg-gray-50" onClick={() => setMobileSidebarOpen(true)}>
                 <Menu className="w-5 h-5" style={{ color: "rgba(15,45,31,0.60)" }} />
               </button>
               <div>
-                <p className="text-sm font-black" style={{ color: "#0f2d1f" }}>
-                  {NAV_SECTIONS.find(n => n.id === active)?.label}
-                </p>
+                <p className="text-sm font-black" style={{ color: "#0f2d1f" }}>{NAV_SECTIONS.find(n => n.id === active)?.label}</p>
                 <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>SOAFGANG 2027 · Espace Administration</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <button className="relative p-2 rounded-xl hover:bg-gray-50 transition-colors">
                 <Bell className="w-4 h-4" style={{ color: "rgba(15,45,31,0.50)" }} />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full animate-pulse"
-                  style={{ backgroundColor: "#c49a30" }} />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "#c49a30" }} />
               </button>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black"
-                style={{ background: "linear-gradient(135deg, #1e5238, #0f2d1f)", color: "#c49a30" }}>NE</div>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black" style={{ background: "linear-gradient(135deg, #1e5238, #0f2d1f)", color: "#c49a30" }}>NE</div>
             </div>
           </header>
-
-          <main key={active} className="flex-1 p-4 md:p-6 overflow-auto">{section}</main>
+          <main key={active} className="flex-1 p-4 md:p-6 overflow-auto">{section[active]}</main>
         </div>
       </div>
     </div>
