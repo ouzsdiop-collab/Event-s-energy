@@ -93,6 +93,7 @@ export default function Navbar() {
         { href: "/a-propos",      label: lang === "en" ? "About" : "À propos",        desc: lang === "en" ? "Context and themes" : "Contexte et thèmes" },
         { href: "/intervenants",  label: lang === "en" ? "Speakers" : "Intervenants", desc: lang === "en" ? "Confirmed experts" : "Experts confirmés" },
         { href: "/partenaires",   label: lang === "en" ? "Partners" : "Partenaires",  desc: lang === "en" ? "Sponsors and partners" : "Sponsors et partenaires" },
+        { href: "/galerie",       label: lang === "en" ? "Gallery" : "Galerie",        desc: lang === "en" ? "Photos & venue" : "Photos & lieu" },
       ],
     },
     {
@@ -184,7 +185,7 @@ export default function Navbar() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  <div className={`overflow-hidden transition-all duration-200 ${mobileExpanded === item.label ? "max-h-60" : "max-h-0"}`}>
+                  <div className={`overflow-hidden transition-all duration-200 ${mobileExpanded === item.label ? "max-h-80" : "max-h-0"}`}>
                     <div className="pl-3 border-l-2 border-forest-100 ml-1 mb-2 space-y-0.5">
                       {item.children.map(child => (
                         <TransitionLink key={child.href} href={child.href} onClick={() => setMenuOpen(false)}
