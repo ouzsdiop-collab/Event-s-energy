@@ -103,16 +103,8 @@ export function LogoMark({ size = 40 }: { size?: number }) {
 
 export default function Logo() {
   return (
-    <TransitionLink href="/" className="flex items-center gap-2.5 shrink-0 group">
+    <TransitionLink href="/" className="flex items-center shrink-0 group" aria-label="SOAFGANG 2027 — Accueil">
       <LogoCanvas size={40} speed={0.8} />
-      <div className="leading-tight">
-        <div className="font-heading font-bold text-gray-800" style={{ fontSize: "11px", lineHeight: "1.35" }}>
-          Salon Ouest Africain<br />
-          Francophone du{" "}
-          <span className="text-emerald-700">Gaz Naturel</span>{" "}
-          <span className="text-yellow-600">2027</span>
-        </div>
-      </div>
     </TransitionLink>
   );
 }

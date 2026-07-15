@@ -1,43 +1,127 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Logo from "@/components/Logo";
 import { ChevronRight, LayoutDashboard } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import TransitionLink from "@/components/TransitionLink";
 
-export default function Navbar() {
-  const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
-  const { lang, setLang, t } = useLang();
+type NavItem = {
+  label: string;
+  href?: string;
+  children?: { href: string; label: string; desc?: string }[];
+};
 
-  const navLinks = [
-    { href: "/a-propos",    label: t.nav.about },
-    { href: "/programme",   label: t.nav.programme },
-    { href: "/intervenants",label: t.nav.speakers },
-    { href: "/inscription", label: t.nav.register },
-  ];
+function DropdownMenu({ item, pathname, onNavigate }: { item: NavItem; pathname: string; onNavigate: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const isActive = item.href
+    ? pathname === item.href
+    : item.children?.some(c => pathname === c.href);
 
-  const moreLinks = [
-    { href: "/actualites",           label: lang === "en" ? "News" : "Actualités" },
-    { href: "/partenaires",          label: lang === "en" ? "Partners" : "Partenaires" },
-    { href: "/informations-pratiques", label: lang === "en" ? "Practical Info" : "Infos pratiques" },
-    { href: "/presse",               label: lang === "en" ? "Press" : "Presse" },
-    { href: "/contact",              label: "Contact" },
-  ];
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const moreActive = moreLinks.some(l => pathname === l.href);
+  if (!item.children) {
+    return (
+      <TransitionLink
+        href={item.href!}
+        onClick={onNavigate}
+        className={`text-sm font-medium px-3 py-2 rounded transition-colors ${
+          isActive ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"
+        }`}
+      >
+        {item.label}
+      </TransitionLink>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        onMouseEnter={() => setOpen(true)}
+        className={`flex items-center gap-1 text-sm font-medium px-3 py-2 rounded transition-colors ${
+          isActive ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"
+        }`}
+      >
+        {item.label}
+        <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          className="absolute top-full left-0 mt-1 bg-white rounded-xl border border-gray-100 shadow-xl py-2 z-50"
+          style={{ minWidth: "220px" }}
+          onMouseLeave={() => setOpen(false)}
+        >
+          {item.children.map(child => (
+            <TransitionLink
+              key={child.href}
+              href={child.href}
+              onClick={() => { setOpen(false); onNavigate(); }}
+              className={`flex flex-col px-4 py-2.5 transition-colors ${
+                pathname === child.href ? "bg-forest-50 text-forest-700" : "hover:bg-gray-50 text-gray-700"
+              }`}
+            >
+              <span className="text-sm font-medium">{child.label}</span>
+              {child.desc && <span className="text-xs text-gray-400 mt-0.5">{child.desc}</span>}
+            </TransitionLink>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Navbar() {
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const { lang, setLang, t } = useLang();
+
+  const navItems: NavItem[] = [
+    {
+      label: lang === "en" ? "The Event" : "L'Événement",
+      children: [
+        { href: "/a-propos",      label: lang === "en" ? "About" : "À propos",        desc: lang === "en" ? "Context and themes" : "Contexte et thèmes" },
+        { href: "/intervenants",  label: lang === "en" ? "Speakers" : "Intervenants", desc: lang === "en" ? "Confirmed experts" : "Experts confirmés" },
+        { href: "/partenaires",   label: lang === "en" ? "Partners" : "Partenaires",  desc: lang === "en" ? "Sponsors and partners" : "Sponsors et partenaires" },
+      ],
+    },
+    {
+      label: lang === "en" ? "Programme" : "Programme",
+      href: "/programme",
+    },
+    {
+      label: lang === "en" ? "Participate" : "Participer",
+      children: [
+        { href: "/inscription",   label: lang === "en" ? "Register" : "S'inscrire",           desc: lang === "en" ? "Book your pass" : "Réservez votre pass" },
+        { href: "/partenaires",   label: lang === "en" ? "Become a partner" : "Devenir partenaire", desc: lang === "en" ? "Sponsorship offers" : "Offres de sponsoring" },
+        { href: "/presse",        label: lang === "en" ? "Press accreditation" : "Accréditation presse", desc: lang === "en" ? "Media & journalists" : "Médias & journalistes" },
+      ],
+    },
+    {
+      label: lang === "en" ? "Practical Info" : "Infos pratiques",
+      children: [
+        { href: "/informations-pratiques", label: lang === "en" ? "Getting there" : "Venir à Cotonou",  desc: lang === "en" ? "Flights, visa, hotel" : "Vols, visa, hôtel" },
+        { href: "/informations-pratiques#hebergement", label: lang === "en" ? "Accommodation" : "Hébergement", desc: lang === "en" ? "Hotels & rates" : "Hôtels & tarifs" },
+        { href: "/contact",       label: "Contact",                                                       desc: lang === "en" ? "Invitation letter" : "Lettre d'invitation" },
+      ],
+    },
+    {
+      label: lang === "en" ? "News" : "Actualités",
+      href: "/actualites",
+    },
+  ];
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
@@ -45,53 +129,14 @@ export default function Navbar() {
         <Logo />
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <TransitionLink
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium px-3 py-2 rounded transition-colors ${
-                pathname === link.href ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"
-              }`}
-            >
-              {link.label}
-            </TransitionLink>
+        <nav className="hidden lg:flex items-center gap-0.5">
+          {navItems.map(item => (
+            <DropdownMenu key={item.label} item={item} pathname={pathname} onNavigate={closeMenu} />
           ))}
-
-          {/* Dropdown "Plus" */}
-          <div ref={moreRef} className="relative">
-            <button
-              onClick={() => setMoreOpen(o => !o)}
-              className={`flex items-center gap-1 text-sm font-medium px-3 py-2 rounded transition-colors ${
-                moreActive ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"
-              }`}
-            >
-              {lang === "en" ? "More" : "Plus"}
-              <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${moreOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {moreOpen && (
-              <div className="absolute top-full left-0 mt-1 w-52 bg-white rounded-xl border border-gray-100 shadow-lg py-1.5 z-50">
-                {moreLinks.map(link => (
-                  <TransitionLink
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMoreOpen(false)}
-                    className={`block px-4 py-2.5 text-sm transition-colors ${
-                      pathname === link.href ? "text-forest-700 font-semibold bg-forest-50" : "text-gray-600 hover:text-forest-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    {link.label}
-                  </TransitionLink>
-                ))}
-              </div>
-            )}
-          </div>
         </nav>
 
         {/* Right actions */}
-        <div className="hidden lg:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-3">
           <TransitionLink href="/presentation"
             className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
               pathname === "/presentation"
@@ -133,29 +178,44 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      <div className={`lg:hidden bg-white border-t border-gray-100 overflow-hidden transition-all duration-300 ${menuOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-        <div className="px-4 py-4 space-y-0.5">
-          {navLinks.map((link) => (
-            <TransitionLink key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
-              className={`block py-2.5 text-sm font-medium ${pathname === link.href ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"}`}>
-              {link.label}
-            </TransitionLink>
+      <div className={`lg:hidden bg-white border-t border-gray-100 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-[700px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}>
+        <div className="px-4 py-3 space-y-0.5">
+          {navItems.map(item => (
+            <div key={item.label}>
+              {item.children ? (
+                <>
+                  <button
+                    onClick={() => setMobileExpanded(mobileExpanded === item.label ? null : item.label)}
+                    className="w-full flex items-center justify-between py-2.5 text-sm font-semibold text-gray-700"
+                  >
+                    {item.label}
+                    <svg className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${mobileExpanded === item.label ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-200 ${mobileExpanded === item.label ? "max-h-60" : "max-h-0"}`}>
+                    <div className="pl-3 border-l-2 border-forest-100 ml-1 mb-2 space-y-0.5">
+                      {item.children.map(child => (
+                        <TransitionLink key={child.href} href={child.href} onClick={() => setMenuOpen(false)}
+                          className={`block py-2 text-sm ${pathname === child.href ? "text-forest-700 font-semibold" : "text-gray-500 hover:text-forest-700"}`}>
+                          {child.label}
+                        </TransitionLink>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <TransitionLink href={item.href!} onClick={() => setMenuOpen(false)}
+                  className={`block py-2.5 text-sm font-semibold ${pathname === item.href ? "text-forest-700" : "text-gray-700 hover:text-forest-700"}`}>
+                  {item.label}
+                </TransitionLink>
+              )}
+            </div>
           ))}
 
-          {/* Mobile more links */}
-          <div className="border-t border-gray-100 pt-2 mt-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 px-0 py-1.5">Plus</p>
-            {moreLinks.map(link => (
-              <TransitionLink key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
-                className={`block py-2.5 text-sm font-medium ${pathname === link.href ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"}`}>
-                {link.label}
-              </TransitionLink>
-            ))}
-          </div>
-
-          <div className="border-t border-gray-100 pt-2 mt-1">
+          <div className="border-t border-gray-100 pt-3 mt-2 space-y-0.5">
             <TransitionLink href="/presentation" onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 py-2.5 text-sm font-medium text-gold-600 hover:text-gold-700">
+              className="flex items-center gap-2 py-2.5 text-sm font-medium text-gold-600">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               Présentation maquette
             </TransitionLink>
@@ -165,12 +225,12 @@ export default function Navbar() {
             </TransitionLink>
           </div>
 
-          <div className="flex items-center gap-3 pt-2 pb-1">
+          <div className="flex items-center gap-3 pt-2 pb-1 border-t border-gray-100 mt-1">
             <button onClick={() => setLang("fr")} className={`text-sm font-semibold ${lang === "fr" ? "text-forest-700" : "text-gray-400"}`}>FR</button>
             <span className="text-gray-300">|</span>
             <button onClick={() => setLang("en")} className={`text-sm font-semibold ${lang === "en" ? "text-forest-700" : "text-gray-400"}`}>EN</button>
           </div>
-          <div className="pt-2">
+          <div className="pt-2 pb-3">
             <TransitionLink href="/inscription" className="block w-full bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-md text-center">
               {t.nav.registerCta}
             </TransitionLink>
