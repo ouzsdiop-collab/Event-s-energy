@@ -15,6 +15,7 @@ export default function Navbar() {
     { href: "/a-propos", label: t.nav.about },
     { href: "/programme", label: t.nav.programme },
     { href: "/intervenants", label: t.nav.speakers },
+    { href: "/informations-pratiques", label: lang === "en" ? "Practical Info" : "Infos pratiques" },
     { href: "/inscription", label: t.nav.register },
   ];
 
