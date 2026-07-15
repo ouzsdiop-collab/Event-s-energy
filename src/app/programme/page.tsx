@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { ArrowUpRight, MapPin, Calendar } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
 
 type SessionType = "Protocole" | "Panel" | "Table ronde" | "Networking" | "B2B";
 
@@ -126,6 +127,22 @@ const DAYS: { label: string; labelEn: string; short: string; shortEn: string; se
 
 const FILTER_KEYS: (SessionType | "Tous")[] = ["Tous", "Panel", "Table ronde", "B2B", "Protocole", "Networking"];
 
+type DbSession = { id: string; day: number; start_time: string; end_time: string; title_fr: string; title_en: string; description_fr: string; description_en: string; type: string; location: string; speakers_text: string; order_index: number };
+
+function dbToSession(s: DbSession, lang: string): Session {
+  return {
+    time: s.start_time.slice(0,5),
+    end: s.end_time.slice(0,5),
+    type: s.type as SessionType,
+    title: s.title_fr,
+    titleEn: s.title_en || s.title_fr,
+    location: s.location || "",
+    desc: s.description_fr || "",
+    descEn: s.description_en || s.description_fr || "",
+    speakers: s.speakers_text ? s.speakers_text.split(",").map(n => n.trim()).filter(Boolean).map(name => ({ name, initials: name.split(" ").map((w: string) => w[0]).join("").slice(0,2).toUpperCase() })) : undefined,
+  };
+}
+
 export default function ProgrammePage() {
   const [activeDay, setActiveDay] = useState(0);
   const [activeFilter, setActiveFilter] = useState<SessionType | "Tous">("Tous");
@@ -133,6 +150,19 @@ export default function ProgrammePage() {
   const headerRef = useRef<HTMLDivElement>(null);
   const { lang, t } = useLang();
   const p = t.programme;
+  const [days, setDays] = useState(DAYS);
+
+  useEffect(() => {
+    supabase.from("programme_sessions").select("*").order("day").order("start_time")
+      .then(({ data }) => {
+        if (!data || data.length === 0) return;
+        const grouped = [1,2,3].map((d, i) => ({
+          ...DAYS[i],
+          sessions: (data as DbSession[]).filter(s => s.day === d).map(s => dbToSession(s, lang)),
+        }));
+        setDays(grouped);
+      });
+  }, [lang]);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -143,7 +173,7 @@ export default function ProgrammePage() {
     return () => obs.disconnect();
   }, []);
 
-  const filtered = DAYS[activeDay].sessions.filter(
+  const filtered = days[activeDay].sessions.filter(
     (s) => activeFilter === "Tous" || s.type === activeFilter
   );
 
@@ -198,7 +228,7 @@ export default function ProgrammePage() {
       {/* Controls */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 mb-10">
         <div className="flex gap-2 mb-6 flex-wrap">
-          {DAYS.map((d, i) => (
+          {days.map((d, i) => (
             <button key={i} onClick={() => { setActiveDay(i); setActiveFilter("Tous"); }}
               className="transition-all duration-200 rounded-xl px-5 py-2.5 text-sm font-semibold"
               style={{

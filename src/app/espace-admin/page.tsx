@@ -970,49 +970,218 @@ function SectionPaiements() {
   );
 }
 
+type ProgramSession = {
+  id: string; day: 1 | 2 | 3; start_time: string; end_time: string;
+  title_fr: string; title_en: string; description_fr: string; description_en: string;
+  type: string; location: string; speakers_text: string; order_index: number; created_at: string;
+};
+
+const TYPE_COLORS: Record<string, string> = {
+  "Protocole": "#c49a30", "Panel": "#246444", "Table ronde": "#1e5238",
+  "Networking": "#5a9e78", "B2B": "#7c5e10",
+};
+const SESSION_TYPES = ["Protocole","Panel","Table ronde","Networking","B2B"];
+const DAY_LABELS: Record<number, string> = { 1: "Jour 1 · 3 février 2027", 2: "Jour 2 · 4 février 2027", 3: "Jour 3 · 5 février 2027" };
+
+const EMPTY_SESSION: Omit<ProgramSession, "id"|"created_at"> = {
+  day: 1, start_time: "09:00", end_time: "10:30",
+  title_fr: "", title_en: "", description_fr: "", description_en: "",
+  type: "Panel", location: "Salle Plénière", speakers_text: "", order_index: 0,
+};
+
 function SectionProgramme() {
-  const typeColors: Record<string, string> = { "Plénière": "#246444", "Conférence": "#1e5238", "Panel": "#c49a30", "Workshop": "#0f2d1f", "Table ronde": "#7c5e10", "Terrain": "#4a7c59" };
-  const statutColors: Record<string, { bg: string; text: string }> = {
-    "Confirmé": { bg: "rgba(36,100,68,0.10)", text: "#246444" },
-    "En cours": { bg: "rgba(196,154,48,0.12)", text: "#b8890a" },
-    "En attente": { bg: "rgba(234,179,8,0.10)", text: "#a16207" },
+  const [sessions, setSessions] = useState<ProgramSession[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editTarget, setEditTarget] = useState<ProgramSession | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ ...EMPTY_SESSION });
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("programme_sessions").select("*").order("day").order("start_time");
+    if (data) setSessions(data as ProgramSession[]);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openNew = () => {
+    setEditTarget(null);
+    setForm({ ...EMPTY_SESSION, order_index: sessions.length + 1 });
+    setShowForm(true);
   };
+
+  const openEdit = (s: ProgramSession) => {
+    setEditTarget(s);
+    setForm({ day: s.day, start_time: s.start_time, end_time: s.end_time, title_fr: s.title_fr, title_en: s.title_en || "", description_fr: s.description_fr || "", description_en: s.description_en || "", type: s.type, location: s.location || "", speakers_text: s.speakers_text || "", order_index: s.order_index });
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    if (!form.title_fr.trim() || !form.start_time) return;
+    setSaving(true);
+    if (editTarget) {
+      await supabase.from("programme_sessions").update(form).eq("id", editTarget.id);
+    } else {
+      await supabase.from("programme_sessions").insert(form);
+    }
+    await load();
+    setSaving(false);
+    setShowForm(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeleting(id);
+    await supabase.from("programme_sessions").delete().eq("id", id);
+    setSessions(prev => prev.filter(s => s.id !== id));
+    setDeleting(null);
+  };
+
+  const f = (k: keyof typeof form, v: string | number) => setForm(p => ({ ...p, [k]: v }));
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4 flex-wrap admin-card" style={{ animationDelay: "0ms" }}>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3 admin-card">
         <div>
           <h2 className="font-heading font-black text-xl mb-0.5" style={{ color: "#0f2d1f" }}>Gestion du Programme</h2>
-          <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{SESSIONS.length} sessions sur 3 jours</p>
+          <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>{sessions.length} sessions · 3 jours</p>
         </div>
+        <button onClick={openNew} className="btn-primary flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl">
+          <Plus className="w-3.5 h-3.5" /> Ajouter une session
+        </button>
       </div>
-      {["J1","J2","J3"].map((jour, ji) => (
-        <div key={jour} className="admin-card bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ animationDelay: `${60 + ji * 80}ms` }}>
-          <div className="px-6 py-4" style={{ backgroundColor: "#0f2d1f" }}>
-            <p className="text-sm font-bold" style={{ color: "#c49a30" }}>
-              {jour === "J1" ? "Jour 1 · 3 février 2027" : jour === "J2" ? "Jour 2 · 4 février 2027" : "Jour 3 · 5 février 2027"}
-            </p>
-          </div>
-          <div className="divide-y" style={{ borderColor: "rgba(36,100,68,0.07)" }}>
-            {SESSIONS.filter(s => s.jour === jour).map((session) => {
-              const sc = statutColors[session.statut] || statutColors["En attente"];
-              const tc = typeColors[session.type] || "#246444";
-              return (
-                <div key={session.id} className="px-6 py-4 flex items-start gap-4 hover:bg-[#f9fbfa] transition-colors group">
-                  <span className="text-xs font-mono font-bold shrink-0 pt-0.5 w-10" style={{ color: "#c49a30" }}>{session.heure}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-2 flex-wrap">
-                      <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{session.titre}</p>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0" style={{ backgroundColor: tc + "15", color: tc }}>{session.type}</span>
-                    </div>
-                    <p className="text-xs mt-1 flex items-center gap-1" style={{ color: "rgba(15,45,31,0.50)" }}><Mic className="w-3 h-3" />{session.intervenant}</p>
-                  </div>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium shrink-0" style={{ backgroundColor: sc.bg, color: sc.text }}>{session.statut}</span>
+
+      {loading ? (
+        <div className="py-16 text-center text-sm" style={{ color: "rgba(15,45,31,0.35)" }}>Chargement…</div>
+      ) : (
+        [1,2,3].map(day => {
+          const daySessions = sessions.filter(s => s.day === day);
+          return (
+            <div key={day} className="admin-card bg-white rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+              <div className="px-6 py-4 flex items-center justify-between" style={{ backgroundColor: "#0f2d1f" }}>
+                <p className="text-sm font-bold" style={{ color: "#c49a30" }}>{DAY_LABELS[day]}</p>
+                <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>{daySessions.length} session{daySessions.length !== 1 ? "s" : ""}</span>
+              </div>
+              {daySessions.length === 0 ? (
+                <p className="px-6 py-8 text-xs text-center" style={{ color: "rgba(15,45,31,0.30)" }}>Aucune session — cliquez sur Ajouter</p>
+              ) : (
+                <div className="divide-y" style={{ borderColor: "rgba(36,100,68,0.07)" }}>
+                  {daySessions.map(s => {
+                    const tc = TYPE_COLORS[s.type] || "#246444";
+                    return (
+                      <div key={s.id} className="px-6 py-4 flex items-start gap-4 hover:bg-[#f9fbfa] transition-colors group">
+                        <div className="shrink-0 text-center w-16">
+                          <p className="text-xs font-mono font-bold" style={{ color: "#c49a30" }}>{s.start_time}</p>
+                          <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.30)" }}>{s.end_time}</p>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start gap-2 flex-wrap mb-1">
+                            <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{s.title_fr}</p>
+                            <span className="text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0" style={{ backgroundColor: tc + "18", color: tc }}>{s.type}</span>
+                          </div>
+                          {s.speakers_text && <p className="text-[11px] flex items-center gap-1 mb-0.5" style={{ color: "rgba(15,45,31,0.50)" }}><Mic className="w-3 h-3" />{s.speakers_text}</p>}
+                          {s.location && <p className="text-[11px]" style={{ color: "rgba(15,45,31,0.40)" }}>📍 {s.location}</p>}
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                          <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" style={{ color: "#246444" }} title="Modifier"><Pencil className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleDelete(s.id)} disabled={deleting === s.id} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors" style={{ color: "#b91c1c" }} title="Supprimer"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              )}
+            </div>
+          );
+        })
+      )}
+
+      {/* Modal formulaire */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.55)" }} onClick={() => setShowForm(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-5 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(36,100,68,0.10)" }}>
+              <h3 className="font-heading font-black text-lg" style={{ color: "#0f2d1f" }}>{editTarget ? "Modifier la session" : "Nouvelle session"}</h3>
+              <button onClick={() => setShowForm(false)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X className="w-4 h-4" style={{ color: "rgba(15,45,31,0.40)" }} /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Jour + type */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Jour</label>
+                  <select value={form.day} onChange={e => f("day", Number(e.target.value) as 1|2|3)} className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                    <option value={1}>Jour 1 – 3 fév.</option>
+                    <option value={2}>Jour 2 – 4 fév.</option>
+                    <option value={3}>Jour 3 – 5 fév.</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Type</label>
+                  <select value={form.type} onChange={e => f("type", e.target.value)} className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                    {SESSION_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+              </div>
+              {/* Horaires */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Début</label>
+                  <input type="time" value={form.start_time} onChange={e => f("start_time", e.target.value)} className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Fin</label>
+                  <input type="time" value={form.end_time} onChange={e => f("end_time", e.target.value)} className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                </div>
+              </div>
+              {/* Titre FR */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Titre (Français) *</label>
+                <input value={form.title_fr} onChange={e => f("title_fr", e.target.value)} placeholder="Titre de la session" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+              {/* Titre EN */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Titre (English)</label>
+                <input value={form.title_en} onChange={e => f("title_en", e.target.value)} placeholder="Session title" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+              {/* Lieu + intervenants */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Lieu</label>
+                  <input value={form.location} onChange={e => f("location", e.target.value)} placeholder="Salle Plénière" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Intervenants</label>
+                  <input value={form.speakers_text} onChange={e => f("speakers_text", e.target.value)} placeholder="Nom 1, Nom 2…" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                </div>
+              </div>
+              {/* Description FR */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Description (Français)</label>
+                <textarea value={form.description_fr} onChange={e => f("description_fr", e.target.value)} rows={2} placeholder="Description de la session…" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none resize-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+              {/* Description EN */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Description (English)</label>
+                <textarea value={form.description_en} onChange={e => f("description_en", e.target.value)} rows={2} placeholder="Session description…" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none resize-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+              {/* Order */}
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wide block mb-1.5" style={{ color: "rgba(15,45,31,0.45)" }}>Ordre d'affichage</label>
+                <input type="number" value={form.order_index} onChange={e => f("order_index", Number(e.target.value))} className="w-24 text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+              </div>
+            </div>
+            <div className="px-6 pb-6 flex justify-end gap-3">
+              <button onClick={() => setShowForm(false)} className="text-xs font-semibold px-4 py-2.5 rounded-xl border" style={{ borderColor: "rgba(36,100,68,0.20)", color: "rgba(15,45,31,0.55)" }}>Annuler</button>
+              <button onClick={handleSave} disabled={saving || !form.title_fr.trim()} className="btn-primary text-xs font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50">
+                {saving ? "Enregistrement…" : editTarget ? "Mettre à jour" : "Ajouter"}
+              </button>
+            </div>
           </div>
         </div>
-      ))}
+      )}
     </div>
   );
 }
