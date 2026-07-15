@@ -91,7 +91,7 @@ export default function PartnersSection() {
 
       <style jsx>{`
         .marquee-track {
-          animation: marquee 28s linear infinite;
+          animation: marquee 55s linear infinite;
           width: max-content;
         }
         .marquee-track:hover { animation-play-state: paused; }

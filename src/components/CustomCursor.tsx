@@ -3,30 +3,27 @@
 import { useEffect, useRef, useState } from "react";
 
 export default function CustomCursor() {
-  const dotRef   = useRef<HTMLDivElement>(null);
-  const ringRef  = useRef<HTMLDivElement>(null);
-  const pos      = useRef({ x: -100, y: -100 });
-  const ring     = useRef({ x: -100, y: -100 });
-  const raf      = useRef<number>(0);
-  const [visible, setVisible] = useState(false);
+  const dotRef  = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const pos     = useRef({ x: -100, y: -100 });
+  const ring    = useRef({ x: -100, y: -100 });
+  const raf     = useRef<number>(0);
+  const [visible,  setVisible]  = useState(false);
   const [clicking, setClicking] = useState(false);
   const [hovering, setHovering] = useState(false);
 
   useEffect(() => {
-    // Hide on touch devices
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const onMove = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY };
       if (!visible) setVisible(true);
-
       const el = e.target as Element;
-      const isClickable = !!el.closest('a, button, [role="button"], input, select, textarea, label[for], [tabindex]');
-      setHovering(isClickable);
+      setHovering(!!el.closest('a, button, [role="button"], input, select, textarea, label[for], [tabindex]'));
     };
 
-    const onDown = () => setClicking(true);
-    const onUp   = () => setClicking(false);
+    const onDown  = () => setClicking(true);
+    const onUp    = () => setClicking(false);
     const onLeave = () => setVisible(false);
     const onEnter = () => setVisible(true);
 
@@ -36,18 +33,14 @@ export default function CustomCursor() {
     document.documentElement.addEventListener("mouseleave", onLeave);
     document.documentElement.addEventListener("mouseenter", onEnter);
 
-    // Spring loop for ring lag
-    const EASE = 0.10;
+    const EASE = 0.11;
     const tick = () => {
       ring.current.x += (pos.current.x - ring.current.x) * EASE;
       ring.current.y += (pos.current.y - ring.current.y) * EASE;
-
-      if (dotRef.current) {
-        dotRef.current.style.transform  = `translate(${pos.current.x}px, ${pos.current.y}px) translate(-50%,-50%)`;
-      }
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ring.current.x}px, ${ring.current.y}px) translate(-50%,-50%)`;
-      }
+      if (dotRef.current)
+        dotRef.current.style.transform = `translate(${pos.current.x}px,${pos.current.y}px) translate(-50%,-50%)`;
+      if (ringRef.current)
+        ringRef.current.style.transform = `translate(${ring.current.x}px,${ring.current.y}px) translate(-50%,-50%)`;
       raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
@@ -64,16 +57,14 @@ export default function CustomCursor() {
 
   if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return null;
 
-  const ringSize  = hovering ? 44  : clicking ? 18  : 32;
-  const dotSize   = hovering ? 6   : clicking ? 3   : 4;
-  const ringColor = hovering ? "#c49a30" : "#0f2d1f";
-  const ringOpacity = hovering ? 0.85 : 0.55;
+  const dotSize  = hovering ? 8  : clicking ? 3  : 5;
+  const ringSize = hovering ? 48 : clicking ? 20 : 34;
 
   return (
     <>
       <style>{`* { cursor: none !important; }`}</style>
 
-      {/* Dot — suit exactement */}
+      {/* Dot — mix-blend-mode: difference → toujours visible */}
       <div
         ref={dotRef}
         style={{
@@ -81,13 +72,14 @@ export default function CustomCursor() {
           pointerEvents: "none",
           width: dotSize, height: dotSize,
           borderRadius: "50%",
-          backgroundColor: hovering ? "#c49a30" : "#0f2d1f",
+          backgroundColor: "#ffffff",
+          mixBlendMode: "difference",
           opacity: visible ? 1 : 0,
-          transition: "width 0.2s, height 0.2s, background-color 0.2s, opacity 0.3s",
+          transition: "width 0.18s ease, height 0.18s ease, opacity 0.3s",
         }}
       />
 
-      {/* Ring — lag spring */}
+      {/* Ring — or au hover, blanc sinon */}
       <div
         ref={ringRef}
         style={{
@@ -95,9 +87,9 @@ export default function CustomCursor() {
           pointerEvents: "none",
           width: ringSize, height: ringSize,
           borderRadius: "50%",
-          border: `1.5px solid ${ringColor}`,
-          opacity: visible ? ringOpacity : 0,
-          transition: "width 0.25s cubic-bezier(0.34,1.56,0.64,1), height 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s, opacity 0.3s",
+          border: `1.5px solid ${hovering ? "#c49a30" : "rgba(255,255,255,0.55)"}`,
+          opacity: visible ? 1 : 0,
+          transition: "width 0.28s cubic-bezier(0.34,1.56,0.64,1), height 0.28s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s, opacity 0.3s",
         }}
       />
     </>
