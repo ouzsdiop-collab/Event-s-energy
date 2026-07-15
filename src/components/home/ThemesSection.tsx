@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
@@ -46,11 +46,123 @@ const GRADIENTS = [
 ];
 const ACCENTS = ["#c49a30", "#d4aa3a", "#c49a30", "#e8c96a"];
 
+function ThemeCard({ item, i, accent, gradient, visible }: {
+  item: { num: string; tag: string; title: string; desc: string };
+  i: number; accent: string; gradient: string; visible: boolean;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setTilt({ x: (y - 0.5) * 14, y: (x - 0.5) * -14 });
+    setMousePos({ x: x * 100, y: y * 100 });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false);
+    setTilt({ x: 0, y: 0 });
+    setMousePos({ x: 50, y: 50 });
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`relative rounded-2xl overflow-hidden cursor-pointer bg-gradient-to-br ${gradient} border border-white/5 transition-[opacity,transform,box-shadow] ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+      style={{
+        minHeight: 300,
+        transitionDuration: hovered ? "120ms" : "500ms",
+        transform: visible
+          ? `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(${hovered ? -6 : 0}px)`
+          : "translateY(40px)",
+        boxShadow: hovered
+          ? `0 24px 48px rgba(10,28,18,0.40), 0 0 0 1px rgba(196,154,48,0.15)`
+          : "0 6px 24px rgba(10,28,18,0.18)",
+        willChange: "transform",
+      }}
+    >
+      <GlowingEffect spread={50} glow={false} disabled={false} proximity={80} inactiveZone={0.01} borderWidth={2} variant="forest" />
+
+      {/* Dot grid */}
+      <div className="absolute inset-0 opacity-[0.04]"
+        style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+
+      {/* Orbe lumineux suivant la souris */}
+      <div className="absolute w-48 h-48 rounded-full pointer-events-none transition-[left,top] duration-200 ease-out"
+        style={{
+          background: `radial-gradient(circle, ${accent}30 0%, transparent 70%)`,
+          left: `calc(${mousePos.x}% - 96px)`,
+          top: `calc(${mousePos.y}% - 96px)`,
+          opacity: hovered ? 1 : 0,
+          transition: hovered ? "opacity 0.3s, left 0.12s, top 0.12s" : "opacity 0.4s",
+        }} />
+
+      {/* Coin glow statique */}
+      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-20 blur-2xl pointer-events-none"
+        style={{ backgroundColor: accent }} />
+
+      <div className="relative z-10 p-7 flex flex-col" style={{ minHeight: 300 }}>
+        {/* Numéro + icône */}
+        <div className="flex items-start justify-between mb-5">
+          <span className="font-heading font-black leading-none select-none"
+            style={{ fontSize: "clamp(2.5rem,5vw,3.5rem)", color: accent, opacity: hovered ? 0.40 : 0.18, transition: "opacity 0.4s" }}>
+            {item.num}
+          </span>
+          <div className="p-2.5 rounded-xl"
+            style={{
+              color: accent,
+              background: `${accent}20`,
+              transform: hovered ? "scale(1.14) rotate(-5deg)" : "scale(1) rotate(0deg)",
+              transition: "transform 0.35s cubic-bezier(0.34,1.56,0.64,1)",
+            }}>
+            {ICONS[i]}
+          </div>
+        </div>
+
+        {/* Tag */}
+        <div className="mb-3.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+            style={{ color: accent, background: `${accent}22` }}>
+            {item.tag}
+          </span>
+        </div>
+
+        {/* Titre */}
+        <h3 className="text-white font-heading font-bold text-base leading-snug mb-3 flex-1"
+          style={{ transform: hovered ? "translateY(-2px)" : "translateY(0)", transition: "transform 0.35s ease" }}>
+          {item.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-xs leading-relaxed"
+          style={{ color: "rgba(255,255,255,0.55)", opacity: hovered ? 1 : 0.7, transform: hovered ? "translateY(0)" : "translateY(4px)", transition: "opacity 0.4s, transform 0.4s" }}>
+          {item.desc}
+        </p>
+
+        {/* Barre dorée */}
+        <div className="mt-5 h-[2px] rounded-full"
+          style={{
+            background: `linear-gradient(to right, ${accent}, transparent)`,
+            width: hovered ? "100%" : "28px",
+            transition: "width 0.5s cubic-bezier(0.22,1,0.36,1)",
+          }} />
+      </div>
+    </div>
+  );
+}
+
 export default function ThemesSection() {
   const { t } = useLang();
   const th = t.themes;
   const [visible, setVisible] = useState<boolean[]>(new Array(4).fill(false));
-  const [hovered, setHovered] = useState<number | null>(null);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -59,22 +171,16 @@ export default function ThemesSection() {
       const obs = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setTimeout(() => {
-              setVisible((prev) => {
-                const next = [...prev];
-                next[i] = true;
-                return next;
-              });
-            }, i * 120);
+            setTimeout(() => setVisible(prev => { const n = [...prev]; n[i] = true; return n; }), i * 110);
             obs.disconnect();
           }
         },
-        { threshold: 0.15 }
+        { threshold: 0.12 }
       );
       obs.observe(el);
       return obs;
     });
-    return () => observers.forEach((o) => o?.disconnect());
+    return () => observers.forEach(o => o?.disconnect());
   }, []);
 
   return (
@@ -93,97 +199,16 @@ export default function ThemesSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {th.items.map((item, i) => (
-            <div
-              key={item.num}
-              ref={(el) => { refs.current[i] = el; }}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-              className={`
-                relative rounded-2xl overflow-hidden cursor-pointer
-                bg-gradient-to-br ${GRADIENTS[i]} border border-white/5
-                transition-all duration-500 ease-out
-                ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-                ${hovered === i ? "-translate-y-2 shadow-2xl shadow-forest-900/30" : "shadow-lg shadow-forest-900/10"}
-              `}
-              style={{ minHeight: "280px" }}
-            >
-              <GlowingEffect
-                spread={50}
-                glow={false}
-                disabled={false}
-                proximity={80}
-                inactiveZone={0.01}
-                borderWidth={2}
-                variant="forest"
-              />
-              <div
-                className="absolute inset-0 opacity-[0.04]"
-                style={{
-                  backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
-                  backgroundSize: "24px 24px",
-                }}
-              />
-              <div
-                className="absolute inset-0 rounded-2xl transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(ellipse at top left, ${ACCENTS[i]}22 0%, transparent 60%)`,
-                  opacity: hovered === i ? 1 : 0,
-                }}
-              />
-              <div className="relative z-10 p-7 flex flex-col h-full" style={{ minHeight: "280px" }}>
-                <div className="flex items-start justify-between mb-6">
-                  <span
-                    className="text-3xl md:text-5xl font-heading font-black leading-none select-none"
-                    style={{ color: ACCENTS[i], opacity: 0.25 }}
-                  >
-                    {item.num}
-                  </span>
-                  <div
-                    className="p-2.5 rounded-xl transition-transform duration-300"
-                    style={{
-                      color: ACCENTS[i],
-                      background: `${ACCENTS[i]}18`,
-                      transform: hovered === i ? "scale(1.12) rotate(-4deg)" : "scale(1)",
-                    }}
-                  >
-                    {ICONS[i]}
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
-                    style={{ color: ACCENTS[i], background: `${ACCENTS[i]}22` }}
-                  >
-                    {item.tag}
-                  </span>
-                </div>
-                <h3 className="text-white font-heading font-bold text-base leading-snug mb-3 flex-1">
-                  {item.title}
-                </h3>
-                <p
-                  className="text-gray-300 text-xs leading-relaxed transition-all duration-500"
-                  style={{ opacity: hovered === i ? 1 : 0.6 }}
-                >
-                  {item.desc}
-                </p>
-                <div
-                  className="mt-5 h-[2px] rounded-full transition-all duration-500"
-                  style={{
-                    background: `linear-gradient(to right, ${ACCENTS[i]}, transparent)`,
-                    width: hovered === i ? "100%" : "32px",
-                  }}
-                />
-              </div>
+            <div key={item.num} ref={el => { refs.current[i] = el; }}>
+              <ThemeCard item={item} i={i} accent={ACCENTS[i]} gradient={GRADIENTS[i]} visible={visible[i]} />
             </div>
           ))}
         </div>
 
         <div className="mt-14 flex items-center justify-between flex-wrap gap-4">
           <p className="text-gray-400 text-sm max-w-lg">{th.ctaText}</p>
-          <a
-            href="/programme"
-            className="inline-flex items-center gap-2 text-forest-600 font-semibold text-sm border border-forest-200 rounded-lg px-5 py-2.5 hover:bg-forest-50 hover:border-forest-400 transition-all duration-200"
-          >
+          <a href="/programme"
+            className="inline-flex items-center gap-2 text-forest-600 font-semibold text-sm border border-forest-200 rounded-lg px-5 py-2.5 hover:bg-forest-50 hover:border-forest-400 transition-all duration-200">
             {th.ctaBtn}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
