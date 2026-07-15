@@ -1702,10 +1702,29 @@ function printInvitationLetter(r: Registration) {
 }
 
 // ─── Section Inscriptions ─────────────────────────────────────────────────────
+const PASS_OPTIONS = [
+  { label: "Standard",       price: 500_000,   desc: "Accès aux conférences et expositions" },
+  { label: "Professionnel",  price: 1_000_000, desc: "Standard + networking VIP" },
+  { label: "Institutionnel", price: 750_000,   desc: "Pour institutions & ministères" },
+  { label: "Exposant",       price: 1_500_000, desc: "Stand d'exposition inclus" },
+  { label: "VIP",            price: 0,         desc: "Invitation officielle — gratuit" },
+  { label: "Presse",         price: 0,         desc: "Accréditation presse" },
+  { label: "Conférencier",   price: 0,         desc: "Intervenant invité — gratuit" },
+];
+
+const EMPTY_FORM = {
+  civilite: "M.", nom: "", prenom: "", email: "", telephone: "", pays: "", fonction: "", organisation: "", categorie: "",
+  pass_type: "Professionnel", pass_price: 1_000_000, pay_method: "Virement bancaire", needs_invitation_letter: false, status: "en_attente",
+};
+
 function SectionInscriptions() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [form, setForm] = useState<typeof EMPTY_FORM>({ ...EMPTY_FORM });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -1719,6 +1738,35 @@ function SectionInscriptions() {
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("registrations").update({ status }).eq("id", id);
     setRegistrations(prev => prev.map(r => r.id === id ? { ...r, status: status as Registration["status"] } : r));
+  };
+
+  const openNew = () => { setForm({ ...EMPTY_FORM }); setSaveError(""); setShowForm(true); };
+
+  const handleCreate = async () => {
+    setSaveError("");
+    if (!form.nom || !form.prenom || !form.email || !form.organisation || !form.pays || !form.fonction || !form.categorie) {
+      setSaveError("Veuillez remplir tous les champs obligatoires."); return;
+    }
+    setSaving(true);
+    const ref = `SOFGN-2027-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    const { error } = await supabase.from("registrations").insert({
+      reference: ref,
+      civilite: form.civilite, nom: form.nom, prenom: form.prenom, email: form.email,
+      telephone: form.telephone, pays: form.pays, organisation: form.organisation,
+      fonction: form.fonction, categorie: form.categorie, pass_type: form.pass_type,
+      pass_price: form.pass_price, pay_method: form.pay_method,
+      needs_invitation_letter: form.needs_invitation_letter, status: form.status,
+    });
+    setSaving(false);
+    if (error) { setSaveError(error.message); return; }
+    setShowForm(false);
+    load();
+    // Send confirmation email (non-blocking)
+    fetch("/api/send-confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prenom: form.prenom, nom: form.nom, email: form.email, reference: ref, passType: form.pass_type, organisation: form.organisation }),
+    }).catch(() => {});
   };
 
   const filtered = registrations.filter(r =>
@@ -1752,6 +1800,145 @@ function SectionInscriptions() {
 
   return (
     <div className="space-y-5 admin-card">
+
+      {/* Modal nouvelle inscription */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(7,24,16,0.55)", backdropFilter: "blur(4px)" }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" style={{ border: "1px solid rgba(36,100,68,0.15)" }}>
+            <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+              <div>
+                <h3 className="font-heading font-black text-lg" style={{ color: "#0f2d1f" }}>Nouvelle inscription</h3>
+                <p className="text-[11px] mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>Créer une inscription manuellement (virement, invitation VIP, groupe…)</p>
+              </div>
+              <button onClick={() => setShowForm(false)} className="p-2 rounded-lg hover:bg-gray-50 transition-colors"><X className="w-4 h-4" style={{ color: "#246444" }} /></button>
+            </div>
+            <div className="px-6 py-5 space-y-5">
+              {/* Identité */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: "rgba(15,45,31,0.40)" }}>Identité</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Civilité</label>
+                    <select value={form.civilite} onChange={e => setForm(f => ({ ...f, civilite: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                      {["M.","Mme","Dr","Pr","Amb."].map(v => <option key={v} value={v}>{v}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Prénom *</label>
+                    <input value={form.prenom} onChange={e => setForm(f => ({ ...f, prenom: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Nom *</label>
+                    <input value={form.nom} onChange={e => setForm(f => ({ ...f, nom: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Email *</label>
+                    <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Téléphone</label>
+                    <input value={form.telephone} onChange={e => setForm(f => ({ ...f, telephone: e.target.value }))}
+                      placeholder="+229..." className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Professionnel */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: "rgba(15,45,31,0.40)" }}>Profil professionnel</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Organisation *</label>
+                    <input value={form.organisation} onChange={e => setForm(f => ({ ...f, organisation: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Pays *</label>
+                    <input value={form.pays} onChange={e => setForm(f => ({ ...f, pays: e.target.value }))}
+                      placeholder="Bénin, Sénégal…" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Fonction *</label>
+                    <input value={form.fonction} onChange={e => setForm(f => ({ ...f, fonction: e.target.value }))}
+                      placeholder="Directeur Général, Consultant…" className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none focus:ring-2 focus:ring-[#246444]/20"
+                      style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Catégorie *</label>
+                    <select value={form.categorie} onChange={e => setForm(f => ({ ...f, categorie: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                      <option value="">— Choisir —</option>
+                      {["Secteur privé","Secteur public","Institution internationale","ONG / Association","Académique / Chercheur","Presse / Médias","Autre"].map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pass */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: "rgba(15,45,31,0.40)" }}>Pass & paiement</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                  {PASS_OPTIONS.map(p => (
+                    <button key={p.label} type="button" onClick={() => setForm(f => ({ ...f, pass_type: p.label, pass_price: p.price }))}
+                      className="text-left p-3 rounded-xl border-2 transition-all"
+                      style={{ borderColor: form.pass_type === p.label ? "#246444" : "rgba(36,100,68,0.15)", backgroundColor: form.pass_type === p.label ? "rgba(36,100,68,0.05)" : "white" }}>
+                      <p className="text-xs font-bold" style={{ color: form.pass_type === p.label ? "#0f2d1f" : "rgba(15,45,31,0.65)" }}>{p.label}</p>
+                      <p className="text-[10px] font-semibold mt-0.5" style={{ color: p.price > 0 ? "#c49a30" : "#246444" }}>
+                        {p.price > 0 ? fmtFCFAShort(p.price) : "Gratuit"}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Méthode de paiement</label>
+                    <select value={form.pay_method} onChange={e => setForm(f => ({ ...f, pay_method: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                      {["Virement bancaire","Mobile Money","Carte bancaire","Exonéré / Invitation"].map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: "rgba(15,45,31,0.45)" }}>Statut initial</label>
+                    <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                      className="w-full text-xs px-3 py-2.5 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                      <option value="en_attente">En attente</option>
+                      <option value="confirmé">Confirmé</option>
+                    </select>
+                  </div>
+                </div>
+                <label className="flex items-center gap-2 mt-3 cursor-pointer">
+                  <input type="checkbox" checked={form.needs_invitation_letter} onChange={e => setForm(f => ({ ...f, needs_invitation_letter: e.target.checked }))} />
+                  <span className="text-xs font-medium" style={{ color: "#0f2d1f" }}>Nécessite une lettre d'invitation officielle</span>
+                </label>
+              </div>
+
+              {saveError && <p className="text-xs font-medium px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(220,38,38,0.08)", color: "#b91c1c" }}>{saveError}</p>}
+
+              <div className="flex gap-3 pt-1 pb-1">
+                <button onClick={handleCreate} disabled={saving}
+                  className="inline-flex items-center gap-2 text-xs font-semibold px-6 py-2.5 rounded-xl btn-primary disabled:opacity-60">
+                  {saving ? "Enregistrement…" : <><Plus className="w-3.5 h-3.5" /> Créer l'inscription</>}
+                </button>
+                <button onClick={() => setShowForm(false)} className="text-xs font-medium px-4 py-2.5 rounded-xl border hover:bg-gray-50 transition-colors"
+                  style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
@@ -1777,6 +1964,9 @@ function SectionInscriptions() {
             </div>
             <button onClick={exportCSV} className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>
               <Download className="w-3.5 h-3.5" /> Export CSV
+            </button>
+            <button onClick={openNew} className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg btn-primary">
+              <Plus className="w-3.5 h-3.5" /> Nouvelle inscription
             </button>
           </div>
         </div>
