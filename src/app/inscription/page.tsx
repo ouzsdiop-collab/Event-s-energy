@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
-import { ArrowRight, ArrowLeft, Shield, Mail, QrCode, CreditCard, Smartphone, Building2, Download, Share2, Check, Calendar, MapPin } from "lucide-react";
+import { ArrowRight, ArrowLeft, Shield, Mail, QrCode, CreditCard, Smartphone, Building2, Download, Check, Calendar, MapPin } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { supabase } from "@/lib/supabase";
 
@@ -16,10 +16,93 @@ type FormData = {
   categorie: string; typeParticipation: string; cgu: boolean;
 };
 
+type TouchedFields = Partial<Record<keyof FormData, boolean>>;
+
+function validate(field: keyof FormData, value: string | boolean): string {
+  switch (field) {
+    case "nom":
+    case "prenom":
+    case "fonction":
+    case "organisation":
+      if (!value || (value as string).trim().length < 2) return "Minimum 2 caractères requis";
+      return "";
+    case "email": {
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!value || !emailRe.test(value as string)) return "Adresse e-mail invalide";
+      return "";
+    }
+    case "telephone":
+      if (!value || (value as string).replace(/\s/g, "").length < 6) return "Minimum 6 chiffres requis";
+      return "";
+    case "cgu":
+      if (!value) return "Veuillez accepter les conditions générales";
+      return "";
+    default:
+      return "";
+  }
+}
+
+const STEP1_REQUIRED: (keyof FormData)[] = ["nom", "prenom", "fonction", "organisation", "email", "telephone", "cgu"];
+
+// Features per pass label (keyed by pass label string)
+const PASS_FEATURES: Record<string, string[]> = {
+  default: [
+    "Accès aux sessions plénières",
+    "Badge nominatif officiel",
+    "Déjeuners inclus (2 jours)",
+    "Accès à l'espace expo",
+  ],
+};
+
+// We'll resolve features at render time using pass label matching keywords
+function getPassFeatures(label: string): string[] {
+  const l = label.toLowerCase();
+  if (l.includes("vip") || l.includes("platine") || l.includes("gold") || l.includes("premium")) {
+    return [
+      "Accès VIP toutes sessions & ateliers",
+      "Réunions B2B privées illimitées",
+      "Déjeuners & dîner de gala inclus",
+      "Transferts aéroport et lounge VIP",
+    ];
+  }
+  if (l.includes("professionnel") || l.includes("pro") || l.includes("silver") || l.includes("standard")) {
+    return [
+      "Accès aux conférences et panels",
+      "5 réunions B2B planifiées",
+      "Déjeuners inclus (2 jours)",
+      "Accès espace exposants",
+    ];
+  }
+  if (l.includes("étudiant") || l.includes("junior") || l.includes("académique") || l.includes("académie")) {
+    return [
+      "Accès aux sessions académiques",
+      "Badge étudiant officiel",
+      "Déjeuner inclus (1 jour)",
+      "Networking jeunes professionnels",
+    ];
+  }
+  if (l.includes("exposant") || l.includes("stand") || l.includes("exhibitor")) {
+    return [
+      "Stand exposant 6 m²",
+      "Accès illimité à tous les espaces",
+      "Réunions B2B prioritaires",
+      "Visibilité dans le programme officiel",
+    ];
+  }
+  return PASS_FEATURES.default;
+}
+
+const RECOMMENDED_KEYWORDS = ["vip", "platine", "gold", "premium", "professionnel", "pro"];
+
+function isRecommended(label: string): boolean {
+  const l = label.toLowerCase();
+  return RECOMMENDED_KEYWORDS.some(k => l.includes(k));
+}
+
 export default function InscriptionPage() {
   const [step, setStep] = useState(1);
   const [payMethod, setPayMethod] = useState<"card" | "mobile" | "wire">("card");
-  const [ref, setRef] = useState(() => genRef());
+  const [ref] = useState(() => genRef());
   const [submitting, setSubmitting] = useState(false);
   const { t } = useLang();
   const ins = t.inscription;
@@ -33,6 +116,8 @@ export default function InscriptionPage() {
 
   const update = (f: keyof FormData, v: string | boolean) => setForm(p => ({ ...p, [f]: v }));
   const selectedPass = ins.passes.find(p => p.label === form.typeParticipation) ?? ins.passes[0];
+
+  const handleNext = () => setStep(2);
 
   return (
     <div style={{ backgroundColor: "#f4f7f5", minHeight: "100vh" }}>
@@ -93,36 +178,55 @@ export default function InscriptionPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-10 pb-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-10 pb-32 lg:pb-24">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           <div className="flex-1 min-w-0">
-            {step === 1 && <Step1 form={form} update={update} selectedPass={selectedPass} onNext={() => setStep(2)} ins={ins} />}
-            {step === 2 && <Step2 form={form} selectedPass={selectedPass} payMethod={payMethod} setPayMethod={setPayMethod} onBack={() => setStep(1)} submitting={submitting} ref={ref} onNext={async () => {
-              setSubmitting(true);
-              await supabase.from("registrations").insert({
-                reference: ref, civilite: form.civilite, nom: form.nom, prenom: form.prenom,
-                fonction: form.fonction, organisation: form.organisation, pays: form.pays,
-                email: form.email, telephone: form.telephone, categorie: form.categorie,
-                pass_type: form.typeParticipation, pass_price: selectedPass.price,
-                pay_method: payMethod, status: "en_attente", needs_invitation_letter: false,
-              });
-              // Envoi email de confirmation (silencieux si RESEND_API_KEY absent)
-              fetch("/api/send-confirmation", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  prenom: form.prenom, nom: form.nom, email: form.email,
-                  reference: ref, passType: selectedPass.label, organisation: form.organisation,
-                }),
-              }).catch(() => {}); // non bloquant
-              setSubmitting(false);
-              setStep(3);
-            }} ins={ins} />}
+            {step === 1 && (
+              <Step1
+                form={form}
+                update={update}
+                selectedPass={selectedPass}
+                onNext={handleNext}
+                ins={ins}
+              />
+            )}
+            {step === 2 && (
+              <Step2
+                form={form}
+                selectedPass={selectedPass}
+                payMethod={payMethod}
+                setPayMethod={setPayMethod}
+                onBack={() => setStep(1)}
+                submitting={submitting}
+                ref={ref}
+                onNext={async () => {
+                  setSubmitting(true);
+                  await supabase.from("registrations").insert({
+                    reference: ref, civilite: form.civilite, nom: form.nom, prenom: form.prenom,
+                    fonction: form.fonction, organisation: form.organisation, pays: form.pays,
+                    email: form.email, telephone: form.telephone, categorie: form.categorie,
+                    pass_type: form.typeParticipation, pass_price: selectedPass.price,
+                    pay_method: payMethod, status: "en_attente", needs_invitation_letter: false,
+                  });
+                  fetch("/api/send-confirmation", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      prenom: form.prenom, nom: form.nom, email: form.email,
+                      reference: ref, passType: selectedPass.label, organisation: form.organisation,
+                    }),
+                  }).catch(() => {});
+                  setSubmitting(false);
+                  setStep(3);
+                }}
+                ins={ins}
+              />
+            )}
             {step === 3 && <Step3 form={form} selectedPass={selectedPass} ref={ref} ins={ins} />}
           </div>
 
           {step < 3 && (
-            <div className="w-full lg:w-72 shrink-0 relative lg:sticky lg:top-24">
+            <div className="w-full lg:w-72 shrink-0 relative lg:sticky lg:top-24 hidden lg:block">
               <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: "#0f2d1f" }}>
                 <div className="px-6 pt-6 pb-4">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(196,154,48,0.70)" }}>
@@ -181,6 +285,16 @@ export default function InscriptionPage() {
         </div>
       </div>
 
+      {/* Sticky mobile bottom bar — steps 1 & 2 only */}
+      {step < 3 && (
+        <MobileStickyBar
+          passLabel={selectedPass.label}
+          passPrice={selectedPass.price}
+          step={step}
+          onNext={step === 1 ? handleNext : undefined}
+        />
+      )}
+
       <style jsx global>{`
         .ins-input {
           width: 100%; padding: 10px 14px; border-radius: 10px;
@@ -189,47 +303,199 @@ export default function InscriptionPage() {
         }
         .ins-input:focus { border-color: #246444; }
         .ins-input::placeholder { color: rgba(15,45,31,0.30); }
+        .ins-input--valid { border-color: #246444 !important; }
+        .ins-input--error { border-color: #dc2626 !important; }
       `}</style>
+    </div>
+  );
+}
+
+/* ── Sticky mobile bottom bar ── */
+function MobileStickyBar({
+  passLabel, passPrice, step, onNext,
+}: {
+  passLabel: string; passPrice: string; step: number; onNext?: () => void;
+}) {
+  return (
+    <div
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3"
+      style={{
+        background: "rgba(15,45,31,0.92)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))",
+        borderTop: "1px solid rgba(36,100,68,0.25)",
+      }}
+    >
+      <div>
+        <p className="text-[10px] uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.40)" }}>{passLabel}</p>
+        <p className="font-heading font-black text-base" style={{ color: "#c49a30" }}>{passPrice}</p>
+      </div>
+      {step === 1 && onNext && (
+        <button
+          onClick={onNext}
+          className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-2.5 rounded-xl transition-all duration-200 hover:opacity-90"
+          style={{ backgroundColor: "#246444", color: "white" }}
+        >
+          Suivant <ArrowRight size={15} />
+        </button>
+      )}
+      {step === 2 && (
+        <span className="text-xs" style={{ color: "rgba(255,255,255,0.40)" }}>Étape 2 · Paiement</span>
+      )}
     </div>
   );
 }
 
 type Ins = ReturnType<typeof useLang>["t"]["inscription"];
 
+/* ── FieldInput helper ── */
+function FieldInput({
+  field, value, touched, type = "text", onChange, onBlur, placeholder, className,
+}: {
+  field: keyof FormData;
+  value: string;
+  touched: boolean;
+  type?: string;
+  onChange: (v: string) => void;
+  onBlur: () => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const error = touched ? validate(field, value) : "";
+  const isValid = touched && !error;
+  const isError = touched && !!error;
+
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        onBlur={onBlur}
+        className={`ins-input pr-9 ${isValid ? "ins-input--valid" : ""} ${isError ? "ins-input--error" : ""} ${className ?? ""}`}
+      />
+      {isValid && (
+        <span
+          className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-4 h-4 rounded-full"
+          style={{ backgroundColor: "#246444", color: "white", fontSize: 10, fontWeight: 700, lineHeight: 1 }}
+          aria-hidden="true"
+        >✓</span>
+      )}
+      {isError && (
+        <p className="mt-1 text-[11px] font-medium" style={{ color: "#dc2626" }}>{error}</p>
+      )}
+    </div>
+  );
+}
+
+/* ── Step 1 ── */
 function Step1({ form, update, selectedPass, onNext, ins }: {
   form: FormData; update: (f: keyof FormData, v: string | boolean) => void;
   selectedPass: Ins["passes"][number]; onNext: () => void; ins: Ins;
 }) {
+  const [touched, setTouched] = useState<TouchedFields>({});
+  const [triedNext, setTriedNext] = useState(false);
+
+  const touch = (f: keyof FormData) => setTouched(p => ({ ...p, [f]: true }));
+
+  const effectiveTouched = (f: keyof FormData) => touched[f] || triedNext;
+
+  const hasErrors = STEP1_REQUIRED.some(f => !!validate(f, form[f]));
+
+  const handleNext = () => {
+    if (hasErrors) {
+      setTriedNext(true);
+      return;
+    }
+    onNext();
+  };
+
+  // Helper to render a FieldInput with touch tracking
+  const fi = (field: keyof FormData, type = "text", placeholder?: string, extraClass?: string) => (
+    <FieldInput
+      field={field}
+      value={form[field] as string}
+      touched={!!effectiveTouched(field)}
+      type={type}
+      onChange={v => update(field, v)}
+      onBlur={() => touch(field)}
+      placeholder={placeholder}
+      className={extraClass}
+    />
+  );
+
+  const cguError = effectiveTouched("cgu") ? validate("cgu", form.cgu) : "";
+
   return (
     <div className="space-y-5">
+      {/* Pass cards */}
       <Card title={ins.passTitle}>
         <div className="space-y-3">
-          {ins.passes.map((p) => (
-            <label key={p.label}
-              className="flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all duration-200"
-              style={{
-                border: `1.5px solid ${form.typeParticipation === p.label ? "#246444" : "rgba(36,100,68,0.12)"}`,
-                backgroundColor: form.typeParticipation === p.label ? "rgba(36,100,68,0.04)" : "white",
-              }}
-              onClick={() => update("typeParticipation", p.label)}>
-              <div className="w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all"
-                style={{ borderColor: form.typeParticipation === p.label ? "#246444" : "rgba(36,100,68,0.25)" }}>
-                {form.typeParticipation === p.label && (
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#246444" }} />
+          {ins.passes.map((p) => {
+            const selected = form.typeParticipation === p.label;
+            const rec = isRecommended(p.label);
+            const features = getPassFeatures(p.label);
+            // Pick a left-border accent color per pass
+            const accentColor = rec ? "#c49a30" : "#246444";
+            return (
+              <label
+                key={p.label}
+                className="block cursor-pointer transition-all duration-200 relative"
+                style={{
+                  border: `1.5px solid ${selected ? "#246444" : "rgba(36,100,68,0.12)"}`,
+                  borderLeft: `3px solid ${accentColor}`,
+                  borderRadius: 14,
+                  backgroundColor: selected ? "rgba(36,100,68,0.05)" : "white",
+                  padding: "16px 18px",
+                }}
+                onClick={() => update("typeParticipation", p.label)}
+              >
+                {/* Recommandé badge */}
+                {rec && (
+                  <span
+                    className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                    style={{ backgroundColor: "rgba(196,154,48,0.12)", color: "#c49a30", border: "1px solid rgba(196,154,48,0.30)" }}
+                  >
+                    Recommandé
+                  </span>
                 )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{p.label}</span>
-                  <span className="font-heading font-black text-sm shrink-0" style={{ color: "#c49a30" }}>{p.price}</span>
+
+                {/* Top row: radio + name + price */}
+                <div className="flex items-center gap-3 mb-1.5">
+                  <div
+                    className="w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all"
+                    style={{
+                      borderColor: selected ? "#246444" : "rgba(36,100,68,0.25)",
+                      backgroundColor: selected ? "#246444" : "white",
+                    }}
+                  >
+                    {selected && <Check size={9} strokeWidth={3} color="white" />}
+                  </div>
+                  <span className="text-sm font-bold flex-1" style={{ color: "#0f2d1f", paddingRight: rec ? 90 : 0 }}>{p.label}</span>
+                  <span className="font-heading font-black text-base shrink-0" style={{ color: "#c49a30" }}>{p.price}</span>
                 </div>
-                <p className="text-xs mt-0.5 leading-snug" style={{ color: "rgba(15,45,31,0.50)" }}>{p.desc}</p>
-              </div>
-            </label>
-          ))}
+
+                {/* Description */}
+                <p className="text-xs leading-snug mb-3 ml-7" style={{ color: "rgba(15,45,31,0.50)" }}>{p.desc}</p>
+
+                {/* Features list */}
+                <ul className="ml-7 space-y-1">
+                  {features.map(feat => (
+                    <li key={feat} className="flex items-start gap-2 text-xs" style={{ color: "rgba(15,45,31,0.65)" }}>
+                      <span className="shrink-0 mt-px" style={{ color: "#246444", fontWeight: 700 }}>✓</span>
+                      {feat}
+                    </li>
+                  ))}
+                </ul>
+              </label>
+            );
+          })}
         </div>
       </Card>
 
+      {/* Identity */}
       <Card title={ins.identityTitle}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <div>
@@ -240,21 +506,21 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
           </div>
           <div>
             <Label text={ins.lastName} required />
-            <input className="ins-input" value={form.nom} onChange={e => update("nom", e.target.value)} />
+            {fi("nom")}
           </div>
           <div>
             <Label text={ins.firstName} required />
-            <input className="ins-input" value={form.prenom} onChange={e => update("prenom", e.target.value)} />
+            {fi("prenom")}
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <div>
             <Label text={ins.position} required />
-            <input className="ins-input" value={form.fonction} onChange={e => update("fonction", e.target.value)} />
+            {fi("fonction")}
           </div>
           <div>
             <Label text={ins.organisation} required />
-            <input className="ins-input" value={form.organisation} onChange={e => update("organisation", e.target.value)} />
+            {fi("organisation")}
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -273,11 +539,12 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
         </div>
       </Card>
 
+      {/* Contact */}
       <Card title={ins.contactTitle}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <Label text={ins.email} required />
-            <input type="email" className="ins-input" value={form.email} onChange={e => update("email", e.target.value)} />
+            {fi("email", "email")}
           </div>
           <div>
             <Label text={ins.phone} required />
@@ -285,33 +552,44 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
               <select className="ins-input w-24 sm:w-28">
                 <option>+229</option><option>+33</option><option>+221</option><option>+225</option><option>+234</option>
               </select>
-              <input type="tel" className="ins-input flex-1" value={form.telephone} onChange={e => update("telephone", e.target.value)} />
+              {fi("telephone", "tel", undefined, "flex-1")}
             </div>
           </div>
         </div>
       </Card>
 
-      <label className="flex items-start gap-3 cursor-pointer group" onClick={() => update("cgu", !form.cgu)}>
-        <div className="w-5 h-5 rounded-md border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all duration-200"
-          style={{ borderColor: form.cgu ? "#246444" : "rgba(36,100,68,0.25)", backgroundColor: form.cgu ? "#246444" : "white" }}>
-          {form.cgu && <Check size={11} strokeWidth={3} color="white" />}
-        </div>
-        <span className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.60)" }}>
-          {ins.cgText.split("{terms}")[0]}
-          <TransitionLink href="#" className="underline" style={{ color: "#246444" }}>{ins.terms}</TransitionLink>
-          {ins.cgText.split("{terms}")[1]?.split("{privacy}")[0]}
-          <TransitionLink href="#" className="underline" style={{ color: "#246444" }}>{ins.privacyLabel}</TransitionLink>
-          {ins.cgText.split("{privacy}")[1]}
-        </span>
-      </label>
+      {/* CGU */}
+      <div>
+        <label className="flex items-start gap-3 cursor-pointer group" onClick={() => { update("cgu", !form.cgu); touch("cgu"); }}>
+          <div className="w-5 h-5 rounded-md border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all duration-200"
+            style={{
+              borderColor: cguError ? "#dc2626" : form.cgu ? "#246444" : "rgba(36,100,68,0.25)",
+              backgroundColor: form.cgu ? "#246444" : "white",
+            }}>
+            {form.cgu && <Check size={11} strokeWidth={3} color="white" />}
+          </div>
+          <span className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.60)" }}>
+            {ins.cgText.split("{terms}")[0]}
+            <TransitionLink href="#" className="underline" style={{ color: "#246444" }}>{ins.terms}</TransitionLink>
+            {ins.cgText.split("{terms}")[1]?.split("{privacy}")[0]}
+            <TransitionLink href="#" className="underline" style={{ color: "#246444" }}>{ins.privacyLabel}</TransitionLink>
+            {ins.cgText.split("{privacy}")[1]}
+          </span>
+        </label>
+        {cguError && (
+          <p className="mt-1.5 ml-8 text-[11px] font-medium" style={{ color: "#dc2626" }}>{cguError}</p>
+        )}
+      </div>
 
       <div className="flex items-center justify-between pt-2">
         <TransitionLink href="/" className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "rgba(15,45,31,0.45)" }}>
           <ArrowLeft size={15} /> {ins.back}
         </TransitionLink>
-        <button onClick={onNext}
+        <button
+          onClick={handleNext}
           className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
-          style={{ backgroundColor: "#0f2d1f", color: "white" }}>
+          style={{ backgroundColor: "#0f2d1f", color: "white" }}
+        >
           {ins.toPayment} <ArrowRight size={16} />
         </button>
       </div>
@@ -319,6 +597,7 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
   );
 }
 
+/* ── Step 2 ── */
 function Step2({ form, selectedPass, payMethod, setPayMethod, onBack, onNext, submitting, ref, ins }: {
   form: FormData; selectedPass: Ins["passes"][number];
   payMethod: "card" | "mobile" | "wire";
@@ -428,13 +707,17 @@ function Step2({ form, selectedPass, payMethod, setPayMethod, onBack, onNext, su
         <button onClick={onNext} disabled={submitting}
           className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3 rounded-xl transition-all duration-200 hover:opacity-90 disabled:opacity-60"
           style={{ backgroundColor: "#0f2d1f", color: "white" }}>
-          {submitting ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Envoi…</> : <>{payMethod === "wire" ? ins.confirmWire : ins.confirmPay}<ArrowRight size={16} /></>}
+          {submitting
+            ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Envoi…</>
+            : <>{payMethod === "wire" ? ins.confirmWire : ins.confirmPay}<ArrowRight size={16} /></>
+          }
         </button>
       </div>
     </div>
   );
 }
 
+/* ── Step 3 ── */
 function Step3({ form, selectedPass, ref, ins }: { form: FormData; selectedPass: Ins["passes"][number]; ref: string; ins: Ins }) {
   const recapValues = [
     `${form.civilite} ${form.prenom} ${form.nom}`,
