@@ -4,6 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { supabase, type Partner } from "@/lib/supabase";
 
+const tierOptions = [
+  { value: "platine", label: "Platine — 15 000 000 FCFA" },
+  { value: "or", label: "Or — 8 000 000 FCFA" },
+  { value: "argent", label: "Argent — 4 000 000 FCFA" },
+  { value: "institutionnel", label: "Institutionnel — Sur mesure" },
+  { value: "autre", label: "Autre / Je ne sais pas encore" },
+];
+
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -89,8 +97,24 @@ const stats = [
   { value: "3 jours", label: "D'échanges et de networking" },
 ];
 
+type PFormState = "idle" | "sending" | "sent";
+
 export default function PartenairesPage() {
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [pForm, setPForm] = useState({ name: "", organisation: "", role: "", email: "", phone: "", tier_interest: "", message: "" });
+  const [pStatus, setPStatus] = useState<PFormState>("idle");
+
+  const handlePartnerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPStatus("sending");
+    await supabase.from("partnership_requests").insert({
+      name: pForm.name, organisation: pForm.organisation, role: pForm.role,
+      email: pForm.email, phone: pForm.phone || null,
+      tier_interest: pForm.tier_interest, message: pForm.message || null,
+      status: "nouveau",
+    });
+    setPStatus("sent");
+  };
 
   useEffect(() => {
     supabase.from("partners").select("*").eq("published", true).order("order_index")
@@ -220,12 +244,71 @@ export default function PartenairesPage() {
         )}
 
         <FadeIn>
-          <div className="rounded-2xl overflow-hidden">
-            <div className="px-8 py-10" style={{ background: "linear-gradient(135deg, #0f2d1f, #163d2a)" }}>
+          <div id="contact-partenariat" className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-8 py-7 border-b border-gray-50">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-forest-600 mb-2">Nous rejoindre</p>
+              <h2 className="font-heading font-black text-gray-900 text-2xl">Déposez votre demande de partenariat</h2>
+              <p className="text-sm text-gray-400 mt-2">Notre équipe vous recontacte sous 48h pour affiner ensemble le niveau d'engagement le mieux adapté.</p>
+            </div>
+            {pStatus === "sent" ? (
+              <div className="py-16 text-center">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5" style={{ backgroundColor: "rgba(36,100,68,0.08)" }}>
+                  <svg className="w-7 h-7 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <h3 className="font-heading font-bold text-gray-900 text-lg mb-2">Demande reçue !</h3>
+                <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">Notre équipe partenariats vous contactera sous 48h à l'adresse <span className="font-semibold text-gray-700">{pForm.email}</span>.</p>
+                <button onClick={() => { setPStatus("idle"); setPForm({ name:"",organisation:"",role:"",email:"",phone:"",tier_interest:"",message:"" }); }} className="mt-6 text-sm font-semibold text-forest-600 hover:text-forest-800 transition-colors">
+                  Nouvelle demande
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handlePartnerSubmit} className="p-8 grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Nom complet <span className="text-red-400">*</span></label>
+                  <input required type="text" value={pForm.name} onChange={e => setPForm(f => ({ ...f, name: e.target.value }))} placeholder="Prénom Nom" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Organisation <span className="text-red-400">*</span></label>
+                  <input required type="text" value={pForm.organisation} onChange={e => setPForm(f => ({ ...f, organisation: e.target.value }))} placeholder="Nom de l'entreprise / institution" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Fonction <span className="text-red-400">*</span></label>
+                  <input required type="text" value={pForm.role} onChange={e => setPForm(f => ({ ...f, role: e.target.value }))} placeholder="DG, Directeur Marketing..." className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email professionnel <span className="text-red-400">*</span></label>
+                  <input required type="email" value={pForm.email} onChange={e => setPForm(f => ({ ...f, email: e.target.value }))} placeholder="vous@organisation.com" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Téléphone</label>
+                  <input type="tel" value={pForm.phone} onChange={e => setPForm(f => ({ ...f, phone: e.target.value }))} placeholder="+229 XX XXX XXX" className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Niveau de partenariat envisagé <span className="text-red-400">*</span></label>
+                  <select required value={pForm.tier_interest} onChange={e => setPForm(f => ({ ...f, tier_interest: e.target.value }))} className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all bg-white text-gray-700">
+                    <option value="">Sélectionnez</option>
+                    {tierOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Message (facultatif)</label>
+                  <textarea rows={3} value={pForm.message} onChange={e => setPForm(f => ({ ...f, message: e.target.value }))} placeholder="Vos objectifs, vos questions, votre contexte..." className="w-full text-sm border border-gray-200 rounded-lg px-3.5 py-2.5 outline-none focus:border-forest-400 focus:ring-2 focus:ring-forest-100 transition-all resize-none placeholder:text-gray-300" />
+                </div>
+                <div className="md:col-span-2 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                  <p className="text-[11px] text-gray-400">Réponse garantie sous 48h · <a href="mailto:partenariats@soafgang2027.org" className="text-forest-600 font-semibold hover:underline">partenariats@soafgang2027.org</a></p>
+                  <button type="submit" disabled={pStatus === "sending"} className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90 disabled:opacity-60 shrink-0" style={{ backgroundColor: "#246444", color: "#fff" }}>
+                    {pStatus === "sending" ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Envoi...</> : <>Envoyer ma demande <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></>}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* CTA rapide email en bas */}
+          <div className="rounded-2xl overflow-hidden mt-5">
+            <div className="px-8 py-8" style={{ background: "linear-gradient(135deg, #0f2d1f, #163d2a)" }}>
               <div className="max-w-2xl mx-auto text-center">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold-400 mb-3">Intéressé ?</p>
-                <h2 className="font-heading font-black text-white text-xl md:text-2xl mb-3">Discutons de votre partenariat</h2>
-                <p className="text-white/40 text-sm mb-7 leading-relaxed">Notre équipe est disponible pour étudier avec vous le niveau de partenariat le mieux adapté à vos objectifs et à votre budget.</p>
+                <p className="text-white/40 text-sm mb-4">Vous préférez nous écrire directement ?</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <a href="mailto:partenariats@soafgang2027.org"
                     className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90"

@@ -66,15 +66,18 @@ const PASS_COLORS: Record<PassType, string> = {
 };
 
 const NAV_SECTIONS = [
-  { id: "overview",       label: "Vue d'ensemble",  icon: LayoutDashboard },
-  { id: "participants",   label: "Participants",     icon: Users },
-  { id: "paiements",      label: "Paiements",        icon: CreditCard },
-  { id: "programme",      label: "Programme",        icon: CalendarDays },
-  { id: "communications", label: "Communications",   icon: Mail },
-  { id: "intervenants",   label: "Intervenants",     icon: Mic },
-  { id: "galerie",        label: "Galerie",          icon: Image },
-  { id: "articles",       label: "Actualités",       icon: Newspaper },
-  { id: "partenaires_cm", label: "Partenaires",      icon: Handshake },
+  { id: "overview",          label: "Vue d'ensemble",   icon: LayoutDashboard },
+  { id: "participants",      label: "Participants",      icon: Users },
+  { id: "paiements",         label: "Paiements",         icon: CreditCard },
+  { id: "pointage",          label: "QR & Pointage",     icon: CheckCircle2 },
+  { id: "programme",         label: "Programme",         icon: CalendarDays },
+  { id: "communications",    label: "Communications",    icon: Mail },
+  { id: "intervenants",      label: "Intervenants",      icon: Mic },
+  { id: "galerie",           label: "Galerie",           icon: Image },
+  { id: "articles",          label: "Actualités",        icon: Newspaper },
+  { id: "partenaires_cm",    label: "Partenaires",       icon: Handshake },
+  { id: "dem_partenariat",   label: "Demandes partenariat", icon: UserPlus },
+  { id: "dem_presse",        label: "Accréditations presse", icon: Globe },
 ];
 
 function fmtFCFA(n: number) { return n.toLocaleString("fr-FR") + " FCFA"; }
@@ -1065,6 +1068,355 @@ function SectionCommunications() {
   );
 }
 
+// ─── Section Demandes Partenariat ─────────────────────────────────────────────
+function SectionDemandesPartenariat() {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+    nouveau:    { bg: "rgba(234,179,8,0.12)",  text: "#a16207", label: "Nouveau" },
+    en_contact: { bg: "rgba(36,100,68,0.10)",  text: "#246444", label: "En contact" },
+    "signé":    { bg: "rgba(196,154,48,0.15)", text: "#9a7320", label: "Signé" },
+    refusé:     { bg: "rgba(220,38,38,0.10)",  text: "#b91c1c", label: "Refusé" },
+  };
+
+  const TIER_LABELS: Record<string, string> = {
+    platine: "Platine", or: "Or", argent: "Argent", institutionnel: "Institutionnel", autre: "Autre",
+  };
+
+  useEffect(() => {
+    supabase.from("partnership_requests").select("*").order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setRequests(data); setLoading(false); });
+  }, []);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("partnership_requests").update({ status }).eq("id", id);
+    setRequests(rs => rs.map(r => r.id === id ? { ...r, status } : r));
+  };
+
+  const filtered = requests.filter(r =>
+    [r.name, r.organisation, r.email, r.pays].join(" ").toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="admin-card bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+      <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+        <div>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Demandes de partenariat</h2>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>{requests.length} demande{requests.length !== 1 ? "s" : ""} reçue{requests.length !== 1 ? "s" : ""}</p>
+        </div>
+        <div className="flex gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(15,45,31,0.30)" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…" className="text-xs pl-8 pr-3 py-2 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="py-16 text-center text-sm" style={{ color: "rgba(15,45,31,0.40)" }}>Chargement…</div>
+      ) : filtered.length === 0 ? (
+        <div className="py-16 text-center">
+          <p className="text-sm" style={{ color: "rgba(15,45,31,0.40)" }}>{requests.length === 0 ? "Aucune demande pour le moment." : "Aucun résultat."}</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs min-w-[700px]">
+            <thead>
+              <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+                {["Date","Nom","Organisation","Niveau","Email","Statut","Action"].map(h => (
+                  <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((r, i) => {
+                const s = STATUS_STYLE[r.status] || STATUS_STYLE.nouveau;
+                return (
+                  <tr key={r.id} className="table-row-anim" style={{ borderBottom: "1px solid rgba(36,100,68,0.06)", animationDelay: `${i * 40}ms` }}>
+                    <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(15,45,31,0.50)" }}>{new Date(r.created_at).toLocaleDateString("fr-FR")}</td>
+                    <td className="px-4 py-3 font-semibold" style={{ color: "#0f2d1f" }}>{r.name}</td>
+                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{r.organisation}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: "rgba(196,154,48,0.12)", color: "#9a7320" }}>{TIER_LABELS[r.tier_interest] || r.tier_interest}</span>
+                    </td>
+                    <td className="px-4 py-3"><a href={`mailto:${r.email}`} className="text-forest-600 hover:underline">{r.email}</a></td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: s.bg, color: s.text }}>{s.label}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <select value={r.status} onChange={e => updateStatus(r.id, e.target.value)} className="text-[10px] border rounded px-1.5 py-1 outline-none bg-white" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                        <option value="nouveau">Nouveau</option>
+                        <option value="en_contact">En contact</option>
+                        <option value="signé">Signé</option>
+                        <option value="refusé">Refusé</option>
+                      </select>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Détail message si présent */}
+      {filtered.some(r => r.message) && (
+        <div className="px-6 py-4 space-y-3" style={{ borderTop: "1px solid rgba(36,100,68,0.07)" }}>
+          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(15,45,31,0.35)" }}>Messages reçus</p>
+          {filtered.filter(r => r.message).map(r => (
+            <div key={r.id} className="rounded-xl px-4 py-3" style={{ backgroundColor: "rgba(15,45,31,0.03)", border: "1px solid rgba(36,100,68,0.08)" }}>
+              <p className="text-[10px] font-bold mb-1" style={{ color: "#246444" }}>{r.name} — {r.organisation}</p>
+              <p className="text-xs leading-relaxed" style={{ color: "rgba(15,45,31,0.65)" }}>{r.message}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Section Demandes Presse ───────────────────────────────────────────────────
+function SectionDemandePresse() {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+    nouveau:  { bg: "rgba(234,179,8,0.12)",  text: "#a16207", label: "Nouveau" },
+    approuvé: { bg: "rgba(36,100,68,0.10)",  text: "#246444", label: "Approuvé" },
+    refusé:   { bg: "rgba(220,38,38,0.10)",  text: "#b91c1c", label: "Refusé" },
+  };
+
+  useEffect(() => {
+    supabase.from("press_requests").select("*").order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setRequests(data); setLoading(false); });
+  }, []);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("press_requests").update({ status }).eq("id", id);
+    setRequests(rs => rs.map(r => r.id === id ? { ...r, status } : r));
+  };
+
+  const filtered = requests.filter(r =>
+    [r.name, r.media, r.email, r.media_type].join(" ").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const exportCSV = () => {
+    const rows = [["Date","Nom","Média","Type","Rôle","Email","Téléphone","Statut"]];
+    filtered.forEach(r => rows.push([
+      new Date(r.created_at).toLocaleDateString("fr-FR"),
+      r.name, r.media, r.media_type, r.role, r.email, r.phone || "", r.status,
+    ]));
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "accreditations-presse.csv"; a.click();
+  };
+
+  return (
+    <div className="admin-card bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+      <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+        <div>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Accréditations presse</h2>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>{requests.length} demande{requests.length !== 1 ? "s" : ""} · {requests.filter(r => r.status === "approuvé").length} approuvée{requests.filter(r => r.status === "approuvé").length !== 1 ? "s" : ""}</p>
+        </div>
+        <div className="flex gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(15,45,31,0.30)" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…" className="text-xs pl-8 pr-3 py-2 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+          </div>
+          <button onClick={exportCSV} className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-colors hover:bg-forest-50" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>
+            <Download className="w-3.5 h-3.5" /> Export CSV
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="py-16 text-center text-sm" style={{ color: "rgba(15,45,31,0.40)" }}>Chargement…</div>
+      ) : filtered.length === 0 ? (
+        <div className="py-16 text-center">
+          <p className="text-sm" style={{ color: "rgba(15,45,31,0.40)" }}>{requests.length === 0 ? "Aucune demande pour le moment." : "Aucun résultat."}</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs min-w-[750px]">
+            <thead>
+              <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+                {["Date","Nom","Média","Type","Email","Téléphone","Statut","Action"].map(h => (
+                  <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((r, i) => {
+                const s = STATUS_STYLE[r.status] || STATUS_STYLE.nouveau;
+                return (
+                  <tr key={r.id} className="table-row-anim" style={{ borderBottom: "1px solid rgba(36,100,68,0.06)", animationDelay: `${i * 40}ms` }}>
+                    <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(15,45,31,0.50)" }}>{new Date(r.created_at).toLocaleDateString("fr-FR")}</td>
+                    <td className="px-4 py-3 font-semibold" style={{ color: "#0f2d1f" }}>
+                      <div>{r.name}</div>
+                      <div className="text-[10px] font-normal" style={{ color: "rgba(15,45,31,0.45)" }}>{r.role}</div>
+                    </td>
+                    <td className="px-4 py-3 font-medium" style={{ color: "rgba(15,45,31,0.75)" }}>{r.media}</td>
+                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.55)" }}>{r.media_type}</td>
+                    <td className="px-4 py-3"><a href={`mailto:${r.email}`} className="text-forest-600 hover:underline">{r.email}</a></td>
+                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.55)" }}>{r.phone || "—"}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: s.bg, color: s.text }}>{s.label}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <select value={r.status} onChange={e => updateStatus(r.id, e.target.value)} className="text-[10px] border rounded px-1.5 py-1 outline-none bg-white" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                        <option value="nouveau">Nouveau</option>
+                        <option value="approuvé">Approuvé</option>
+                        <option value="refusé">Refusé</option>
+                      </select>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Section QR Codes & Pointage ──────────────────────────────────────────────
+function SectionPointage() {
+  const [search, setSearch] = useState("");
+  const [checkedIn, setCheckedIn] = useState<Record<string, boolean>>({});
+  const [checkedInAt, setCheckedInAt] = useState<Record<string, string>>({});
+  const [qrModal, setQrModal] = useState<typeof PARTICIPANTS[0] | null>(null);
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const filtered = PARTICIPANTS.filter(p =>
+    [p.nom, p.prenom, p.organisation, p.id].join(" ").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleCheckIn = (id: string) => {
+    const now = new Date().toISOString();
+    setCheckedIn(c => ({ ...c, [id]: true }));
+    setCheckedInAt(a => ({ ...a, [id]: now }));
+  };
+
+  useEffect(() => {
+    if (!qrModal || !qrCanvasRef.current) return;
+    const url = `${window.location.origin}/badge/${qrModal.id}`;
+    import("qrcode").then(QRCode => {
+      QRCode.toCanvas(qrCanvasRef.current!, url, {
+        width: 200, margin: 2,
+        color: { dark: "#0f2d1f", light: "#ffffff" },
+      });
+    });
+  }, [qrModal]);
+
+  const presentCount = Object.values(checkedIn).filter(Boolean).length;
+
+  return (
+    <div className="space-y-5 admin-card">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: "Participants attendus", value: PARTICIPANTS.length, color: "#246444" },
+          { label: "Présents pointés", value: presentCount, color: "#c49a30" },
+          { label: "En attente", value: PARTICIPANTS.length - presentCount, color: "rgba(15,45,31,0.40)" },
+        ].map(s => (
+          <div key={s.label} className="bg-white rounded-xl p-4 text-center shadow-sm" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+            <div className="font-heading font-black text-2xl mb-1" style={{ color: s.color }}>{s.value}</div>
+            <p className="text-[10px] font-medium" style={{ color: "rgba(15,45,31,0.50)" }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Contrôle d'accès & QR Codes</h2>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(15,45,31,0.30)" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Nom, ID…" className="text-xs pl-8 pr-3 py-2 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs min-w-[680px]">
+            <thead>
+              <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+                {["ID","Participant","Organisation","Pass","Présence","QR / Pointer"].map(h => (
+                  <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((p, i) => {
+                const isIn = checkedIn[p.id];
+                const inAt = checkedInAt[p.id];
+                return (
+                  <tr key={p.id} className="table-row-anim" style={{ borderBottom: "1px solid rgba(36,100,68,0.06)", animationDelay: `${i * 30}ms`, backgroundColor: isIn ? "rgba(36,100,68,0.025)" : undefined }}>
+                    <td className="px-4 py-3 font-mono text-[10px]" style={{ color: "rgba(15,45,31,0.45)" }}>{p.id}</td>
+                    <td className="px-4 py-3 font-semibold" style={{ color: "#0f2d1f" }}>{p.prenom} {p.nom}</td>
+                    <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{p.organisation}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: PASS_COLORS[p.pass] }}>
+                        {p.pass}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {isIn ? (
+                        <div>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(36,100,68,0.10)", color: "#246444" }}>
+                            <CheckCircle2 className="w-3 h-3" /> Pointé
+                          </span>
+                          {inAt && <p className="text-[9px] mt-0.5" style={{ color: "rgba(15,45,31,0.35)" }}>{new Date(inAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>}
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(234,179,8,0.12)", color: "#a16207" }}>
+                          <Clock className="w-3 h-3" /> En attente
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setQrModal(p)} className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg border transition-colors hover:bg-forest-50" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>
+                          QR
+                        </button>
+                        {!isIn && (
+                          <button onClick={() => handleCheckIn(p.id)} className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg text-white transition-colors hover:opacity-80" style={{ backgroundColor: "#246444" }}>
+                            Pointer ✓
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* QR Modal */}
+      {qrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.6)" }} onClick={() => setQrModal(null)}>
+          <div className="bg-white rounded-2xl p-7 shadow-2xl text-center max-w-xs w-full mx-4" onClick={e => e.stopPropagation()}>
+            <p className="font-heading font-black text-lg mb-0.5" style={{ color: "#0f2d1f" }}>{qrModal.prenom} {qrModal.nom}</p>
+            <p className="text-xs mb-1" style={{ color: "rgba(15,45,31,0.50)" }}>{qrModal.organisation}</p>
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white inline-block mb-5" style={{ backgroundColor: PASS_COLORS[qrModal.pass] }}>{qrModal.pass}</span>
+            <div className="flex justify-center mb-3">
+              <canvas ref={qrCanvasRef} className="rounded-xl" />
+            </div>
+            <p className="text-[9px] font-mono mb-4" style={{ color: "rgba(15,45,31,0.35)" }}>{qrModal.id}</p>
+            <p className="text-[10px] mb-4" style={{ color: "rgba(15,45,31,0.45)" }}>Ce QR ouvre la page badge sur n'importe quel téléphone</p>
+            <button onClick={() => setQrModal(null)} className="text-xs font-semibold text-gray-400 hover:text-gray-600 transition-colors">Fermer</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function EspaceAdminPage() {
   const [active, setActive] = useState("overview");
@@ -1072,18 +1424,22 @@ export default function EspaceAdminPage() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const section: Record<string, React.ReactNode> = {
-    overview:       <SectionOverview />,
-    participants:   <SectionParticipants />,
-    paiements:      <SectionPaiements />,
-    programme:      <SectionProgramme />,
-    communications: <SectionCommunications />,
-    intervenants:   <SectionIntervenants />,
-    galerie:        <SectionGalerie />,
-    articles:       <SectionArticles />,
-    partenaires_cm: <SectionPartenaires />,
+    overview:        <SectionOverview />,
+    participants:    <SectionParticipants />,
+    paiements:       <SectionPaiements />,
+    pointage:        <SectionPointage />,
+    programme:       <SectionProgramme />,
+    communications:  <SectionCommunications />,
+    intervenants:    <SectionIntervenants />,
+    galerie:         <SectionGalerie />,
+    articles:        <SectionArticles />,
+    partenaires_cm:  <SectionPartenaires />,
+    dem_partenariat: <SectionDemandesPartenariat />,
+    dem_presse:      <SectionDemandePresse />,
   };
 
   const contentSections = ["intervenants","galerie","articles","partenaires_cm"];
+  const demandeSections = ["dem_partenariat","dem_presse","pointage"];
 
   return (
     <div style={{ backgroundColor: "#f4f7f5", minHeight: "100vh" }}>
@@ -1119,36 +1475,60 @@ export default function EspaceAdminPage() {
             </button>
           </div>
 
-          <nav className="flex-1 py-4 px-2 overflow-y-auto">
-            {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Gestion événement</p>}
-            <div className="space-y-0.5 mb-4">
-              {NAV_SECTIONS.filter(n => !contentSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
-                const isActive = active === id;
-                return (
-                  <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
-                    style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
-                    <Icon className="w-4 h-4 shrink-0" />
-                    {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
-                    {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
-                  </button>
-                );
-              })}
+          <nav className="flex-1 py-4 px-2 overflow-y-auto space-y-4">
+            {/* Gestion événement */}
+            <div>
+              {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Gestion événement</p>}
+              <div className="space-y-0.5">
+                {NAV_SECTIONS.filter(n => !contentSections.includes(n.id) && !demandeSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
+                  const isActive = active === id;
+                  return (
+                    <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
+                      style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
+                      {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Contenu du site</p>}
-            <div className="space-y-0.5">
-              {NAV_SECTIONS.filter(n => contentSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
-                const isActive = active === id;
-                return (
-                  <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
-                    style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
-                    <Icon className="w-4 h-4 shrink-0" />
-                    {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
-                    {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
-                  </button>
-                );
-              })}
+            {/* Demandes & accès */}
+            <div>
+              {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Demandes & Accès</p>}
+              <div className="space-y-0.5">
+                {NAV_SECTIONS.filter(n => demandeSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
+                  const isActive = active === id;
+                  return (
+                    <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
+                      style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
+                      {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Contenu du site */}
+            <div>
+              {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Contenu du site</p>}
+              <div className="space-y-0.5">
+                {NAV_SECTIONS.filter(n => contentSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
+                  const isActive = active === id;
+                  return (
+                    <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
+                      style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
+                      {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </nav>
 

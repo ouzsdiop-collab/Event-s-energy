@@ -61,6 +61,32 @@ export type Partner = {
   created_at: string;
 };
 
+export type PartnershipRequest = {
+  id: string;
+  name: string;
+  organisation: string;
+  role: string;
+  email: string;
+  phone: string | null;
+  tier_interest: "platine" | "or" | "argent" | "institutionnel" | "autre";
+  message: string | null;
+  status: "nouveau" | "en_contact" | "signé" | "refusé";
+  created_at: string;
+};
+
+export type PressRequest = {
+  id: string;
+  name: string;
+  media: string;
+  role: string;
+  email: string;
+  phone: string | null;
+  media_type: string;
+  coverage: string | null;
+  status: "nouveau" | "approuvé" | "refusé";
+  created_at: string;
+};
+
 export type ProgrammeSession = {
   id: string;
   day: 1 | 2 | 3;

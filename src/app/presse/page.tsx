@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
+import { supabase } from "@/lib/supabase";
 
 function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -64,10 +65,16 @@ export default function PressePage() {
   const [form, setForm] = useState({ name: "", media: "", role: "", email: "", phone: "", type: "", coverage: "" });
   const [status, setStatus] = useState<AccredFormState>("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
-    setTimeout(() => setStatus("sent"), 1800);
+    await supabase.from("press_requests").insert({
+      name: form.name, media: form.media, role: form.role,
+      email: form.email, phone: form.phone || null,
+      media_type: form.type, coverage: form.coverage || null,
+      status: "nouveau",
+    });
+    setStatus("sent");
   };
 
   return (
