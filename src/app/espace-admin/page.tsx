@@ -6,9 +6,9 @@ import {
   Bell, ChevronRight, Search, Download, Eye,
   CheckCircle2, XCircle, Clock, TrendingUp,
   Globe, Mic, Send, Menu, X, ArrowUpRight,
-  Image, Newspaper, Handshake, UserPlus, Trash2, Pencil, Upload, Plus,
+  Image, Newspaper, Handshake, UserPlus, Trash2, Pencil, Upload, Plus, FileText,
 } from "lucide-react";
-import { supabase, type Speaker, type GalleryImage, type Article, type Partner } from "@/lib/supabase";
+import { supabase, type Speaker, type GalleryImage, type Article, type Partner, type Registration, type PartnershipRequest, type PressRequest } from "@/lib/supabase";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Statut = "confirmé" | "en attente" | "annulé" | "VIP";
@@ -76,6 +76,7 @@ const NAV_SECTIONS = [
   { id: "galerie",           label: "Galerie",           icon: Image },
   { id: "articles",          label: "Actualités",        icon: Newspaper },
   { id: "partenaires_cm",    label: "Partenaires",       icon: Handshake },
+  { id: "inscriptions",      label: "Inscriptions",          icon: FileText },
   { id: "dem_partenariat",   label: "Demandes partenariat", icon: UserPlus },
   { id: "dem_presse",        label: "Accréditations presse", icon: Globe },
 ];
@@ -1434,11 +1435,219 @@ function SectionPointage() {
   );
 }
 
+// ─── Invitation Letter Printer ────────────────────────────────────────────────
+function printInvitationLetter(r: Registration) {
+  const win = window.open("", "_blank");
+  if (!win) return;
+  const today = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  win.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<title>Lettre d'invitation – ${r.prenom} ${r.nom}</title>
+<style>
+  body { font-family: Georgia, serif; margin: 0; padding: 40px 60px; color: #111; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #246444; padding-bottom: 20px; margin-bottom: 32px; }
+  .logo-block .title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #0f2d1f; }
+  .logo-block .sub { font-size: 11px; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; }
+  .ref { font-size: 11px; color: #6b7280; text-align: right; }
+  h2 { font-size: 18px; color: #246444; margin: 0 0 24px; font-weight: 700; letter-spacing: 0.5px; }
+  p { line-height: 1.8; margin: 0 0 16px; font-size: 13px; }
+  .highlight { font-weight: bold; color: #0f2d1f; }
+  .badge-box { border: 2px solid #246444; border-radius: 8px; padding: 16px 20px; margin: 28px 0; background: #f9fafb; }
+  .badge-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; }
+  .badge-label { color: #6b7280; }
+  .badge-val { font-weight: 700; color: #0f2d1f; }
+  .footer { border-top: 1px solid #d1d5db; margin-top: 60px; padding-top: 16px; font-size: 11px; color: #9ca3af; text-align: center; }
+  @media print { button { display: none; } }
+</style></head><body>
+<div class="header">
+  <div class="logo-block"><div class="title">SOAFGANG 2027</div><div class="sub">Sommet Africain du Gaz Naturel</div></div>
+  <div class="ref"><div>Réf. : <strong>${r.reference}</strong></div><div>Cotonou, le ${today}</div></div>
+</div>
+<h2>LETTRE D'INVITATION OFFICIELLE</h2>
+<p>Le Comité d'Organisation du <span class="highlight">Sommet Africain du Gaz Naturel (SOAFGANG 2027)</span> a l'honneur de convier :</p>
+<div class="badge-box">
+  <div class="badge-row"><span class="badge-label">Nom complet</span><span class="badge-val">${r.civilite} ${r.prenom} ${r.nom}</span></div>
+  <div class="badge-row"><span class="badge-label">Fonction</span><span class="badge-val">${r.fonction}</span></div>
+  <div class="badge-row"><span class="badge-label">Organisation</span><span class="badge-val">${r.organisation}</span></div>
+  <div class="badge-row"><span class="badge-label">Pays</span><span class="badge-val">${r.pays}</span></div>
+  <div class="badge-row"><span class="badge-label">Catégorie</span><span class="badge-val">${r.categorie}</span></div>
+  <div class="badge-row"><span class="badge-label">Pass</span><span class="badge-val">${r.pass_type}</span></div>
+  <div class="badge-row"><span class="badge-label">Réf. inscription</span><span class="badge-val">${r.reference}</span></div>
+</div>
+<p>à participer au <span class="highlight">1er Sommet Africain du Gaz Naturel (SOAFGANG 2027)</span>, qui se tiendra les <span class="highlight">15, 16 et 17 mars 2027</span> au <span class="highlight">Palais des Congrès de Cotonou, Bénin</span>.</p>
+<p>Cet événement réunira les décideurs politiques, les opérateurs énergétiques, les investisseurs et les experts du secteur gazier de la région ouest-africaine autour d'un programme de haut niveau axé sur les enjeux de transition énergétique, d'infrastructure et de financement.</p>
+<p>La présente lettre vaut invitation officielle et peut être utilisée pour toutes démarches administratives nécessaires, notamment l'obtention de visa.</p>
+<p style="margin-top:40px;">Nous vous prions d'agréer, ${r.civilite} ${r.nom}, l'expression de notre considération distinguée.</p>
+<p style="margin-top:32px;"><strong>Le Comité d'Organisation</strong><br>SOAFGANG 2027 – Cotonou, Bénin<br><em>contact@soafgang2027.org</em></p>
+<div class="footer">SOAFGANG 2027 · Palais des Congrès de Cotonou · contact@soafgang2027.org · Ce document est officiel et non cessible.</div>
+<script>window.onload=()=>window.print();</script>
+</body></html>`);
+  win.document.close();
+}
+
+// ─── Section Inscriptions ─────────────────────────────────────────────────────
+function SectionInscriptions() {
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase.from("registrations").select("*").order("created_at", { ascending: false });
+    if (data) setRegistrations(data as Registration[]);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("registrations").update({ status }).eq("id", id);
+    setRegistrations(prev => prev.map(r => r.id === id ? { ...r, status: status as Registration["status"] } : r));
+  };
+
+  const filtered = registrations.filter(r =>
+    [r.nom, r.prenom, r.email, r.organisation, r.reference, r.pays].join(" ").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const total = registrations.length;
+  const confirmed = registrations.filter(r => r.status === "confirmé").length;
+  const pending = registrations.filter(r => r.status === "en_attente").length;
+  const cancelled = registrations.filter(r => r.status === "annulé").length;
+
+  const exportCSV = () => {
+    const headers = ["Réf","Date","Civilité","Nom","Prénom","Fonction","Organisation","Pays","Email","Téléphone","Catégorie","Pass","Tarif","Paiement","Statut"];
+    const rows = registrations.map(r => [
+      r.reference, r.created_at.slice(0,10), r.civilite, r.nom, r.prenom, r.fonction,
+      r.organisation, r.pays, r.email, r.telephone, r.categorie, r.pass_type,
+      r.pass_price, r.pay_method, r.status,
+    ]);
+    const csv = [headers, ...rows].map(row => row.map(v => `"${(v ?? "").toString().replace(/"/g, '""')}"`).join(",")).join("\n");
+    const a = document.createElement("a");
+    a.href = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(csv);
+    a.download = `inscriptions-soafgang2027-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  };
+
+  const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
+    en_attente: { bg: "rgba(234,179,8,0.12)", text: "#a16207", label: "En attente" },
+    confirmé:   { bg: "rgba(36,100,68,0.10)", text: "#246444", label: "Confirmé" },
+    annulé:     { bg: "rgba(220,38,38,0.10)", text: "#b91c1c", label: "Annulé" },
+  };
+
+  return (
+    <div className="space-y-5 admin-card">
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[
+          { label: "Total inscriptions", value: total, color: "#246444" },
+          { label: "Confirmées", value: confirmed, color: "#246444" },
+          { label: "En attente", value: pending, color: "#a16207" },
+          { label: "Annulées", value: cancelled, color: "#b91c1c" },
+        ].map(s => (
+          <div key={s.label} className="bg-white rounded-xl p-4 text-center shadow-sm" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+            <div className="font-heading font-black text-2xl mb-1" style={{ color: s.color }}>{s.value}</div>
+            <p className="text-[10px] font-medium" style={{ color: "rgba(15,45,31,0.50)" }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden" style={{ border: "1px solid rgba(36,100,68,0.10)" }}>
+        <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-3" style={{ borderBottom: "1px solid rgba(36,100,68,0.07)" }}>
+          <h2 className="font-heading font-black text-xl" style={{ color: "#0f2d1f" }}>Inscriptions</h2>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(15,45,31,0.30)" }} />
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Nom, email, réf…" className="text-xs pl-8 pr-3 py-2 rounded-lg border outline-none" style={{ borderColor: "rgba(36,100,68,0.20)" }} />
+            </div>
+            <button onClick={exportCSV} className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: "rgba(36,100,68,0.20)", color: "#246444" }}>
+              <Download className="w-3.5 h-3.5" /> Export CSV
+            </button>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="py-16 text-center text-sm" style={{ color: "rgba(15,45,31,0.35)" }}>Chargement…</div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center text-sm" style={{ color: "rgba(15,45,31,0.35)" }}>
+            {registrations.length === 0 ? "Aucune inscription reçue pour l'instant." : "Aucun résultat pour cette recherche."}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs min-w-[900px]">
+              <thead>
+                <tr style={{ backgroundColor: "rgba(15,45,31,0.03)", borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+                  {["Réf","Date","Participant","Organisation","Pays","Pass","Paiement","Statut","Actions"].map(h => (
+                    <th key={h} className="text-left px-4 py-3 font-bold uppercase tracking-wider text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((r, i) => {
+                  const s = STATUS_STYLE[r.status] ?? STATUS_STYLE.en_attente;
+                  return (
+                    <tr key={r.id} className="table-row-anim" style={{ borderBottom: "1px solid rgba(36,100,68,0.06)", animationDelay: `${i * 25}ms` }}>
+                      <td className="px-4 py-3 font-mono text-[10px]" style={{ color: "rgba(15,45,31,0.45)" }}>{r.reference}</td>
+                      <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(15,45,31,0.55)" }}>{r.created_at?.slice(0,10)}</td>
+                      <td className="px-4 py-3">
+                        <p className="font-semibold" style={{ color: "#0f2d1f" }}>{r.civilite} {r.prenom} {r.nom}</p>
+                        <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.45)" }}>{r.email}</p>
+                        <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.35)" }}>{r.fonction}</p>
+                      </td>
+                      <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{r.organisation}</td>
+                      <td className="px-4 py-3" style={{ color: "rgba(15,45,31,0.65)" }}>{r.pays}</td>
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-[10px]" style={{ color: "#0f2d1f" }}>{r.pass_type}</p>
+                        <p className="text-[10px]" style={{ color: "rgba(15,45,31,0.40)" }}>{r.pass_price}</p>
+                      </td>
+                      <td className="px-4 py-3 text-[10px]" style={{ color: "rgba(15,45,31,0.55)" }}>{r.pay_method}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ backgroundColor: s.bg, color: s.text }}>{s.label}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <select value={r.status} onChange={e => updateStatus(r.id, e.target.value)} className="text-[10px] border rounded px-1.5 py-1 outline-none bg-white" style={{ borderColor: "rgba(36,100,68,0.20)" }}>
+                            <option value="en_attente">En attente</option>
+                            <option value="confirmé">Confirmé</option>
+                            <option value="annulé">Annulé</option>
+                          </select>
+                          <button onClick={() => printInvitationLetter(r)} title="Lettre d'invitation" className="p-1.5 rounded-lg hover:bg-amber-50 transition-colors" style={{ color: "#c49a30", border: "1px solid rgba(196,154,48,0.30)" }}>
+                            <FileText className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function EspaceAdminPage() {
   const [active, setActive] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [badges, setBadges] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    async function fetchBadges() {
+      const [insRes, partRes, pressRes] = await Promise.all([
+        supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "en_attente"),
+        supabase.from("partnership_requests").select("id", { count: "exact", head: true }).eq("status", "nouveau"),
+        supabase.from("press_requests").select("id", { count: "exact", head: true }).eq("status", "nouveau"),
+      ]);
+      setBadges({
+        inscriptions:    insRes.count ?? 0,
+        dem_partenariat: partRes.count ?? 0,
+        dem_presse:      pressRes.count ?? 0,
+      });
+    }
+    fetchBadges();
+  }, []);
 
   const section: Record<string, React.ReactNode> = {
     overview:        <SectionOverview />,
@@ -1451,12 +1660,13 @@ export default function EspaceAdminPage() {
     galerie:         <SectionGalerie />,
     articles:        <SectionArticles />,
     partenaires_cm:  <SectionPartenaires />,
+    inscriptions:    <SectionInscriptions />,
     dem_partenariat: <SectionDemandesPartenariat />,
     dem_presse:      <SectionDemandePresse />,
   };
 
   const contentSections = ["intervenants","galerie","articles","partenaires_cm"];
-  const demandeSections = ["dem_partenariat","dem_presse","pointage"];
+  const demandeSections = ["inscriptions","dem_partenariat","dem_presse","pointage"];
 
   return (
     <div style={{ backgroundColor: "#f4f7f5", minHeight: "100vh" }}>
@@ -1493,60 +1703,38 @@ export default function EspaceAdminPage() {
           </div>
 
           <nav className="flex-1 py-4 px-2 overflow-y-auto space-y-4">
-            {/* Gestion événement */}
-            <div>
-              {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Gestion événement</p>}
-              <div className="space-y-0.5">
-                {NAV_SECTIONS.filter(n => !contentSections.includes(n.id) && !demandeSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
-                  const isActive = active === id;
-                  return (
-                    <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
-                      style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
-                      <Icon className="w-4 h-4 shrink-0" />
-                      {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
-                      {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
-                    </button>
-                  );
-                })}
+            {([
+              { label: "Gestion événement", ids: NAV_SECTIONS.filter(n => !contentSections.includes(n.id) && !demandeSections.includes(n.id)) },
+              { label: "Demandes & Accès",  ids: NAV_SECTIONS.filter(n => demandeSections.includes(n.id)) },
+              { label: "Contenu du site",   ids: NAV_SECTIONS.filter(n => contentSections.includes(n.id)) },
+            ] as const).map(group => (
+              <div key={group.label}>
+                {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>{group.label}</p>}
+                <div className="space-y-0.5">
+                  {group.ids.map(({ id, label, icon: Icon }) => {
+                    const isActive = active === id;
+                    const badge = badges[id] ?? 0;
+                    return (
+                      <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
+                        style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
+                        <div className="relative shrink-0">
+                          <Icon className="w-4 h-4" />
+                          {badge > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 rounded-full text-[9px] font-black flex items-center justify-center leading-none"
+                              style={{ backgroundColor: "#c49a30", color: "#0f2d1f" }}>
+                              {badge > 99 ? "99+" : badge}
+                            </span>
+                          )}
+                        </div>
+                        {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
+                        {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-            {/* Demandes & accès */}
-            <div>
-              {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Demandes & Accès</p>}
-              <div className="space-y-0.5">
-                {NAV_SECTIONS.filter(n => demandeSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
-                  const isActive = active === id;
-                  return (
-                    <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
-                      style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
-                      <Icon className="w-4 h-4 shrink-0" />
-                      {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
-                      {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            {/* Contenu du site */}
-            <div>
-              {sidebarOpen && <p className="text-[9px] font-bold uppercase tracking-[0.2em] px-3 mb-2" style={{ color: "rgba(255,255,255,0.20)" }}>Contenu du site</p>}
-              <div className="space-y-0.5">
-                {NAV_SECTIONS.filter(n => contentSections.includes(n.id)).map(({ id, label, icon: Icon }) => {
-                  const isActive = active === id;
-                  return (
-                    <button key={id} onClick={() => { setActive(id); setMobileSidebarOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200"
-                      style={{ backgroundColor: isActive ? "rgba(196,154,48,0.15)" : "transparent", color: isActive ? "#c49a30" : "rgba(255,255,255,0.45)" }}>
-                      <Icon className="w-4 h-4 shrink-0" />
-                      {sidebarOpen && <span className="text-xs font-medium flex-1">{label}</span>}
-                      {sidebarOpen && isActive && <ChevronRight className="w-3 h-3" style={{ color: "#c49a30" }} />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            ))}
           </nav>
 
           <div className="p-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>

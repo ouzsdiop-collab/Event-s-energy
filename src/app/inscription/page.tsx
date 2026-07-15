@@ -4,6 +4,11 @@ import { useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { ArrowRight, ArrowLeft, Shield, Mail, QrCode, CreditCard, Smartphone, Building2, Download, Share2, Check, Calendar, MapPin } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
+
+function genRef() {
+  return "SOFGN-2027-" + Math.floor(1000 + Math.random() * 9000);
+}
 
 type FormData = {
   civilite: string; nom: string; prenom: string; fonction: string;
@@ -11,11 +16,11 @@ type FormData = {
   categorie: string; typeParticipation: string; cgu: boolean;
 };
 
-const REF = "SOFGN-2027-0042";
-
 export default function InscriptionPage() {
   const [step, setStep] = useState(1);
   const [payMethod, setPayMethod] = useState<"card" | "mobile" | "wire">("card");
+  const [ref, setRef] = useState(() => genRef());
+  const [submitting, setSubmitting] = useState(false);
   const { t } = useLang();
   const ins = t.inscription;
 
@@ -92,8 +97,19 @@ export default function InscriptionPage() {
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           <div className="flex-1 min-w-0">
             {step === 1 && <Step1 form={form} update={update} selectedPass={selectedPass} onNext={() => setStep(2)} ins={ins} />}
-            {step === 2 && <Step2 form={form} selectedPass={selectedPass} payMethod={payMethod} setPayMethod={setPayMethod} onBack={() => setStep(1)} onNext={() => setStep(3)} ins={ins} />}
-            {step === 3 && <Step3 form={form} selectedPass={selectedPass} ins={ins} />}
+            {step === 2 && <Step2 form={form} selectedPass={selectedPass} payMethod={payMethod} setPayMethod={setPayMethod} onBack={() => setStep(1)} submitting={submitting} ref={ref} onNext={async () => {
+              setSubmitting(true);
+              await supabase.from("registrations").insert({
+                reference: ref, civilite: form.civilite, nom: form.nom, prenom: form.prenom,
+                fonction: form.fonction, organisation: form.organisation, pays: form.pays,
+                email: form.email, telephone: form.telephone, categorie: form.categorie,
+                pass_type: form.typeParticipation, pass_price: selectedPass.price,
+                pay_method: payMethod, status: "en_attente", needs_invitation_letter: false,
+              });
+              setSubmitting(false);
+              setStep(3);
+            }} ins={ins} />}
+            {step === 3 && <Step3 form={form} selectedPass={selectedPass} ref={ref} ins={ins} />}
           </div>
 
           {step < 3 && (
@@ -294,14 +310,14 @@ function Step1({ form, update, selectedPass, onNext, ins }: {
   );
 }
 
-function Step2({ form, selectedPass, payMethod, setPayMethod, onBack, onNext, ins }: {
+function Step2({ form, selectedPass, payMethod, setPayMethod, onBack, onNext, submitting, ref, ins }: {
   form: FormData; selectedPass: Ins["passes"][number];
   payMethod: "card" | "mobile" | "wire";
   setPayMethod: (m: "card" | "mobile" | "wire") => void;
-  onBack: () => void; onNext: () => void; ins: Ins;
+  onBack: () => void; onNext: () => void; submitting: boolean; ref: string; ins: Ins;
 }) {
   const wireFields = ins.wireFields;
-  const wireVals = [...ins.wireValues, REF, selectedPass.price];
+  const wireVals = [...ins.wireValues, ref, selectedPass.price];
 
   return (
     <div className="space-y-5">
@@ -315,7 +331,7 @@ function Step2({ form, selectedPass, payMethod, setPayMethod, onBack, onNext, in
         </div>
         <div className="text-right">
           <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "rgba(255,255,255,0.40)" }}>{ins.refLabel}</p>
-          <p className="font-mono font-bold text-sm" style={{ color: "rgba(196,154,48,0.80)" }}>{REF}</p>
+          <p className="font-mono font-bold text-sm" style={{ color: "rgba(196,154,48,0.80)" }}>{ref}</p>
         </div>
       </div>
 
@@ -400,22 +416,21 @@ function Step2({ form, selectedPass, payMethod, setPayMethod, onBack, onNext, in
         <button onClick={onBack} className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "rgba(15,45,31,0.45)" }}>
           <ArrowLeft size={15} /> {ins.back}
         </button>
-        <button onClick={onNext}
-          className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
+        <button onClick={onNext} disabled={submitting}
+          className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3 rounded-xl transition-all duration-200 hover:opacity-90 disabled:opacity-60"
           style={{ backgroundColor: "#0f2d1f", color: "white" }}>
-          {payMethod === "wire" ? ins.confirmWire : ins.confirmPay}
-          <ArrowRight size={16} />
+          {submitting ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Envoi…</> : <>{payMethod === "wire" ? ins.confirmWire : ins.confirmPay}<ArrowRight size={16} /></>}
         </button>
       </div>
     </div>
   );
 }
 
-function Step3({ form, selectedPass, ins }: { form: FormData; selectedPass: Ins["passes"][number]; ins: Ins }) {
+function Step3({ form, selectedPass, ref, ins }: { form: FormData; selectedPass: Ins["passes"][number]; ref: string; ins: Ins }) {
   const recapValues = [
     `${form.civilite} ${form.prenom} ${form.nom}`,
     form.fonction, form.organisation, form.email,
-    form.pays, form.categorie, selectedPass.label, selectedPass.price, REF,
+    form.pays, form.categorie, selectedPass.label, selectedPass.price, ref,
   ];
 
   return (
@@ -464,7 +479,7 @@ function Step3({ form, selectedPass, ins }: { form: FormData; selectedPass: Ins[
                 <text x="60" y="62" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#0f2d1f">GN</text>
               </svg>
             </div>
-            <p className="text-xs font-mono font-bold mb-1" style={{ color: "#246444" }}>{REF}</p>
+            <p className="text-xs font-mono font-bold mb-1" style={{ color: "#246444" }}>{ref}</p>
             <p className="text-xs text-center mb-4" style={{ color: "rgba(15,45,31,0.45)" }}>{ins.qrPresent}</p>
             <div className="flex gap-2">
               <button className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all duration-200"

@@ -64,6 +64,26 @@ export type Partner = {
   created_at: string;
 };
 
+export type Registration = {
+  id: string;
+  reference: string;
+  civilite: string;
+  nom: string;
+  prenom: string;
+  fonction: string;
+  organisation: string;
+  pays: string;
+  email: string;
+  telephone: string;
+  categorie: string;
+  pass_type: string;
+  pass_price: string;
+  pay_method: string;
+  status: "en_attente" | "confirmé" | "annulé";
+  needs_invitation_letter: boolean;
+  created_at: string;
+};
+
 export type PartnershipRequest = {
   id: string;
   name: string;
