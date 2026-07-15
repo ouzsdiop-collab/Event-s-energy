@@ -69,6 +69,7 @@ export default function Footer() {
     { href: "#", label: f.privacy },
   ];
 
+
   return (
     <footer ref={footerRef} className="relative flex flex-col w-full overflow-hidden select-none">
 
