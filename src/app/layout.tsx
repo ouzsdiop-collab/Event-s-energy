@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import MockupBanner from "@/components/MockupBanner";
 import { LangProvider } from "@/lib/i18n";
 import { TransitionProvider } from "@/lib/transition";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Salon Ouest Africain Francophone sur le Gaz Naturel – 1ère Édition",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </TransitionProvider>
         </LangProvider>
+        <Analytics />
       </body>
     </html>
   );
