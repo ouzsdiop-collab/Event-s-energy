@@ -253,7 +253,7 @@ const T = {
       confirmPay: "Confirmer le paiement",
       // Step 3
       confirmed: "Inscription confirmée",
-      welcome: "Bienvenue au SOFGN 2027",
+      welcome: "Bienvenue au SOAFGN 2027",
       confirmEmail: "Un e-mail de confirmation a été envoyé à",
       badgeTitle: "Votre badge d'accès",
       qrPresent: "Présentez ce QR code à l'entrée pour retirer votre badge.",
@@ -513,7 +513,7 @@ const T = {
       confirmWire: "I have made the transfer",
       confirmPay: "Confirm payment",
       confirmed: "Registration confirmed",
-      welcome: "Welcome to SOFGN 2027",
+      welcome: "Welcome to SOAFGN 2027",
       confirmEmail: "A confirmation email has been sent to",
       badgeTitle: "Your access badge",
       qrPresent: "Present this QR code at the entrance to collect your badge.",

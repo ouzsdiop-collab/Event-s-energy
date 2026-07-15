@@ -7,7 +7,7 @@ import { useLang } from "@/lib/i18n";
 import { supabase } from "@/lib/supabase";
 
 function genRef() {
-  return "SOFGN-2027-" + Math.floor(1000 + Math.random() * 9000);
+  return "SOAFGN-2027-" + Math.floor(1000 + Math.random() * 9000);
 }
 
 type FormData = {

@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Générer la référence
-  const ref = `SOFGN-2027-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  const ref = `SOAFGN-2027-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
   // Insérer avec les données sanitizées
   const { error } = await supabaseAdmin.from("registrations").insert({

@@ -1748,7 +1748,7 @@ function SectionInscriptions() {
       setSaveError("Veuillez remplir tous les champs obligatoires."); return;
     }
     setSaving(true);
-    const ref = `SOFGN-2027-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    const ref = `SOAFGN-2027-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     const { error } = await supabase.from("registrations").insert({
       reference: ref,
       civilite: form.civilite, nom: form.nom, prenom: form.prenom, email: form.email,
