@@ -84,17 +84,17 @@ values ('soafgang-media', 'soafgang-media', true)
 on conflict (id) do nothing;
 
 -- Politique d'accès public en lecture
-create policy "Public read access" on storage.objects
+create policy if not exists "Public read access" on storage.objects
   for select using (bucket_id = 'soafgang-media');
 
 -- Politique d'upload pour les utilisateurs authentifiés (admin)
-create policy "Auth upload" on storage.objects
+create policy if not exists "Auth upload" on storage.objects
   for insert with check (bucket_id = 'soafgang-media');
 
-create policy "Auth update" on storage.objects
+create policy if not exists "Auth update" on storage.objects
   for update using (bucket_id = 'soafgang-media');
 
-create policy "Auth delete" on storage.objects
+create policy if not exists "Auth delete" on storage.objects
   for delete using (bucket_id = 'soafgang-media');
 
 -- RLS (Row Level Security) — lecture publique sur tout
