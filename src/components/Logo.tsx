@@ -106,8 +106,8 @@ export default function Logo() {
     <TransitionLink href="/" className="flex items-center gap-2.5 shrink-0 group" aria-label="SOAFGANG 2027 — Accueil">
       <LogoCanvas size={36} speed={0.8} />
       <div className="flex flex-col leading-none">
-        <span className="font-heading font-black text-[13px] tracking-tight text-gray-900 group-hover:text-forest-700 transition-colors">SOAFGANG</span>
-        <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-gray-400">2027 · Cotonou</span>
+        <span className="font-heading font-black text-[15px] tracking-tight text-gray-900 group-hover:text-forest-700 transition-colors">SOAFGANG</span>
+        <span className="text-[9px] font-semibold uppercase tracking-[0.20em]" style={{ color: "#c49a30" }}>2027 · Cotonou</span>
       </div>
     </TransitionLink>
   );

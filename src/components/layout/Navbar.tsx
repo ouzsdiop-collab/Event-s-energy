@@ -84,13 +84,23 @@ export default function Navbar() {
 
         {/* Right — actions */}
         <div className="hidden lg:flex items-center gap-2.5">
-          {/* Lang switcher */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: "rgba(15,45,31,0.45)" }}>
-            <button onClick={() => setLang("fr")} className="transition-colors px-1"
-              style={{ color: lang === "fr" ? "#246444" : undefined, fontWeight: lang === "fr" ? 800 : undefined }}>FR</button>
-            <span style={{ color: "rgba(15,45,31,0.18)" }}>|</span>
-            <button onClick={() => setLang("en")} className="transition-colors px-1"
-              style={{ color: lang === "en" ? "#246444" : undefined, fontWeight: lang === "en" ? 800 : undefined }}>EN</button>
+          {/* Lang switcher — pill toggle */}
+          <div className="flex items-center rounded-full p-0.5 text-[11px] font-bold"
+            style={{ backgroundColor: "rgba(36,100,68,0.08)", border: "1px solid rgba(36,100,68,0.12)" }}>
+            <button onClick={() => setLang("fr")}
+              className="px-2.5 py-1 rounded-full transition-all duration-200"
+              style={lang === "fr"
+                ? { backgroundColor: "#246444", color: "#fff" }
+                : { color: "rgba(15,45,31,0.45)" }}>
+              FR
+            </button>
+            <button onClick={() => setLang("en")}
+              className="px-2.5 py-1 rounded-full transition-all duration-200"
+              style={lang === "en"
+                ? { backgroundColor: "#246444", color: "#fff" }
+                : { color: "rgba(15,45,31,0.45)" }}>
+              EN
+            </button>
           </div>
           {/* Admin */}
           <TransitionLink href="/espace-admin"
@@ -104,8 +114,8 @@ export default function Navbar() {
           </TransitionLink>
           {/* CTA */}
           <TransitionLink href="/inscription"
-            className="inline-flex items-center gap-1.5 text-[13px] font-bold px-4 py-2 rounded-full transition-all"
-            style={{ backgroundColor: "#0f2d1f", color: "#c49a30", boxShadow: "0 2px 12px rgba(10,28,18,0.18)" }}>
+            className="inline-flex items-center gap-1.5 text-[13px] font-bold px-5 py-2 rounded-full transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_20px_rgba(196,154,48,0.35)]"
+            style={{ backgroundColor: "#c49a30", color: "#0f2d1f" }}>
             {t.nav.registerCta} <ChevronRight className="w-3.5 h-3.5" />
           </TransitionLink>
         </div>
