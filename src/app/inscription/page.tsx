@@ -106,6 +106,15 @@ export default function InscriptionPage() {
                 pass_type: form.typeParticipation, pass_price: selectedPass.price,
                 pay_method: payMethod, status: "en_attente", needs_invitation_letter: false,
               });
+              // Envoi email de confirmation (silencieux si RESEND_API_KEY absent)
+              fetch("/api/send-confirmation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  prenom: form.prenom, nom: form.nom, email: form.email,
+                  reference: ref, passType: selectedPass.label, organisation: form.organisation,
+                }),
+              }).catch(() => {}); // non bloquant
               setSubmitting(false);
               setStep(3);
             }} ins={ins} />}
@@ -455,46 +464,23 @@ function Step3({ form, selectedPass, ref, ins }: { form: FormData; selectedPass:
       <div className="grid md:grid-cols-2 gap-5">
         <Card title={ins.badgeTitle}>
           <div className="flex flex-col items-center">
-            <div className="rounded-2xl p-4 mb-4" style={{ border: "2px solid rgba(36,100,68,0.15)", backgroundColor: "white" }}>
-              <svg viewBox="0 0 120 120" className="w-40 h-40">
-                <rect width="120" height="120" fill="white"/>
-                <rect x="8" y="8" width="28" height="28" rx="3" fill="#0f2d1f"/>
-                <rect x="13" y="13" width="18" height="18" rx="1" fill="white"/>
-                <rect x="17" y="17" width="10" height="10" rx="1" fill="#0f2d1f"/>
-                <rect x="84" y="8" width="28" height="28" rx="3" fill="#0f2d1f"/>
-                <rect x="89" y="13" width="18" height="18" rx="1" fill="white"/>
-                <rect x="93" y="17" width="10" height="10" rx="1" fill="#0f2d1f"/>
-                <rect x="8" y="84" width="28" height="28" rx="3" fill="#0f2d1f"/>
-                <rect x="13" y="89" width="18" height="18" rx="1" fill="white"/>
-                <rect x="17" y="93" width="10" height="10" rx="1" fill="#0f2d1f"/>
-                {[44,48,52,60,64,72,80,88,96,104,108].map((x,i)=><rect key={i} x={x} y="8" width="4" height="4" fill="#0f2d1f"/>)}
-                {[44,52,56,60,68,76,84,92,100,108].map((x,i)=><rect key={i} x={x} y="16" width="4" height="4" fill="#0f2d1f"/>)}
-                {[44,48,56,64,72,80,88,96,104].map((x,i)=><rect key={i} x={x} y="24" width="4" height="4" fill="#0f2d1f"/>)}
-                {[8,16,24,44,52,60,68,76,84,92,100,108].map((y,i)=><rect key={i} x="44" y={y+32} width="4" height="4" fill="#0f2d1f"/>)}
-                {[8,20,28,36,44,52,60,68,76,84,92,100,108].map((y,i)=><rect key={i} x="52" y={y+32} width="4" height="4" fill="#0f2d1f" opacity={i%2===0?1:0}/>)}
-                {[8,16,24,32,48,56,72,80,88,100].map((y,i)=><rect key={i} x="60" y={y+32} width="4" height="4" fill="#0f2d1f"/>)}
-                {[8,24,40,56,72,88,100].map((y,i)=><rect key={i} x="68" y={y+32} width="4" height="4" fill="#0f2d1f"/>)}
-                {[12,28,44,60,76,92,108].map((y,i)=><rect key={i} x="76" y={y+32} width="4" height="4" fill="#0f2d1f"/>)}
-                <rect x="48" y="48" width="24" height="24" rx="4" fill="#c49a30"/>
-                <text x="60" y="62" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#0f2d1f">GN</text>
-              </svg>
+            <div className="rounded-2xl p-5 mb-4 text-center" style={{ border: "2px solid rgba(36,100,68,0.15)", backgroundColor: "#f9fbfa", width: "100%" }}>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center font-heading font-black text-2xl mx-auto mb-3"
+                style={{ background: "linear-gradient(135deg,#0f2d1f,#246444)", color: "#c49a30" }}>
+                {form.prenom?.[0]}{form.nom?.[0]}
+              </div>
+              <p className="font-heading font-black text-base" style={{ color: "#0f2d1f" }}>{form.prenom} {form.nom}</p>
+              <p className="text-xs mb-3" style={{ color: "rgba(15,45,31,0.45)" }}>{form.organisation}</p>
+              <span className="inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+                style={{ backgroundColor: "#0f2d1f", color: "#c49a30" }}>{selectedPass.label}</span>
             </div>
             <p className="text-xs font-mono font-bold mb-1" style={{ color: "#246444" }}>{ref}</p>
             <p className="text-xs text-center mb-4" style={{ color: "rgba(15,45,31,0.45)" }}>{ins.qrPresent}</p>
-            <div className="flex gap-2">
-              <button className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all duration-200"
-                style={{ border: "1.5px solid rgba(36,100,68,0.20)", color: "#246444" }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(36,100,68,0.05)")}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
-                <Download size={13} /> {ins.download}
-              </button>
-              <button className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all duration-200"
-                style={{ border: "1.5px solid rgba(36,100,68,0.20)", color: "#246444" }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(36,100,68,0.05)")}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
-                <Share2 size={13} /> {ins.share}
-              </button>
-            </div>
+            <TransitionLink href={`/badge/${ref}`}
+              className="flex items-center justify-center gap-2 w-full text-sm font-bold px-4 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
+              style={{ backgroundColor: "#0f2d1f", color: "#c49a30" }}>
+              <Download size={14} /> {ins.download}
+            </TransitionLink>
           </div>
         </Card>
 
