@@ -56,6 +56,8 @@ export default function Footer() {
     { href: "/a-propos", label: f.links.themes },
     { href: "/intervenants", label: f.links.speakers },
     { href: "/programme", label: f.links.agenda },
+    { href: "/partenaires", label: lang === "en" ? "Partners" : "Partenaires" },
+    { href: "/informations-pratiques", label: lang === "en" ? "Practical Info" : "Infos pratiques" },
     { href: "/inscription", label: f.links.participate },
   ];
 
