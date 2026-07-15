@@ -103,8 +103,12 @@ export function LogoMark({ size = 40 }: { size?: number }) {
 
 export default function Logo() {
   return (
-    <TransitionLink href="/" className="flex items-center shrink-0 group" aria-label="SOAFGANG 2027 — Accueil">
-      <LogoCanvas size={40} speed={0.8} />
+    <TransitionLink href="/" className="flex items-center gap-2.5 shrink-0 group" aria-label="SOAFGANG 2027 — Accueil">
+      <LogoCanvas size={36} speed={0.8} />
+      <div className="flex flex-col leading-none">
+        <span className="font-heading font-black text-[13px] tracking-tight text-gray-900 group-hover:text-forest-700 transition-colors">SOAFGANG</span>
+        <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-gray-400">2027 · Abidjan</span>
+      </div>
     </TransitionLink>
   );
 }

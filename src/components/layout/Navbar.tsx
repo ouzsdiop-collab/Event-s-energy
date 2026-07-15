@@ -32,7 +32,7 @@ function DropdownMenu({ item, pathname, onNavigate }: { item: NavItem; pathname:
       <TransitionLink
         href={item.href!}
         onClick={onNavigate}
-        className={`text-sm font-medium px-3 py-2 rounded transition-colors ${
+        className={`text-[13px] font-medium px-2.5 py-1.5 rounded transition-colors ${
           isActive ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"
         }`}
       >
@@ -46,7 +46,7 @@ function DropdownMenu({ item, pathname, onNavigate }: { item: NavItem; pathname:
       <button
         onClick={() => setOpen(o => !o)}
         onMouseEnter={() => setOpen(true)}
-        className={`flex items-center gap-1 text-sm font-medium px-3 py-2 rounded transition-colors ${
+        className={`flex items-center gap-1 text-[13px] font-medium px-2.5 py-1.5 rounded transition-colors ${
           isActive ? "text-forest-700 font-semibold" : "text-gray-600 hover:text-forest-700"
         }`}
       >
@@ -66,12 +66,12 @@ function DropdownMenu({ item, pathname, onNavigate }: { item: NavItem; pathname:
               key={child.href}
               href={child.href}
               onClick={() => { setOpen(false); onNavigate(); }}
-              className={`flex flex-col px-4 py-2.5 transition-colors ${
+              className={`flex flex-col px-4 py-2 transition-colors ${
                 pathname === child.href ? "bg-forest-50 text-forest-700" : "hover:bg-gray-50 text-gray-700"
               }`}
             >
-              <span className="text-sm font-medium">{child.label}</span>
-              {child.desc && <span className="text-xs text-gray-400 mt-0.5">{child.desc}</span>}
+              <span className="text-[13px] font-medium">{child.label}</span>
+              {child.desc && <span className="text-[11px] text-gray-400 mt-0.5">{child.desc}</span>}
             </TransitionLink>
           ))}
         </div>
@@ -130,7 +130,7 @@ export default function Navbar() {
         <Logo />
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-0.5">
+        <nav className="hidden lg:flex items-center gap-0">
           {navItems.map(item => (
             <DropdownMenu key={item.label} item={item} pathname={pathname} onNavigate={closeMenu} />
           ))}
@@ -153,7 +153,7 @@ export default function Navbar() {
           </div>
           <TransitionLink
             href="/inscription"
-            className="bg-forest-700 hover:bg-forest-800 text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-colors inline-flex items-center gap-1.5"
+            className="bg-forest-700 hover:bg-forest-800 text-white text-[13px] font-semibold px-4 py-2 rounded-md transition-colors inline-flex items-center gap-1.5"
           >
             {t.nav.registerCta} <ChevronRight className="w-3.5 h-3.5" />
           </TransitionLink>
