@@ -34,14 +34,32 @@ const categoryFilters: { key: Category; label: string }[] = [
 
 // Placeholder images shown before any are uploaded to Supabase
 const PLACEHOLDER_IMAGES: GalleryImage[] = [
-  { id: "p1", url: "https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?w=900&q=80", caption_fr: "Grande salle de conférence", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "venue", order_index: 0, published: true, created_at: "" },
-  { id: "p2", url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=900&q=80", caption_fr: "Session plénière", caption_en: null, focal_x: 0.5, focal_y: 0.35, category: "sessions", order_index: 1, published: true, created_at: "" },
-  { id: "p3", url: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&q=80", caption_fr: "Espace networking", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "networking", order_index: 2, published: true, created_at: "" },
-  { id: "p4", url: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=900&q=80", caption_fr: "Sofitel Abidjan — Vue extérieure", caption_en: null, focal_x: 0.5, focal_y: 0.45, category: "venue", order_index: 3, published: true, created_at: "" },
-  { id: "p5", url: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=900&q=80", caption_fr: "Table ronde experts", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "sessions", order_index: 4, published: true, created_at: "" },
-  { id: "p6", url: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=900&q=80", caption_fr: "Cocktail de bienvenue", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "networking", order_index: 5, published: true, created_at: "" },
-  { id: "p7", url: "https://images.unsplash.com/photo-1560523159-6b681a1e1852?w=900&q=80", caption_fr: "Salle de conférence VIP", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "venue", order_index: 6, published: true, created_at: "" },
-  { id: "p8", url: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=900&q=80", caption_fr: "Cérémonie d'ouverture", caption_en: null, focal_x: 0.5, focal_y: 0.35, category: "sessions", order_index: 7, published: true, created_at: "" },
+  // venue
+  { id: "p1",  url: "https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=1200&q=80", caption_fr: "Grande salle de conférence", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "venue", order_index: 0, published: true, created_at: "" },
+  { id: "p2",  url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80", caption_fr: "Lobby d'accueil", caption_en: null, focal_x: 0.5, focal_y: 0.45, category: "venue", order_index: 1, published: true, created_at: "" },
+  { id: "p3",  url: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&q=80", caption_fr: "Salle plénière principale", caption_en: null, focal_x: 0.5, focal_y: 0.38, category: "venue", order_index: 2, published: true, created_at: "" },
+  { id: "p4",  url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80", caption_fr: "Espace gala & dîner officiel", caption_en: null, focal_x: 0.5, focal_y: 0.42, category: "venue", order_index: 3, published: true, created_at: "" },
+  { id: "p5",  url: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=1200&q=80", caption_fr: "Vue panoramique — Abidjan", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "venue", order_index: 4, published: true, created_at: "" },
+  // sessions
+  { id: "p6",  url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80", caption_fr: "Session plénière d'ouverture", caption_en: null, focal_x: 0.5, focal_y: 0.35, category: "sessions", order_index: 5, published: true, created_at: "" },
+  { id: "p7",  url: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1200&q=80", caption_fr: "Table ronde — Transition énergétique", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "sessions", order_index: 6, published: true, created_at: "" },
+  { id: "p8",  url: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=1200&q=80", caption_fr: "Panel régional UEMOA", caption_en: null, focal_x: 0.5, focal_y: 0.35, category: "sessions", order_index: 7, published: true, created_at: "" },
+  { id: "p9",  url: "https://images.unsplash.com/photo-1558008258-3256797b43f3?w=1200&q=80", caption_fr: "Atelier technique gaz naturel", caption_en: null, focal_x: 0.5, focal_y: 0.45, category: "sessions", order_index: 8, published: true, created_at: "" },
+  { id: "p10", url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200&q=80", caption_fr: "Présentation d'un intervenant", caption_en: null, focal_x: 0.5, focal_y: 0.3, category: "sessions", order_index: 9, published: true, created_at: "" },
+  // speakers
+  { id: "p11", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80", caption_fr: "Intervenant — Secteur énergie", caption_en: null, focal_x: 0.5, focal_y: 0.25, category: "speakers", order_index: 10, published: true, created_at: "" },
+  { id: "p12", url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80", caption_fr: "Intervenante — Institutions financières", caption_en: null, focal_x: 0.5, focal_y: 0.2, category: "speakers", order_index: 11, published: true, created_at: "" },
+  { id: "p13", url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80", caption_fr: "Expert — Politique gazière", caption_en: null, focal_x: 0.5, focal_y: 0.22, category: "speakers", order_index: 12, published: true, created_at: "" },
+  { id: "p14", url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&q=80", caption_fr: "Intervenante — Régulation régionale", caption_en: null, focal_x: 0.5, focal_y: 0.2, category: "speakers", order_index: 13, published: true, created_at: "" },
+  // networking
+  { id: "p15", url: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&q=80", caption_fr: "Cocktail de bienvenue", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "networking", order_index: 14, published: true, created_at: "" },
+  { id: "p16", url: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=1200&q=80", caption_fr: "Échanges entre participants", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "networking", order_index: 15, published: true, created_at: "" },
+  { id: "p17", url: "https://images.unsplash.com/photo-1560439514-4e9645039924?w=1200&q=80", caption_fr: "Rencontres B2B", caption_en: null, focal_x: 0.5, focal_y: 0.45, category: "networking", order_index: 16, published: true, created_at: "" },
+  { id: "p18", url: "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1200&q=80", caption_fr: "Dîner de gala officiel", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "networking", order_index: 17, published: true, created_at: "" },
+  // other — énergie & contexte africain
+  { id: "p19", url: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200&q=80", caption_fr: "Infrastructure gazière en Afrique", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "other", order_index: 18, published: true, created_at: "" },
+  { id: "p20", url: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&q=80", caption_fr: "Transition énergétique", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "other", order_index: 19, published: true, created_at: "" },
+  { id: "p21", url: "https://images.unsplash.com/photo-1485575301924-6891ef935dcd?w=1200&q=80", caption_fr: "Pipeline — Réseau gazier", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "other", order_index: 20, published: true, created_at: "" },
 ];
 
 export default function GaleriePage() {
