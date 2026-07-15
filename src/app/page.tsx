@@ -1,7 +1,9 @@
 import Hero from "@/components/home/Hero";
 import ThemesSection from "@/components/home/ThemesSection";
 import SpeakersSection from "@/components/home/SpeakersSection";
+import ProgrammePreview from "@/components/home/ProgrammePreview";
 import PartnersSection from "@/components/home/PartnersSection";
+import CtaSection from "@/components/home/CtaSection";
 
 export default function HomePage() {
   return (
@@ -9,7 +11,9 @@ export default function HomePage() {
       <Hero />
       <ThemesSection />
       <SpeakersSection />
+      <ProgrammePreview />
       <PartnersSection />
+      <CtaSection />
     </>
   );
 }

@@ -88,6 +88,28 @@ const T = {
       more: "Et",
       moreSuffix: "autres intervenants à confirmer dans les prochaines semaines",
     },
+    // Programme Preview Section
+    programmePreview: {
+      label: "PROGRAMME · APERÇU",
+      title: "3 jours",
+      titleHighlight: "d'échanges",
+      ctaBtn: "Programme complet",
+      note: "Panels pléniers, tables rondes thématiques et sessions de networking · 3–5 février 2027, Cotonou",
+    },
+    // CTA Section
+    ctaSection: {
+      label: "REJOIGNEZ L'ÉVÉNEMENT",
+      title: "Soyez présent à",
+      titleHighlight: "la 1ère édition",
+      location: "Sofitel Cotonou Marina Hotel & Spa · 3–5 février 2027",
+      days: "Jours",
+      hours: "Heures",
+      minutes: "Min",
+      seconds: "Sec",
+      registerBtn: "S'inscrire maintenant",
+      programBtn: "Voir le programme",
+      note: "Places limitées · Inscription ouverte jusqu'au 31 janvier 2027",
+    },
     // Partners Section
     partners: {
       label: "NOS PARTENAIRES & SPONSORS",
@@ -335,6 +357,26 @@ const T = {
       confirmedBadge: "CONFIRMED",
       more: "And",
       moreSuffix: "more speakers to be confirmed in the coming weeks",
+    },
+    programmePreview: {
+      label: "PROGRAMME · PREVIEW",
+      title: "3 days",
+      titleHighlight: "of exchange",
+      ctaBtn: "Full programme",
+      note: "Plenary panels, thematic roundtables and networking sessions · Feb 3–5, 2027, Cotonou",
+    },
+    ctaSection: {
+      label: "JOIN THE EVENT",
+      title: "Be there for",
+      titleHighlight: "the 1st edition",
+      location: "Sofitel Cotonou Marina Hotel & Spa · Feb 3–5, 2027",
+      days: "Days",
+      hours: "Hours",
+      minutes: "Min",
+      seconds: "Sec",
+      registerBtn: "Register now",
+      programBtn: "View programme",
+      note: "Limited places · Registration open until January 31, 2027",
     },
     partners: {
       label: "OUR PARTNERS & SPONSORS",
