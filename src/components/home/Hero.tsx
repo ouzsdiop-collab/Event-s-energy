@@ -1,14 +1,34 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import TransitionLink from "@/components/TransitionLink";
 import { Calendar, MapPin, ChevronRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
+function useCountdown(target: Date) {
+  const calc = () => {
+    const diff = target.getTime() - Date.now();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return {
+      days:    Math.floor(diff / 86400000),
+      hours:   Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000)  / 60000),
+      seconds: Math.floor((diff % 60000)    / 1000),
+    };
+  };
+  const [time, setTime] = useState(calc);
+  useEffect(() => {
+    const id = setInterval(() => setTime(calc()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
 export default function Hero() {
   const { t } = useLang();
   const h = t.hero;
+  const countdown = useCountdown(new Date("2027-02-03T08:00:00"));
 
   return (
     <section className="relative min-h-[100dvh] flex flex-col overflow-hidden bg-[#f4f7f5]">
@@ -31,25 +51,28 @@ export default function Hero() {
             </span>
           </div>
 
-          <h1 className="font-heading font-black mb-6 hero-slide-up" style={{ lineHeight: 0.92 }}>
+          <h1 className="font-heading font-black mb-6 hero-slide-up" style={{ lineHeight: 0.95 }}>
+            {/* Supertitle — label secondaire, discret mais lisible */}
             <span
-              className="block font-medium uppercase tracking-[0.18em] mb-4"
-              style={{ fontSize: "clamp(0.60rem, 2.5vw, 0.80rem)", color: "rgba(36,100,68,0.45)", lineHeight: 1 }}
+              className="block font-semibold uppercase tracking-[0.20em] mb-3"
+              style={{ fontSize: "clamp(0.55rem, 1.8vw, 0.72rem)", color: "rgba(36,100,68,0.55)", lineHeight: 1 }}
             >
               {h.supertitle}
             </span>
+            {/* GAZ — noir profond, maximum d'impact */}
             <span
-              className="block text-gray-900"
-              style={{ fontSize: "clamp(3rem, 11vw, 6.2rem)", letterSpacing: "-0.02em" }}
+              className="block"
+              style={{ fontSize: "clamp(3rem, 11vw, 6.2rem)", letterSpacing: "-0.025em", color: "#0d1f15" }}
             >
               GAZ
             </span>
+            {/* NATUREL — gradient vert→or, c'est le mot clé */}
             <span
               className="block"
               style={{
                 fontSize: "clamp(3rem, 11vw, 6.2rem)",
-                letterSpacing: "-0.02em",
-                background: "linear-gradient(90deg, #246444 0%, #1e5238 45%, #c49a30 100%)",
+                letterSpacing: "-0.025em",
+                background: "linear-gradient(90deg, #246444 0%, #1a7a48 40%, #c49a30 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -57,14 +80,15 @@ export default function Hero() {
             >
               NATUREL
             </span>
+            {/* 2027 — contour doré visible, ancre temporelle */}
             <span
               className="block"
               style={{
-                fontSize: "clamp(1.8rem, 7vw, 3.8rem)",
-                letterSpacing: "0.14em",
+                fontSize: "clamp(1.6rem, 6vw, 3.4rem)",
+                letterSpacing: "0.18em",
                 color: "transparent",
-                WebkitTextStroke: "1.5px rgba(15,45,31,0.20)",
-                lineHeight: 1.2,
+                WebkitTextStroke: "1.5px rgba(196,154,48,0.45)",
+                lineHeight: 1.3,
               }}
             >
               2027
@@ -93,6 +117,32 @@ export default function Hero() {
                 <rect x="7" y="7" width="13" height="7" fill="#E8112D" />
               </svg>
               {h.country}
+            </div>
+          </div>
+
+          {/* Countdown */}
+          <div className="flex items-center gap-3 mb-8 hero-fade">
+            {[
+              { val: countdown.days,    label: "jours" },
+              { val: countdown.hours,   label: "heures" },
+              { val: countdown.minutes, label: "min" },
+              { val: countdown.seconds, label: "sec" },
+            ].map(({ val, label }, i) => (
+              <React.Fragment key={label}>
+                <div className="text-center">
+                  <div
+                    className="font-heading font-black tabular-nums leading-none"
+                    style={{ fontSize: "clamp(1.4rem, 3.5vw, 2rem)", background: "linear-gradient(135deg, #0d1f15, #246444)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+                  >
+                    {String(val).padStart(2, "0")}
+                  </div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mt-0.5">{label}</div>
+                </div>
+                {i < 3 && <span className="text-gold-400 font-black text-lg mb-3">:</span>}
+              </React.Fragment>
+            ))}
+            <div className="ml-1 pl-3 border-l border-gray-200">
+              <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-forest-600 leading-tight">Ouverture<br/>3 fév. 2027</div>
             </div>
           </div>
 
