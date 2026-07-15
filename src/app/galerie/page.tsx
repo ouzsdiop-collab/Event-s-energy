@@ -39,7 +39,7 @@ const PLACEHOLDER_IMAGES: GalleryImage[] = [
   { id: "p2",  url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80", caption_fr: "Lobby d'accueil", caption_en: null, focal_x: 0.5, focal_y: 0.45, category: "venue", order_index: 1, published: true, created_at: "" },
   { id: "p3",  url: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&q=80", caption_fr: "Salle plénière principale", caption_en: null, focal_x: 0.5, focal_y: 0.38, category: "venue", order_index: 2, published: true, created_at: "" },
   { id: "p4",  url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80", caption_fr: "Espace gala & dîner officiel", caption_en: null, focal_x: 0.5, focal_y: 0.42, category: "venue", order_index: 3, published: true, created_at: "" },
-  { id: "p5",  url: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=1200&q=80", caption_fr: "Vue panoramique — Abidjan", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "venue", order_index: 4, published: true, created_at: "" },
+  { id: "p5",  url: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=1200&q=80", caption_fr: "Vue panoramique — Cotonou", caption_en: null, focal_x: 0.5, focal_y: 0.5, category: "venue", order_index: 4, published: true, created_at: "" },
   // sessions
   { id: "p6",  url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80", caption_fr: "Session plénière d'ouverture", caption_en: null, focal_x: 0.5, focal_y: 0.35, category: "sessions", order_index: 5, published: true, created_at: "" },
   { id: "p7",  url: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1200&q=80", caption_fr: "Table ronde — Transition énergétique", caption_en: null, focal_x: 0.5, focal_y: 0.4, category: "sessions", order_index: 6, published: true, created_at: "" },
@@ -191,7 +191,7 @@ export default function GaleriePage() {
             <div className="px-8 py-10 text-center" style={{ background: "linear-gradient(135deg, #0f2d1f, #163d2a)" }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold-400 mb-3">Rejoignez l'événement</p>
               <h2 className="font-heading font-black text-white text-xl md:text-2xl mb-3">Vivez l'expérience en direct</h2>
-              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Inscrivez-vous pour participer au premier salon gazier francophone d'Afrique de l'Ouest — Abidjan, 2027.</p>
+              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Inscrivez-vous pour participer au premier salon gazier francophone d'Afrique de l'Ouest — Cotonou, 2027.</p>
               <a href="/inscription" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
                 S'inscrire maintenant
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
