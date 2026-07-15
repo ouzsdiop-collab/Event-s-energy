@@ -2074,13 +2074,6 @@ export default function EspaceAdminPage() {
         .btn-primary:active { transform:translateY(0); }
       `}</style>
 
-      <div className="w-full px-4 py-3 flex items-center gap-3" style={{ backgroundColor: "#0f2d1f", borderBottom: "1px solid rgba(196,154,48,0.20)" }}>
-        <Eye className="w-4 h-4 shrink-0" style={{ color: "#c49a30" }} />
-        <p className="text-xs" style={{ color: "rgba(255,255,255,0.70)" }}>
-          <span className="font-bold" style={{ color: "#c49a30" }}>Espace admin · </span>
-          Données simulées pour participants/paiements/programme. Intervenants, galerie, articles et partenaires sont connectés à Supabase en temps réel.
-        </p>
-      </div>
 
       <div className="flex" style={{ minHeight: "calc(100vh - 49px)" }}>
         {mobileSidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />}

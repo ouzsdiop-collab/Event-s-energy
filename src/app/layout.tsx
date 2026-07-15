@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import MockupBanner from "@/components/MockupBanner";
 import AlertBanner from "@/components/AlertBanner";
 import { LangProvider } from "@/lib/i18n";
 import { TransitionProvider } from "@/lib/transition";
@@ -20,7 +19,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LangProvider>
           <TransitionProvider>
-            <MockupBanner />
             <AlertBanner />
             <Navbar />
             <main>{children}</main>
