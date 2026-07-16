@@ -148,7 +148,7 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 md:gap-3 hero-fade">
             <TransitionLink
-              href="/inscription"
+              href="mailto:contact@soafgn2027.org"
               className="bg-forest-700 hover:bg-forest-800 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 shadow-sm text-sm w-full sm:w-auto"
             >
               {h.registerBtn} <ChevronRight className="w-4 h-4" />

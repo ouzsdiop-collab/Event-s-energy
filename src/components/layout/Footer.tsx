@@ -89,14 +89,14 @@ export default function Footer() {
           {f.tagline}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <TransitionLink href="/inscription"
+          <a href="mailto:contact@soafgn2027.org"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
             style={{ backgroundColor: "#c49a30", color: "#0a1f14" }}>
             {f.ctaBtn}
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
-          </TransitionLink>
+          </a>
           <TransitionLink href="/programme"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5"
             style={{ border: "1px solid rgba(196,154,48,0.4)", color: "#d4aa3a" }}>

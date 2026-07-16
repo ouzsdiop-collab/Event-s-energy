@@ -121,14 +121,14 @@ export default function CtaSection() {
         {/* CTA buttons */}
         <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
           style={{ transitionDelay: "360ms" }}>
-          <TransitionLink href="/inscription"
+          <a href="mailto:contact@soafgn2027.org"
             className="inline-flex items-center gap-2.5 font-bold px-8 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105 hover:shadow-[0_0_32px_rgba(196,154,48,0.35)]"
             style={{ backgroundColor: "#c49a30", color: "#060f09" }}>
             {c.registerBtn}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
-          </TransitionLink>
+          </a>
           <TransitionLink href="/programme"
             className="inline-flex items-center gap-2.5 font-semibold px-8 py-4 rounded-full text-sm transition-all duration-200 hover:scale-105"
             style={{ border: "1px solid rgba(196,154,48,0.3)", color: "#c49a30", backgroundColor: "rgba(196,154,48,0.06)" }}>

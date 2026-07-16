@@ -30,18 +30,6 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
-  // Rate limiting sur le formulaire d'inscription (POST implicite via Supabase client)
-  // On limite les routes sensibles côté next
-  if (pathname.startsWith("/inscription")) {
-    const allowed = rateLimit(ip, 20, 60_000); // 20 req/min par IP
-    if (!allowed) {
-      return new NextResponse("Trop de requêtes. Veuillez patienter.", {
-        status: 429,
-        headers: { "Retry-After": "60" },
-      });
-    }
-  }
-
   const response = NextResponse.next();
 
   // Headers de sécurité supplémentaires sur toutes les réponses

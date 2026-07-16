@@ -42,7 +42,6 @@ export default function Navbar() {
       name: lang === "en" ? "Participate" : "Participer",
       icon: Users,
       children: [
-        { href: "/inscription",   label: lang === "en" ? "Register"         : "S'inscrire",            desc: lang === "en" ? "Book your pass"      : "Réservez votre pass" },
         { href: "/partenaires",   label: lang === "en" ? "Become a partner" : "Devenir partenaire",    desc: lang === "en" ? "Sponsorship offers"  : "Offres de sponsoring" },
         { href: "/presse",        label: lang === "en" ? "Press"            : "Accréditation presse",  desc: lang === "en" ? "Media & journalists" : "Médias & journalistes" },
       ],
@@ -113,11 +112,11 @@ export default function Navbar() {
             <LayoutDashboard className="w-3 h-3" /> Admin
           </TransitionLink>
           {/* CTA */}
-          <TransitionLink href="/inscription"
+          <a href="mailto:contact@soafgn2027.org"
             className="inline-flex items-center gap-1.5 text-[13px] font-bold px-5 py-2 rounded-full transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_20px_rgba(196,154,48,0.35)]"
             style={{ backgroundColor: "#c49a30", color: "#0f2d1f" }}>
-            {t.nav.registerCta} <ChevronRight className="w-3.5 h-3.5" />
-          </TransitionLink>
+            {lang === "en" ? "Request invitation" : "Demander une invitation"} <ChevronRight className="w-3.5 h-3.5" />
+          </a>
         </div>
 
         {/* Mobile toggle */}
@@ -184,11 +183,11 @@ export default function Navbar() {
               <button onClick={() => setLang("en")} className="text-sm font-bold transition-colors"
                 style={{ color: lang === "en" ? "#c49a30" : "rgba(255,255,255,0.30)" }}>EN</button>
             </div>
-            <TransitionLink href="/inscription" onClick={() => setMenuOpen(false)}
+            <a href="mailto:contact@soafgn2027.org" onClick={() => setMenuOpen(false)}
               className="block w-full text-sm font-bold px-4 py-3 rounded-xl text-center"
               style={{ backgroundColor: "#c49a30", color: "#0f2d1f" }}>
-              {t.nav.registerCta}
-            </TransitionLink>
+              {lang === "en" ? "Request invitation" : "Demander une invitation"}
+            </a>
           </div>
         </div>
       </div>
