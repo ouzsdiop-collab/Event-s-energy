@@ -3,12 +3,100 @@
 import React, { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
 
 const socials = [
   { label: "LinkedIn", href: "#", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> },
   { label: "X / Twitter", href: "#", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
   { label: "YouTube", href: "#", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> },
 ];
+
+function NewsletterSection({ lang }: { lang: string }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      const { error } = await supabase
+        .from("newsletter_subscribers")
+        .insert({ email: email.trim(), created_at: new Date().toISOString() });
+      if (error) {
+        if (error.code === "23505") {
+          // duplicate
+          setStatus("success");
+        } else {
+          setErrorMsg(lang === "en" ? "An error occurred. Please try again." : "Une erreur est survenue. Veuillez réessayer.");
+          setStatus("error");
+        }
+      } else {
+        setStatus("success");
+      }
+    } catch {
+      setErrorMsg(lang === "en" ? "An error occurred. Please try again." : "Une erreur est survenue. Veuillez réessayer.");
+      setStatus("error");
+    }
+  };
+
+  return (
+    <div className="py-10 px-4 border-b" style={{ backgroundColor: "#0a1f14", borderColor: "rgba(255,255,255,0.07)" }}>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-12">
+          <div className="shrink-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#c49a30" }}>
+              {lang === "en" ? "Stay informed" : "Restez informé"}
+            </p>
+            <h3 className="font-heading font-black text-white text-lg leading-tight max-w-xs">
+              {lang === "en"
+                ? "Get the latest SOAFGN 2027 news"
+                : "Recevez les dernières actualités et annonces du SOAFGN 2027"}
+            </h3>
+          </div>
+          <div className="flex-1">
+            {status === "success" ? (
+              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "#4ade80" }}>
+                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                {lang === "en" ? "Thank you! You are now subscribed." : "Merci ! Vous êtes abonné(e)."}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={lang === "en" ? "Your email address" : "Votre adresse e-mail"}
+                  className="flex-1 bg-white/5 border text-white text-sm px-4 py-2.5 rounded-lg outline-none focus:border-gold-400 transition-colors placeholder:text-white/30"
+                  style={{ borderColor: "rgba(255,255,255,0.15)" }}
+                  disabled={status === "loading"}
+                />
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="font-semibold text-sm px-5 py-2.5 rounded-lg transition-all duration-200 hover:opacity-90 whitespace-nowrap disabled:opacity-60"
+                  style={{ backgroundColor: "#246444", color: "#fff" }}
+                >
+                  {status === "loading"
+                    ? (lang === "en" ? "..." : "...")
+                    : (lang === "en" ? "Subscribe" : "S'abonner")}
+                </button>
+              </form>
+            )}
+            {status === "error" && (
+              <p className="text-xs mt-2" style={{ color: "#f87171" }}>{errorMsg}</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Footer() {
   const waveRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -50,7 +138,7 @@ export default function Footer() {
     { href: "/a-propos", label: lang === "en" ? "About" : "À propos" },
     { href: "/programme", label: f.links.programme },
     { href: "/actualites", label: lang === "en" ? "News" : "Actualités" },
-    { href: "/inscription", label: lang === "en" ? "Register" : "S'inscrire" },
+    { href: "mailto:contact@soafgn2027.org", label: lang === "en" ? "Request an invitation" : "Demander une invitation", isExternal: true },
   ];
 
   const eventLinks = [
@@ -59,7 +147,7 @@ export default function Footer() {
     { href: "/programme", label: f.links.agenda },
     { href: "/partenaires", label: lang === "en" ? "Partners" : "Partenaires" },
     { href: "/informations-pratiques", label: lang === "en" ? "Practical Info" : "Infos pratiques" },
-    { href: "/inscription", label: f.links.participate },
+    { href: "mailto:contact@soafgn2027.org", label: lang === "en" ? "Request an invitation" : "Demander une invitation", isExternal: true },
   ];
 
   const legalLinks = [
@@ -92,7 +180,7 @@ export default function Footer() {
           <a href="mailto:contact@soafgn2027.org"
             className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
             style={{ backgroundColor: "#c49a30", color: "#0a1f14" }}>
-            {f.ctaBtn}
+            {lang === "en" ? "Request an invitation" : "Demander une invitation"}
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
             </svg>
@@ -109,6 +197,9 @@ export default function Footer() {
         <div className="absolute bottom-0 left-0 right-0 h-px"
           style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.06) 80%, transparent)" }} />
       </div>
+
+      {/* Newsletter */}
+      <NewsletterSection lang={lang} />
 
       {/* Main links */}
       <div className="py-14 px-4" style={{ backgroundColor: "#071810" }}>
@@ -148,13 +239,21 @@ export default function Footer() {
               {lang === "en" ? "Quick links" : "Liens rapides"}
             </h4>
             <ul className="space-y-3">
-              {navLinks.map(({ href, label }) => (
+              {navLinks.map(({ href, label, isExternal }) => (
                 <li key={label}>
-                  <TransitionLink href={href} className="text-sm transition-colors duration-200"
-                    style={{ color: "rgba(255,255,255,0.50)" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-                    onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
-                  >{label}</TransitionLink>
+                  {isExternal ? (
+                    <a href={href} className="text-sm transition-colors duration-200"
+                      style={{ color: "rgba(255,255,255,0.50)" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
+                    >{label}</a>
+                  ) : (
+                    <TransitionLink href={href} className="text-sm transition-colors duration-200"
+                      style={{ color: "rgba(255,255,255,0.50)" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
+                    >{label}</TransitionLink>
+                  )}
                 </li>
               ))}
             </ul>
@@ -166,13 +265,21 @@ export default function Footer() {
               {f.sections.event}
             </h4>
             <ul className="space-y-3">
-              {eventLinks.map(({ href, label }) => (
+              {eventLinks.map(({ href, label, isExternal }) => (
                 <li key={label}>
-                  <TransitionLink href={href} className="text-sm transition-colors duration-200"
-                    style={{ color: "rgba(255,255,255,0.50)" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-                    onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
-                  >{label}</TransitionLink>
+                  {isExternal ? (
+                    <a href={href} className="text-sm transition-colors duration-200"
+                      style={{ color: "rgba(255,255,255,0.50)" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
+                    >{label}</a>
+                  ) : (
+                    <TransitionLink href={href} className="text-sm transition-colors duration-200"
+                      style={{ color: "rgba(255,255,255,0.50)" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.50)")}
+                    >{label}</TransitionLink>
+                  )}
                 </li>
               ))}
             </ul>
@@ -185,7 +292,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3.5">
               {[
-                { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#c49a30" }}><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>, text: "info@gaz-naturel-uemoa.org" },
+                { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#c49a30" }}><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>, text: "contact@soafgn2027.org" },
                 { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#c49a30" }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.5a19.79 19.79 0 01-3-8.57A2 2 0 012.18 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.15a16 16 0 006.29 6.29l1.42-1.42a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>, text: "+229 21 30 56 78" },
                 { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#c49a30" }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>, text: "Sofitel Cotonou Marina, Bénin" },
               ].map(({ icon, text }) => (
