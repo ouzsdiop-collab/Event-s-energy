@@ -191,9 +191,9 @@ export default function GaleriePage() {
             <div className="px-8 py-10 text-center" style={{ background: "linear-gradient(135deg, #0f2d1f, #163d2a)" }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold-400 mb-3">Rejoignez l'événement</p>
               <h2 className="font-heading font-black text-white text-xl md:text-2xl mb-3">Vivez l'expérience en direct</h2>
-              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Inscrivez-vous pour participer au premier salon gazier francophone d'Afrique de l'Ouest — Cotonou, 2027.</p>
-              <a href="/inscription" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
-                S'inscrire maintenant
+              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Demandez votre invitation pour participer au premier salon gazier francophone d'Afrique de l'Ouest — Cotonou, 2027.</p>
+              <a href="mailto:contact@soafgn2027.org" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
+                Demander une invitation
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </a>
             </div>

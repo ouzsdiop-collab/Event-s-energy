@@ -340,15 +340,15 @@ export default function InformationsPratiquesPage() {
             <div className="px-8 py-10 text-center" style={{ background: "linear-gradient(135deg, #0f2d1f, #163d2a)" }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold-400 mb-3">Prêt à participer ?</p>
               <h2 className="font-heading font-black text-white text-xl md:text-2xl mb-2">Réservez votre place</h2>
-              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Inscrivez-vous dès maintenant pour bénéficier des tarifs préférentiels et du bloc de chambres négocié au Sofitel.</p>
+              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Demandez votre invitation et bénéficiez du bloc de chambres négocié au Sofitel pour les participants.</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <TransitionLink href="/inscription" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
-                  S'inscrire maintenant
+                <a href="mailto:contact@soafgn2027.org" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
+                  Demander une invitation
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                </TransitionLink>
-                <TransitionLink href="/contact" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5" style={{ border: "1px solid rgba(196,154,48,0.35)", color: "#c49a30" }}>
+                </a>
+                <a href="mailto:contact@soafgn2027.org?subject=Lettre%20d%27invitation%20SOAFGN%202027" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:bg-white/5" style={{ border: "1px solid rgba(196,154,48,0.35)", color: "#c49a30" }}>
                   Demander une lettre d'invitation
-                </TransitionLink>
+                </a>
               </div>
             </div>
           </div>

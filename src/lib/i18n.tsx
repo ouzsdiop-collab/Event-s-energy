@@ -21,7 +21,7 @@ const T = {
       tagline: "La rencontre régionale de référence pour les acteurs du secteur gazier de l'espace UEMOA.",
       cta: "Participez à la 1ère édition",
       ctaSub: "Cotonou, Bénin · 3–5 février 2027",
-      ctaBtn: "S'inscrire maintenant",
+      ctaBtn: "Demander une invitation",
       programBtn: "Voir le programme",
       sections: {
         event: "L'ÉVÉNEMENT",
@@ -52,7 +52,7 @@ const T = {
       date: "3–5 fév. 2027",
       location: "Sofitel Cotonou Marina",
       country: "Bénin",
-      registerBtn: "S'inscrire",
+      registerBtn: "Demander une invitation",
       programBtn: "Programme",
       speakersBtn: "Intervenants",
       stats: [
@@ -106,9 +106,9 @@ const T = {
       hours: "Heures",
       minutes: "Min",
       seconds: "Sec",
-      registerBtn: "S'inscrire maintenant",
+      registerBtn: "Demander une invitation",
       programBtn: "Voir le programme",
-      note: "Places limitées · Inscription ouverte jusqu'au 31 janvier 2027",
+      note: "Places limitées · Invitations sur demande · contact@soafgn2027.org",
     },
     // Key Figures Section
     keyFigures: {
@@ -203,7 +203,7 @@ const T = {
       ],
       ctaTitle: "Rejoignez cet événement historique",
       ctaSub: "Cotonou, Bénin · 3–5 février 2027",
-      ctaRegister: "S'inscrire",
+      ctaRegister: "Demander une invitation",
       ctaProgram: "Programme",
     },
     // Speakers (intervenants) page
@@ -223,7 +223,7 @@ const T = {
       topic: "Thème",
       viewProg: "Voir le programme",
       moreLabel: "Et 12+ autres intervenants à confirmer dans les prochaines semaines.",
-      moreLink: "S'inscrire",
+      moreLink: "Demander une invitation",
     },
     // Programme page
     programme: {
@@ -237,7 +237,7 @@ const T = {
       speakers: "Intervenants",
       noSessions: "Aucune session pour ce filtre.",
       networking: "Networking & échanges libres",
-      registerCta: "S'inscrire au salon",
+      registerCta: "Demander une invitation",
     },
     // Inscription page
     inscription: {
@@ -333,7 +333,7 @@ const T = {
       tagline: "The regional reference event for gas sector stakeholders in the UEMOA area.",
       cta: "Join the 1st edition",
       ctaSub: "Cotonou, Benin · Feb 3–5, 2027",
-      ctaBtn: "Register now",
+      ctaBtn: "Request an invitation",
       programBtn: "View programme",
       sections: {
         event: "THE EVENT",
@@ -363,7 +363,7 @@ const T = {
       date: "Feb 3–5, 2027",
       location: "Sofitel Cotonou Marina",
       country: "Benin",
-      registerBtn: "Register",
+      registerBtn: "Request an invitation",
       programBtn: "Programme",
       speakersBtn: "Speakers",
       stats: [
@@ -413,9 +413,9 @@ const T = {
       hours: "Hours",
       minutes: "Min",
       seconds: "Sec",
-      registerBtn: "Register now",
+      registerBtn: "Request an invitation",
       programBtn: "View programme",
-      note: "Limited places · Registration open until January 31, 2027",
+      note: "Limited places · Invitations on request · contact@soafgn2027.org",
     },
     keyFigures: {
       label: "KEY FIGURES",
@@ -506,7 +506,7 @@ const T = {
       ],
       ctaTitle: "Join this historic event",
       ctaSub: "Cotonou, Benin · Feb 3–5, 2027",
-      ctaRegister: "Register",
+      ctaRegister: "Request an invitation",
       ctaProgram: "Programme",
     },
     intervenants: {
@@ -525,7 +525,7 @@ const T = {
       topic: "Topic",
       viewProg: "View programme",
       moreLabel: "And 12+ more speakers to be confirmed in the coming weeks.",
-      moreLink: "Register",
+      moreLink: "Request an invitation",
     },
     programme: {
       eyebrow: "OFFICIAL PROGRAMME",
@@ -538,7 +538,7 @@ const T = {
       speakers: "Speakers",
       noSessions: "No sessions for this filter.",
       networking: "Networking & open exchanges",
-      registerCta: "Register for the forum",
+      registerCta: "Request an invitation",
     },
     inscription: {
       eyebrow: "1ST EDITION · COTONOU, BENIN",

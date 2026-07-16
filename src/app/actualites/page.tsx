@@ -159,11 +159,16 @@ export default function ActualitesPage() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-forest-600 mb-4">Liens rapides</p>
                   <div className="space-y-2">
                     {[
-                      { href: "/inscription", label: "S'inscrire au salon" },
-                      { href: "/intervenants", label: "Voir les intervenants" },
-                      { href: "/partenaires", label: "Devenir partenaire" },
-                      { href: "/presse", label: "Accréditation presse" },
-                    ].map(({ href, label }) => (
+                      { href: "mailto:contact@soafgn2027.org", label: "Demander une invitation", external: true },
+                      { href: "/intervenants", label: "Voir les intervenants", external: false },
+                      { href: "/partenaires", label: "Devenir partenaire", external: false },
+                      { href: "/presse", label: "Accréditation presse", external: false },
+                    ].map(({ href, label, external }) => external ? (
+                      <a key={href} href={href} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0 text-xs text-gray-600 hover:text-forest-700 transition-colors group">
+                        {label}
+                        <svg className="w-3.5 h-3.5 text-gray-300 group-hover:text-forest-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                      </a>
+                    ) : (
                       <TransitionLink key={href} href={href} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0 text-xs text-gray-600 hover:text-forest-700 transition-colors group">
                         {label}
                         <svg className="w-3.5 h-3.5 text-gray-300 group-hover:text-forest-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -205,11 +210,11 @@ export default function ActualitesPage() {
             <div className="px-8 py-10 text-center" style={{ background: "linear-gradient(135deg, #0f2d1f, #163d2a)" }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-gold-400 mb-3">Ne manquez rien</p>
               <h2 className="font-heading font-black text-white text-xl md:text-2xl mb-3">Rejoignez les participants</h2>
-              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Inscrivez-vous dès maintenant pour participer au premier salon gazier francophone d'Afrique de l'Ouest.</p>
-              <TransitionLink href="/inscription" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
-                S'inscrire maintenant
+              <p className="text-white/40 text-sm mb-7 max-w-md mx-auto">Demandez votre invitation pour participer au premier salon gazier francophone d'Afrique de l'Ouest.</p>
+              <a href="mailto:contact@soafgn2027.org" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
+                Demander une invitation
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </TransitionLink>
+              </a>
             </div>
           </div>
         </FadeIn>

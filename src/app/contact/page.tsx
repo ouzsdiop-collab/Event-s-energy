@@ -276,11 +276,16 @@ export default function ContactPage() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-forest-600 mb-5">Liens utiles</p>
                 <div className="space-y-2">
                   {[
-                    { href: "/inscription", label: "S'inscrire au salon" },
-                    { href: "/informations-pratiques", label: "Visas et hébergement" },
-                    { href: "/partenaires", label: "Devenir partenaire" },
-                    { href: "/programme", label: "Consulter le programme" },
-                  ].map(({ href, label }) => (
+                    { href: "mailto:contact@soafgn2027.org", label: "Demander une invitation", external: true },
+                    { href: "/informations-pratiques", label: "Visas et hébergement", external: false },
+                    { href: "/partenaires", label: "Devenir partenaire", external: false },
+                    { href: "/programme", label: "Consulter le programme", external: false },
+                  ].map(({ href, label, external }) => external ? (
+                    <a key={href} href={href} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 text-sm text-gray-600 hover:text-forest-700 transition-colors group">
+                      {label}
+                      <svg className="w-4 h-4 text-gray-300 group-hover:text-forest-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                  ) : (
                     <TransitionLink key={href} href={href} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 text-sm text-gray-600 hover:text-forest-700 transition-colors group">
                       {label}
                       <svg className="w-4 h-4 text-gray-300 group-hover:text-forest-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>

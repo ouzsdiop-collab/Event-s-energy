@@ -189,15 +189,15 @@ const pages = [
     features: ["Filtres par catégorie (Institutionnel, Secteur privé, etc.)", "Cartes avec animation d'entrée progressive", "Pays d'origine et drapeaux", "Badge de confirmation par intervenant"],
   },
   {
-    name: "Inscription",
-    href: "/inscription",
+    name: "Invitation",
+    href: "mailto:contact@soafgn2027.org",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
-    desc: "Formulaire complet d'inscription avec sélection du type de pass, informations personnelles, organisations et accompagnants.",
-    features: ["3 types de pass (VIP, Professionnel, Observateur)", "Tarification en FCFA", "Résumé dynamique de la commande", "Gestion des accompagnants"],
+    desc: "Les participations se font sur invitation. Contactez-nous pour demander votre accréditation ou votre lettre d'invitation officielle.",
+    features: ["Invitations sur demande", "Lettre officielle pour visa disponible", "Réponse sous 48h ouvrées", "contact@soafgn2027.org"],
   },
   {
     name: "Espace Admin",

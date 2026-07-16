@@ -275,11 +275,11 @@ function OrgsSection() {
           <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>{a.ctaSub}</p>
         </div>
         <div className="flex gap-3">
-          <TransitionLink href="/inscription"
+          <a href="mailto:contact@soafgn2027.org"
             className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
             style={{ backgroundColor: "#246444", color: "white" }}>
             {a.ctaRegister} <ArrowUpRight className="w-4 h-4" />
-          </TransitionLink>
+          </a>
           <TransitionLink href="/programme"
             className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200"
             style={{ border: "1px solid rgba(36,100,68,0.25)", color: "#246444" }}

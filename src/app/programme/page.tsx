@@ -155,11 +155,11 @@ export default function ProgrammePage() {
             <div className="flex items-center gap-2 md:justify-end text-sm" style={{ color: "rgba(15,45,31,0.45)" }}>
               <MapPin className="w-3.5 h-3.5" />{p.location}
             </div>
-            <TransitionLink href="/inscription"
+            <a href="mailto:contact@soafgn2027.org"
               className="mt-1 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide md:self-end"
               style={{ color: "#c49a30" }}>
               {p.registerCta} <ArrowUpRight className="w-3.5 h-3.5" />
-            </TransitionLink>
+            </a>
           </div>
         </div>
         <div className={`h-px transition-all duration-700 ${headerVisible ? "opacity-100" : "opacity-0"}`}
@@ -247,11 +247,11 @@ export default function ProgrammePage() {
             {lang === "en" ? "Programme subject to change · Version June 2026" : "Programme sous réserve de modifications · Version juin 2026"}
           </p>
           <div className="flex gap-3">
-            <TransitionLink href="/inscription"
+            <a href="mailto:contact@soafgn2027.org"
               className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
               style={{ backgroundColor: "#246444", color: "white" }}>
               {p.registerCta} <ArrowUpRight className="w-4 h-4" />
-            </TransitionLink>
+            </a>
             <TransitionLink href="/intervenants"
               className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 hover:bg-forest-50"
               style={{ border: "1px solid rgba(36,100,68,0.20)", color: "#246444" }}>

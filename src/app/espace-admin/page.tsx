@@ -1816,7 +1816,7 @@ function SectionInscriptions() {
     const csv = [headers, ...rows].map(row => row.map(v => `"${(v ?? "").toString().replace(/"/g, '""')}"`).join(",")).join("\n");
     const a = document.createElement("a");
     a.href = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(csv);
-    a.download = `inscriptions-soafgang2027-${new Date().toISOString().slice(0,10)}.csv`;
+    a.download = `inscriptions-soafgn2027-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
   };
 
