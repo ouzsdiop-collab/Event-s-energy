@@ -1,5 +1,7 @@
 import Hero from "@/components/home/Hero";
 import ThemesSection from "@/components/home/ThemesSection";
+import KeyFigures from "@/components/home/KeyFigures";
+import InvestmentOpportunities from "@/components/home/InvestmentOpportunities";
 import SpeakersSection from "@/components/home/SpeakersSection";
 import ProgrammePreview from "@/components/home/ProgrammePreview";
 import PartnersSection from "@/components/home/PartnersSection";
@@ -10,6 +12,8 @@ export default function HomePage() {
     <>
       <Hero />
       <ThemesSection />
+      <KeyFigures />
+      <InvestmentOpportunities />
       <SpeakersSection />
       <ProgrammePreview />
       <PartnersSection />

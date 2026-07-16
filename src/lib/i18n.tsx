@@ -110,6 +110,45 @@ const T = {
       programBtn: "Voir le programme",
       note: "Places limitées · Inscription ouverte jusqu'au 31 janvier 2027",
     },
+    // Key Figures Section
+    keyFigures: {
+      label: "CHIFFRES CLÉS",
+      title: "Le contexte qui justifie cet événement",
+      stats: [
+        { label: "Personnes sans accès à l'électricité en Afrique sub-saharienne", source: "AIE / Banque mondiale" },
+        { label: "Taux d'électrification moyen dans l'espace UEMOA", source: "EIS 2023" },
+        { label: "Part du gaz naturel dans le mix électrique de la région UEMOA", source: "CREG / AIE" },
+        { label: "Croissance projetée de la demande gazière en Afrique jusqu'en 2050", source: "AIE Africa Energy Outlook" },
+      ],
+    },
+    // Investment Opportunities Section
+    investmentOpportunities: {
+      label: "OPPORTUNITÉS D'INVESTISSEMENT",
+      title: "5 domaines prioritaires pour les investisseurs",
+      subtitle: "L'Exhibition est conçue comme une plateforme de matchmaking entre développeurs de projets et investisseurs",
+      items: [
+        {
+          title: "Infrastructures gazières",
+          desc: "Construction de gazoducs intra et interétatiques, terminaux GNL, réseaux de distribution nationaux.",
+        },
+        {
+          title: "Gas-to-Power",
+          desc: "Centrales électriques à gaz (IPP et publiques), conversion au gaz naturel, projets hybrides gaz-renouvelables.",
+        },
+        {
+          title: "Industrialisation & utilisation du gaz",
+          desc: "Industries intensives en gaz (ciment, agro-industrie, engrais), GNC pour le transport, solutions GPL.",
+        },
+        {
+          title: "Financement & structuration de projets",
+          desc: "Finance de projet, PPP, financement mixte, institutions financières régionales et internationales.",
+        },
+        {
+          title: "Technologies & services associés",
+          desc: "Solutions digitales pour réseaux gaziers, technologies de stockage et transport, ingénierie et maintenance.",
+        },
+      ],
+    },
     // Partners Section
     partners: {
       label: "NOS PARTENAIRES & SPONSORS",
@@ -377,6 +416,43 @@ const T = {
       registerBtn: "Register now",
       programBtn: "View programme",
       note: "Limited places · Registration open until January 31, 2027",
+    },
+    keyFigures: {
+      label: "KEY FIGURES",
+      title: "The context that makes this event essential",
+      stats: [
+        { label: "People without access to electricity in sub-Saharan Africa", source: "IEA / World Bank" },
+        { label: "Average electrification rate in the UEMOA area", source: "EIS 2023" },
+        { label: "Share of natural gas in the UEMOA electricity mix", source: "CREG / IEA" },
+        { label: "Projected growth in gas demand in Africa through 2050", source: "IEA Africa Energy Outlook" },
+      ],
+    },
+    investmentOpportunities: {
+      label: "INVESTMENT OPPORTUNITIES",
+      title: "5 priority areas for investors",
+      subtitle: "The Exhibition is designed as a matchmaking platform between project developers and investors",
+      items: [
+        {
+          title: "Gas infrastructure",
+          desc: "Construction of intra- and inter-state pipelines, LNG terminals, national distribution networks.",
+        },
+        {
+          title: "Gas-to-Power",
+          desc: "Gas-fired power plants (IPP and public), natural gas conversion, hybrid gas-renewable projects.",
+        },
+        {
+          title: "Industrialisation & gas utilisation",
+          desc: "Gas-intensive industries (cement, agro-industry, fertilisers), CNG for transport, LPG solutions.",
+        },
+        {
+          title: "Project financing & structuring",
+          desc: "Project finance, PPP, blended finance, regional and international financial institutions.",
+        },
+        {
+          title: "Technologies & associated services",
+          desc: "Digital solutions for gas networks, storage and transport technologies, engineering and maintenance.",
+        },
+      ],
     },
     partners: {
       label: "OUR PARTNERS & SPONSORS",
