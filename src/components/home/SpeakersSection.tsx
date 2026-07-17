@@ -3,18 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { supabase, type Speaker } from "@/lib/supabase";
 
 const BG_COLORS = ["1e5238", "163d2a", "246444", "1e5238", "163d2a", "246444", "1e5238", "163d2a"];
-
-// Blob unique par carte : couleur, position, taille, timing
-const BLOBS = [
-  { r: "196,154,48", opacity: 0.28, x: "78%",  y: "18%",  size: 140, duration: "5.2s", delay: "0s"   },
-  { r: "36,100,68",  opacity: 0.38, x: "18%",  y: "72%",  size: 160, duration: "6.1s", delay: "1.3s" },
-  { r: "196,154,48", opacity: 0.22, x: "25%",  y: "22%",  size: 130, duration: "4.8s", delay: "0.7s" },
-  { r: "36,100,68",  opacity: 0.32, x: "72%",  y: "68%",  size: 150, duration: "5.6s", delay: "2.0s" },
-];
 
 function avatarUrl(name: string, bg: string) {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=fff&size=200&bold=true&font-size=0.38`;
@@ -25,20 +16,19 @@ function SpeakerCard({
 }: {
   speaker: Speaker; i: number; lang: string; confirmedLabel: string; visible: boolean;
 }) {
-  const blob = BLOBS[i % BLOBS.length];
-
   return (
     <div
-      className={`group relative bg-white rounded-2xl overflow-hidden cursor-default border border-gray-100
-        shadow-sm hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1.5
-        transition-all duration-400 ease-out
+      className={`group relative cursor-default flex flex-col items-center text-center
+        hover:-translate-y-2 transition-all duration-400 ease-out px-3 py-6
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       style={{ transitionDelay: visible ? "0ms" : `${(i % 4) * 90}ms` }}
     >
-      <GlowingEffect spread={40} glow={false} disabled={false} proximity={60} inactiveZone={0.01} borderWidth={2} variant="forest" />
+      {/* Halo hover discret */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(196,154,48,0.07) 0%, transparent 70%)" }} />
 
       {/* Contenu */}
-      <div className="relative z-10 p-5 text-center">
+      <div className="relative z-10 text-center">
 
         {/* Avatar */}
         <div className="relative w-fit mx-auto mb-4">
@@ -93,14 +83,6 @@ function SpeakerCard({
         </div>
       </div>
 
-      {/* Barre dorée bas au hover */}
-      <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-300"
-        style={{ background: "linear-gradient(to right, #246444, #c49a30)", width: "0%" }}
-      />
-      <style jsx>{`
-        .group:hover div:last-child { width: 60% !important; }
-      `}</style>
     </div>
   );
 }
