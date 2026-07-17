@@ -69,14 +69,18 @@ export default function SpeakersSection() {
   }, [speakers]);
 
   return (
-    <section className="py-14 md:py-24 px-4 bg-[#f7faf8] relative overflow-hidden">
+    <section className="py-14 md:py-24 px-4 relative overflow-hidden" style={{ backgroundColor: "#071810" }}>
+      {/* Grille subtile sur fond sombre */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(0deg, #1e5238 0px, #1e5238 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #1e5238 0px, #1e5238 1px, transparent 1px, transparent 40px)",
+            "repeating-linear-gradient(0deg, #ffffff 0px, #ffffff 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #ffffff 0px, #ffffff 1px, transparent 1px, transparent 40px)",
         }}
       />
+      {/* Glow d'ambiance */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full pointer-events-none blur-[120px] opacity-20"
+        style={{ background: "radial-gradient(ellipse, rgba(36,100,68,0.5) 0%, transparent 70%)" }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div
@@ -84,15 +88,16 @@ export default function SpeakersSection() {
           className={`flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6 transition-all duration-700 ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
         >
           <div>
-            <p className="section-label mb-3">{sp.label}</p>
-            <h2 className="text-4xl md:text-5xl font-heading font-black text-gray-900 leading-tight">
-              {sp.title} <span className="text-forest-600">{sp.titleHighlight}</span>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] mb-3 block" style={{ color: "#c49a30" }}>{sp.label}</p>
+            <h2 className="text-4xl md:text-5xl font-heading font-black leading-tight text-white">
+              {sp.title} <span style={{ color: "#c49a30" }}>{sp.titleHighlight}</span>
             </h2>
             <div className="w-14 h-[3px] bg-gold-400 rounded-full mt-5" />
           </div>
           <TransitionLink
             href="/intervenants"
-            className="self-start md:self-auto inline-flex items-center gap-2 text-forest-600 font-semibold text-sm border border-forest-200 rounded-lg px-5 py-2.5 hover:bg-forest-50 hover:border-forest-400 transition-all duration-200 shrink-0"
+            className="self-start md:self-auto inline-flex items-center gap-2 font-semibold text-sm rounded-lg px-5 py-2.5 transition-all duration-200 shrink-0 hover:opacity-80"
+            style={{ border: "1px solid rgba(196,154,48,0.35)", color: "#c49a30" }}
           >
             {sp.ctaBtn}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,8 +177,8 @@ export default function SpeakersSection() {
 
         {speakers.length > 0 && (
           <div className="mt-10 text-center">
-            <p className="text-gray-400 text-sm">
-              {sp.more} <span className="font-semibold text-forest-600">12+ {sp.moreSuffix}</span>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+              {sp.more} <span className="font-semibold" style={{ color: "#c49a30" }}>12+ {sp.moreSuffix}</span>
             </p>
           </div>
         )}

@@ -196,7 +196,7 @@ export default function ThemesSection() {
   }, []);
 
   return (
-    <section className="py-16 md:py-28 px-4 overflow-hidden" style={{ backgroundColor: "#f7f9f7" }}>
+    <section className="py-16 md:py-28 px-4 overflow-hidden bg-white">
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}

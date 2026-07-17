@@ -136,7 +136,7 @@ export default function ProgrammePreview() {
   }, []);
 
   return (
-    <section className="py-14 md:py-24 px-4 bg-white overflow-hidden">
+    <section className="py-14 md:py-24 px-4 overflow-hidden" style={{ backgroundColor: "#f7f9f7" }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div ref={ref} className={`flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
