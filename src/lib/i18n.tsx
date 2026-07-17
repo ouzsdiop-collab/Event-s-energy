@@ -113,13 +113,15 @@ const T = {
     // Key Figures Section
     keyFigures: {
       label: "CHIFFRES CLÉS",
-      title: "Le contexte qui justifie cet événement",
+      title: "Le contexte qui rend cet événement indispensable",
       stats: [
-        { label: "Personnes sans accès à l'électricité en Afrique sub-saharienne", source: "AIE / Banque mondiale" },
-        { label: "Taux d'électrification moyen dans l'espace UEMOA", source: "EIS 2023" },
-        { label: "Part du gaz naturel dans le mix électrique de la région UEMOA", source: "CREG / AIE" },
-        { label: "Croissance projetée de la demande gazière en Afrique jusqu'en 2050", source: "AIE Africa Energy Outlook" },
+        { label: "Personnes sans accès à l'électricité en Afrique sub-saharienne — un défi structurel que le gaz naturel peut adresser", source: "AIE / Banque mondiale" },
+        { label: "Taux d'électrification moyen dans l'espace UEMOA, bien en deçà de la moyenne africaine (57%)", source: "EIS 2023" },
+        { label: "Part du gaz naturel dans le mix électrique actuel de la région UEMOA — un potentiel largement sous-exploité", source: "CREG / AIE" },
+        { label: "Croissance annuelle projetée de la demande gazière en Afrique d'ici 2050, la plus forte au monde", source: "AIE Africa Energy Outlook" },
       ],
+      context: "Ces données illustrent l'urgence d'un dialogue régional structuré entre décideurs, investisseurs et opérateurs du secteur gazier de l'espace UEMOA.",
+      contextLink: "En savoir plus sur le contexte",
     },
     // Investment Opportunities Section
     investmentOpportunities: {
@@ -419,13 +421,15 @@ const T = {
     },
     keyFigures: {
       label: "KEY FIGURES",
-      title: "The context that makes this event essential",
+      title: "The context that makes this event indispensable",
       stats: [
-        { label: "People without access to electricity in sub-Saharan Africa", source: "IEA / World Bank" },
-        { label: "Average electrification rate in the UEMOA area", source: "EIS 2023" },
-        { label: "Share of natural gas in the UEMOA electricity mix", source: "CREG / IEA" },
-        { label: "Projected growth in gas demand in Africa through 2050", source: "IEA Africa Energy Outlook" },
+        { label: "People without access to electricity in sub-Saharan Africa — a structural challenge natural gas can address", source: "IEA / World Bank" },
+        { label: "Average electrification rate in the UEMOA area, well below the African average (57%)", source: "EIS 2023" },
+        { label: "Share of natural gas in the current UEMOA electricity mix — a largely untapped potential", source: "CREG / IEA" },
+        { label: "Projected annual growth in gas demand in Africa through 2050, the highest rate in the world", source: "IEA Africa Energy Outlook" },
       ],
+      context: "These figures illustrate the urgency of a structured regional dialogue between decision-makers, investors and gas sector operators in the UEMOA area.",
+      contextLink: "Learn more about the context",
     },
     investmentOpportunities: {
       label: "INVESTMENT OPPORTUNITIES",
