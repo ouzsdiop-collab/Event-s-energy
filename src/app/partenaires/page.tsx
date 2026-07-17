@@ -5,10 +5,10 @@ import TransitionLink from "@/components/TransitionLink";
 import { supabase, type Partner } from "@/lib/supabase";
 
 const tierOptions = [
-  { value: "platine", label: "Platine — 15 000 000 FCFA" },
-  { value: "or", label: "Or — 8 000 000 FCFA" },
-  { value: "argent", label: "Argent — 4 000 000 FCFA" },
-  { value: "institutionnel", label: "Institutionnel — Sur mesure" },
+  { value: "platine", label: "Platine,  15 000 000 FCFA" },
+  { value: "or", label: "Or,  8 000 000 FCFA" },
+  { value: "argent", label: "Argent,  4 000 000 FCFA" },
+  { value: "institutionnel", label: "Institutionnel,  Sur mesure" },
   { value: "autre", label: "Autre / Je ne sais pas encore" },
 ];
 

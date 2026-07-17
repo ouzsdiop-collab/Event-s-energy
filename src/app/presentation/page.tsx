@@ -98,7 +98,7 @@ const participantCategories = [
       </svg>
     ),
     label: "Institutions régionales",
-    desc: "WAGP, WAPP, UEMOA — acteurs de l'intégration énergétique régionale",
+    desc: "WAGP, WAPP, UEMOA,  acteurs de l'intégration énergétique régionale",
   },
   {
     icon: (
@@ -116,7 +116,7 @@ const participantCategories = [
       </svg>
     ),
     label: "Délégation spéciale nigériane",
-    desc: "Délégation de haut niveau du secteur énergétique nigérian — premier producteur gazier de la région",
+    desc: "Délégation de haut niveau du secteur énergétique nigérian,  premier producteur gazier de la région",
   },
 ];
 
@@ -133,7 +133,7 @@ const beninReasons = [
   },
   {
     title: "Stabilité et attractivité",
-    desc: "Stabilité politique reconnue, réformes économiques continues et environnement favorable à l'investissement — gages de confiance pour les partenaires internationaux.",
+    desc: "Stabilité politique reconnue, réformes économiques continues et environnement favorable à l'investissement,  gages de confiance pour les partenaires internationaux.",
     icon: "◈",
   },
   {
@@ -281,7 +281,7 @@ export default function PresentationPage() {
         <div className="relative max-w-5xl mx-auto px-6 py-20 md:py-28 text-center">
           <div className="inline-flex items-center gap-2 border border-gold-500/30 rounded-full px-4 py-1.5 mb-8" style={{ backgroundColor: "rgba(196,154,48,0.08)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-[0.16em] text-gold-400">Concept Note Officiel — SOAFGN 2027</span>
+            <span className="text-xs font-bold uppercase tracking-[0.16em] text-gold-400">Concept Note Officiel,  SOAFGN 2027</span>
           </div>
           <h1 className="font-heading font-black text-white mb-5" style={{ fontSize: "clamp(1.7rem, 5vw, 3rem)", lineHeight: 1.08 }}>
             Construire un marché gazier intégré<br />et accessible dans l'espace UEMOA
@@ -290,7 +290,7 @@ export default function PresentationPage() {
             <span className="italic text-white/35">Défis, opportunités et engagements</span>
           </p>
           <p className="text-white/40 text-xs md:text-sm leading-relaxed max-w-xl mx-auto mb-10">
-            Cotonou, Bénin — 3, 4 & 5 février 2027 · Sofitel Cotonou Marina
+            Cotonou, Bénin,  3, 4 & 5 février 2027 · Sofitel Cotonou Marina
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <TransitionLink href="/" className="inline-flex items-center justify-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90" style={{ backgroundColor: "#c49a30", color: "#071810" }}>
@@ -326,7 +326,7 @@ export default function PresentationPage() {
                 Ce thème central reflète l'ambition collective des États membres de l'UEMOA de transformer la ressource gazière en véritable levier de développement économique et énergétique. Il positionne le SOAFGN 2027 comme l'espace de dialogue incontournable pour définir la trajectoire du secteur gazier régional.
               </p>
               <p>
-                Panels, tables rondes et réunions B2B facilitées par le comité organisateur — le format est conçu pour maximiser les échanges substantiels, favoriser la conclusion de partenariats et produire des engagements concrets à l'issue de l'événement.
+                Panels, tables rondes et réunions B2B facilitées par le comité organisateur,  le format est conçu pour maximiser les échanges substantiels, favoriser la conclusion de partenariats et produire des engagements concrets à l'issue de l'événement.
               </p>
             </div>
           </div>
@@ -434,7 +434,7 @@ export default function PresentationPage() {
               <h2 className="font-heading font-black text-gray-900 text-2xl md:text-3xl">Les 6 pages de la maquette</h2>
               <div className="w-10 h-[3px] bg-gold-400 rounded-full mt-4" />
               <p className="text-sm text-gray-500 mt-3 max-w-xl">
-                Prototype haute fidélité illustrant le potentiel digital du site officiel SOAFGN 2027 — naviguez librement.
+                Prototype haute fidélité illustrant le potentiel digital du site officiel SOAFGN 2027,  naviguez librement.
               </p>
             </div>
           </FadeIn>

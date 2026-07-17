@@ -88,13 +88,13 @@ function HeroSection() {
           style={{ color: "#c49a30", animationDelay: "0.1s" }}>
           {a.eyebrow}
         </p>
-        <h1 className={`font-heading font-black leading-[0.88] mb-10 ap-reveal ${visible ? "visible" : ""}`}
+        <h1 className={`font-heading font-black leading-[0.9] mb-10 ap-reveal ${visible ? "visible" : ""}`}
           style={{ animationDelay: "0.2s" }}>
-          <span className="block" style={{ fontSize: "clamp(2.2rem, 8vw, 6rem)", letterSpacing: "-0.03em", color: "#0f2d1f" }}>
+          <span className="block" style={{ fontSize: "clamp(1.9rem, 5vw, 3.8rem)", letterSpacing: "-0.02em", color: "#0f2d1f" }}>
             {a.title1}
           </span>
           <span className="block" style={{
-            fontSize: "clamp(2.2rem, 8vw, 6rem)", letterSpacing: "-0.03em",
+            fontSize: "clamp(1.9rem, 5vw, 3.8rem)", letterSpacing: "-0.02em",
             background: "linear-gradient(90deg, #246444 0%, #1e5238 50%, #c49a30 100%)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
           }}>
@@ -123,48 +123,103 @@ function HeroSection() {
 }
 
 function ContextSection() {
-  const { ref: headerRef, visible: headerVisible } = useReveal();
-  const { refs: statRefs, visible: statsVisible } = useRevealList(4, 100);
+  const { ref: headerRef, visible: headerVisible } = useReveal(0.1);
+  const { refs: paraRefs, visible: parasVisible } = useRevealList(3, 110);
+  const { refs: statRefs, visible: statsVisible } = useRevealList(4, 80);
   const { t } = useLang();
   const a = t.about;
+
   return (
-    <section className="py-16 md:py-20 px-4 sm:px-6 md:px-12" style={{ backgroundColor: "white" }}>
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
-          <div ref={headerRef} className={`ap-reveal ${headerVisible ? "visible" : ""}`}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.20em] mb-4" style={{ color: "#c49a30" }}>
+    <section className="overflow-hidden" style={{ backgroundColor: "white" }}>
+
+      {/* Headline + grand chiffre 600M */}
+      <div className="relative py-14 md:py-20 px-4 sm:px-6 md:px-12" style={{ borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+        {/* Watermark 600M en arrière-plan */}
+        <div className="absolute right-0 top-0 bottom-0 flex items-center pr-4 md:pr-12 pointer-events-none select-none" aria-hidden="true">
+          <span className="font-heading font-black" style={{
+            fontSize: "clamp(5rem, 18vw, 16rem)",
+            letterSpacing: "-0.04em",
+            color: "rgba(36,100,68,0.04)",
+            lineHeight: 1,
+          }}>
+            600M
+          </span>
+        </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div ref={headerRef}>
+            <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-5 ap-fade ${headerVisible ? "visible" : ""}`}
+              style={{ color: "#c49a30" }}>
               {a.contextLabel}
             </p>
-            <h2 className="font-heading font-black text-2xl md:text-3xl mb-6 leading-tight" style={{ color: "#0f2d1f" }}>
+            <h2 className={`font-heading font-black text-2xl md:text-3xl mb-8 leading-tight max-w-lg ap-reveal ${headerVisible ? "visible" : ""}`}
+              style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
               {a.contextTitle}
             </h2>
-            <div className="space-y-4 text-sm leading-[1.85]" style={{ color: "rgba(15,45,31,0.60)" }}>
-              <p>{a.contextP1}</p>
-              <p>{a.contextP2}</p>
-              <p>
+            {/* Stat mise en avant */}
+            <div className={`flex items-center gap-4 ap-fade ${headerVisible ? "visible" : ""}`}
+              style={{ animationDelay: "0.3s" }}>
+              <span className="font-heading font-black" style={{
+                fontSize: "clamp(2.4rem, 5vw, 3.8rem)",
+                background: "linear-gradient(135deg, #1e5238, #c49a30)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                lineHeight: 1,
+              }}>
+                600M
+              </span>
+              <div>
+                <p className="text-xs font-semibold" style={{ color: "#0f2d1f" }}>personnes</p>
+                <p className="text-xs" style={{ color: "rgba(15,45,31,0.45)" }}>sans accès à l'électricité en Afrique subsaharienne</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 paragraphes éditoriaux */}
+      <div className="py-12 px-4 sm:px-6 md:px-12" style={{ borderBottom: "1px solid rgba(36,100,68,0.08)" }}>
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 md:gap-12">
+          <div ref={el => { paraRefs.current[0] = el; }}>
+            <div className={`ap-reveal ${parasVisible[0] ? "visible" : ""}`}>
+              <div className="w-8 h-[2px] mb-5 rounded-full" style={{ background: "#c49a30" }} />
+              <p className="text-sm leading-[1.9]" style={{ color: "rgba(15,45,31,0.60)" }}>{a.contextP1}</p>
+            </div>
+          </div>
+          <div ref={el => { paraRefs.current[1] = el; }}>
+            <div className={`ap-reveal ${parasVisible[1] ? "visible" : ""}`} style={{ animationDelay: "0.1s" }}>
+              <div className="w-8 h-[2px] mb-5 rounded-full" style={{ background: "#246444" }} />
+              <p className="text-sm leading-[1.9]" style={{ color: "rgba(15,45,31,0.60)" }}>{a.contextP2}</p>
+            </div>
+          </div>
+          <div ref={el => { paraRefs.current[2] = el; }}>
+            <div className={`ap-reveal ${parasVisible[2] ? "visible" : ""}`} style={{ animationDelay: "0.2s" }}>
+              <div className="w-8 h-[2px] mb-5 rounded-full" style={{ background: "#1e5238" }} />
+              <p className="text-sm leading-[1.9]" style={{ color: "rgba(15,45,31,0.60)" }}>
                 {a.contextP3.split("{name}")[0]}
                 <strong style={{ color: "#0f2d1f" }}>{a.contextP3Bold}</strong>
                 {a.contextP3.split("{name}")[1]}
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {a.stats.map((s, i) => (
-              <div key={s.value} ref={el => { statRefs.current[i] = el; }}>
-                <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-4 h-full ap-reveal ${statsVisible[i] ? "visible" : ""}`}
-                  style={{ animationDelay: `${i * 0.08}s` }}>
-                  <div className="font-heading font-black mb-2" style={{
-                    fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-                    background: "linear-gradient(135deg, #1e5238 0%, #c49a30 100%)",
-                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                  }}>
-                    {s.value}
-                  </div>
-                  <p className="text-xs leading-snug" style={{ color: "rgba(15,45,31,0.50)" }}>{s.label}</p>
+        </div>
+      </div>
+
+      {/* Bande de stats */}
+      <div className="py-10 px-4 sm:px-6 md:px-12" style={{ backgroundColor: "rgba(36,100,68,0.025)" }}>
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+          {a.stats.map((s, i) => (
+            <div key={s.value} ref={el => { statRefs.current[i] = el; }}>
+              <div className={`ap-reveal ${statsVisible[i] ? "visible" : ""}`}>
+                <div className="font-heading font-black leading-none mb-2" style={{
+                  fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
+                  background: "linear-gradient(135deg, #1e5238 0%, #c49a30 100%)",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                }}>
+                  {s.value}
                 </div>
+                <p className="text-xs leading-snug" style={{ color: "rgba(15,45,31,0.45)" }}>{s.label}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
