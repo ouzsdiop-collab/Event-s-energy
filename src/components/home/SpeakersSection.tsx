@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { useLang } from "@/lib/i18n";
 import { supabase, type Speaker } from "@/lib/supabase";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const BG_COLORS = ["1e5238", "163d2a", "246444", "1e5238", "163d2a", "246444", "1e5238", "163d2a"];
 
@@ -18,14 +19,13 @@ function SpeakerCard({
 }) {
   return (
     <div
-      className={`group relative cursor-default flex flex-col items-center text-center
-        hover:-translate-y-2 transition-all duration-400 ease-out px-3 py-6
+      className={`group relative bg-white rounded-2xl p-5 border border-gray-100 cursor-default
+        shadow-sm hover:shadow-xl hover:shadow-forest-900/10 hover:-translate-y-1.5
+        transition-all duration-400 ease-out
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
       style={{ transitionDelay: visible ? "0ms" : `${(i % 4) * 90}ms` }}
     >
-      {/* Halo hover discret */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(196,154,48,0.07) 0%, transparent 70%)" }} />
+      <GlowingEffect spread={40} glow={false} disabled={false} proximity={60} inactiveZone={0.01} borderWidth={2} variant="forest" />
 
       {/* Contenu */}
       <div className="relative z-10 text-center">
@@ -145,9 +145,6 @@ export default function SpeakersSection() {
 
   return (
     <section className="py-14 md:py-24 px-4 relative overflow-hidden" style={{ backgroundColor: "#071810" }}>
-      {/* Grille fond */}
-      <div className="absolute inset-0 opacity-[0.035]"
-        style={{ backgroundImage: "repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 40px)" }} />
       {/* Glow ambiance haut */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-full pointer-events-none blur-[130px] opacity-18"
         style={{ background: "radial-gradient(ellipse, rgba(36,100,68,0.45) 0%, transparent 70%)" }} />
