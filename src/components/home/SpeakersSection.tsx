@@ -29,37 +29,13 @@ function SpeakerCard({
 
   return (
     <div
-      className={`group relative rounded-2xl overflow-hidden cursor-default
-        hover:-translate-y-2 hover:shadow-[0_24px_48px_rgba(0,0,0,0.45)]
+      className={`group relative bg-white rounded-2xl overflow-hidden cursor-default border border-gray-100
+        shadow-sm hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1.5
         transition-all duration-400 ease-out
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-      style={{
-        background: "rgba(255,255,255,0.045)",
-        border: "1px solid rgba(255,255,255,0.09)",
-        transitionDelay: visible ? "0ms" : `${(i % 4) * 90}ms`,
-      }}
+      style={{ transitionDelay: visible ? "0ms" : `${(i % 4) * 90}ms` }}
     >
-      <GlowingEffect spread={50} glow={false} disabled={false} proximity={70} inactiveZone={0.01} borderWidth={1.5} variant="forest" />
-
-      {/* ── Blob animé énergie ── */}
-      <div
-        className="blob-energy absolute rounded-full pointer-events-none"
-        style={{
-          width: blob.size,
-          height: blob.size,
-          left: blob.x,
-          top: blob.y,
-          transform: "translate(-50%, -50%)",
-          background: `radial-gradient(circle, rgba(${blob.r},${blob.opacity}) 0%, transparent 70%)`,
-          filter: "blur(28px)",
-          animationDuration: blob.duration,
-          animationDelay: blob.delay,
-        }}
-      />
-
-      {/* Grain subtil */}
-      <div className="absolute inset-0 opacity-[0.025] pointer-events-none"
-        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: "150px" }} />
+      <GlowingEffect spread={40} glow={false} disabled={false} proximity={60} inactiveZone={0.01} borderWidth={2} variant="forest" />
 
       {/* Contenu */}
       <div className="relative z-10 p-5 text-center">
@@ -86,8 +62,8 @@ function SpeakerCard({
             )}
           </div>
           {/* Badge check */}
-          <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full border-2"
-            style={{ backgroundColor: "#246444", borderColor: "#071810" }}>
+          <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full border-2 border-white"
+            style={{ backgroundColor: "#246444" }}>
             <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
@@ -95,25 +71,23 @@ function SpeakerCard({
         </div>
 
         {/* Nom */}
-        <div className="font-heading font-bold text-sm leading-tight mb-1.5 transition-colors duration-200"
-          style={{ color: "rgba(255,255,255,0.92)" }}>
+        <div className="font-heading font-bold text-gray-900 text-sm leading-tight mb-1.5">
           {speaker.name}
         </div>
 
         {/* Titre */}
-        <div className="text-[11px] leading-snug mb-4 min-h-[2.5rem] flex items-center justify-center"
-          style={{ color: "rgba(255,255,255,0.42)" }}>
+        <div className="text-gray-400 text-[11px] leading-snug mb-4 min-h-[2.5rem] flex items-center justify-center">
           {lang === "en" ? (speaker.title_en || speaker.title_fr) : speaker.title_fr}
         </div>
 
         {/* Pays + badge */}
         <div className="flex items-center justify-center gap-2">
-          <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.38)" }}>
+          <span className="text-xs text-gray-400 flex items-center gap-1">
             <span>{speaker.flag}</span>
             <span>{lang === "en" ? (speaker.country_en || speaker.country_fr) : speaker.country_fr}</span>
           </span>
-          <span className="w-px h-3" style={{ backgroundColor: "rgba(255,255,255,0.12)" }} />
-          <span className="text-[10px] font-bold tracking-wider" style={{ color: "#c49a30" }}>
+          <span className="w-px h-3 bg-gray-200" />
+          <span className="text-[10px] font-bold text-forest-600 tracking-wider">
             {confirmedLabel}
           </span>
         </div>
@@ -121,19 +95,11 @@ function SpeakerCard({
 
       {/* Barre dorée bas au hover */}
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-400"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-300"
         style={{ background: "linear-gradient(to right, #246444, #c49a30)", width: "0%" }}
       />
       <style jsx>{`
-        .group:hover div:last-child { width: 65% !important; }
-        .blob-energy {
-          animation: blobFloat var(--blob-dur, 5s) ease-in-out infinite;
-        }
-        @keyframes blobFloat {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); }
-          30%  { transform: translate(calc(-50% + 10px), calc(-50% - 8px)) scale(1.15); }
-          65%  { transform: translate(calc(-50% - 7px), calc(-50% + 6px)) scale(0.92); }
-        }
+        .group:hover div:last-child { width: 60% !important; }
       `}</style>
     </div>
   );
