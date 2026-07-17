@@ -609,45 +609,93 @@ function ResultsSection() {
 
 function OrgsSection() {
   const { ref: headerRef, visible: headerVisible } = useReveal();
-  const { refs: cardRefs, visible: cardsVisible } = useRevealList(3, 90);
+  const { refs: cardRefs, visible: cardsVisible } = useRevealList(3, 110);
   const { t } = useLang();
   const a = t.about;
+
   return (
-    <section className="px-4 sm:px-6 md:px-12 py-12 md:py-20" style={{ backgroundColor: "white" }}>
+    <section className="px-4 sm:px-6 md:px-12 py-16 md:py-24 overflow-hidden" style={{ backgroundColor: "white" }}>
       <div className="max-w-6xl mx-auto">
-        <div ref={headerRef}>
+
+        {/* Header */}
+        <div ref={headerRef} className="mb-14">
           <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${headerVisible ? "visible" : ""}`}
             style={{ color: "#c49a30" }}>
             {a.orgsLabel}
           </p>
-          <h2 className={`font-heading font-black text-2xl md:text-3xl mb-12 ap-reveal ${headerVisible ? "visible" : ""}`}
-            style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
-            {a.orgsTitle}
-          </h2>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <h2 className={`font-heading font-black text-2xl md:text-3xl leading-tight ap-reveal ${headerVisible ? "visible" : ""}`}
+              style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
+              {a.orgsTitle}
+            </h2>
+            <p className={`text-sm md:max-w-sm ap-fade ${headerVisible ? "visible" : ""}`}
+              style={{ color: "rgba(15,45,31,0.45)", animationDelay: "0.25s" }}>
+              {a.orgsSub}
+            </p>
+          </div>
+          <div className="w-12 h-[3px] rounded-full mt-5"
+            style={{ background: "linear-gradient(to right, #c49a30, transparent)" }} />
         </div>
-        <div className="grid md:grid-cols-3 gap-5">
+
+        {/* Cards organisateurs */}
+        <div className="grid md:grid-cols-3 gap-6">
           {a.orgs.map((org, i) => (
             <div key={org.name} ref={el => { cardRefs.current[i] = el; }}>
-              <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-7 ap-reveal ${cardsVisible[i] ? "visible" : ""}`}>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 font-heading font-black text-sm"
-                  style={{ background: "linear-gradient(135deg, #1e5238, #0f2d1f)", color: "#c49a30" }}>
-                  {org.initials}
+              <div className={`group relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm h-full flex flex-col ap-reveal ${cardsVisible[i] ? "visible" : ""}`}
+                style={{ animationDelay: `${i * 0.1}s` }}>
+
+                {/* Barre colorée top */}
+                <div className="h-1.5 w-full shrink-0"
+                  style={{ background: `linear-gradient(to right, ${org.color}, transparent)` }} />
+
+                <div className="p-7 flex flex-col flex-1">
+                  {/* Badge initiales + localisation */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center font-heading font-black text-base shrink-0 transition-transform duration-300 group-hover:scale-105"
+                      style={{ background: `linear-gradient(135deg, ${org.color}22, ${org.color}10)`, color: org.color, border: `1.5px solid ${org.color}30` }}>
+                      {org.initials}
+                    </div>
+                    <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                      style={{ background: "rgba(36,100,68,0.07)", color: "rgba(15,45,31,0.50)" }}>
+                      {org.location}
+                    </span>
+                  </div>
+
+                  {/* Nom */}
+                  <h3 className="font-heading font-bold text-base mb-2 leading-snug" style={{ color: "#0f2d1f" }}>
+                    {org.name}
+                  </h3>
+
+                  {/* Rôle */}
+                  <p className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: org.color }}>
+                    {org.role}
+                  </p>
+
+                  {/* Séparateur */}
+                  <div className="h-px mb-4" style={{ background: "rgba(36,100,68,0.08)" }} />
+
+                  {/* Description */}
+                  <p className="text-sm leading-relaxed flex-1" style={{ color: "rgba(15,45,31,0.55)" }}>
+                    {org.desc}
+                  </p>
                 </div>
-                <h3 className="font-heading font-bold text-base mb-1" style={{ color: "#0f2d1f" }}>{org.name}</h3>
-                <p className="text-[11px] font-bold uppercase tracking-wide mb-3" style={{ color: "#c49a30" }}>{org.role}</p>
-                <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.50)" }}>{org.desc}</p>
+
+                {/* Ligne colorée bottom au survol */}
+                <div className="absolute bottom-0 left-0 h-[2px] transition-all duration-500 group-hover:w-full"
+                  style={{ background: `linear-gradient(to right, ${org.color}, transparent)`, width: "0%" }} />
               </div>
             </div>
           ))}
         </div>
 
+        {/* CTA */}
         <div className={`mt-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-10 ap-fade ${headerVisible ? "visible" : ""}`}
-          style={{ borderTop: "1px solid rgba(36,100,68,0.12)", animationDelay: "0.35s" }}>
+          style={{ borderTop: "1px solid rgba(36,100,68,0.12)", animationDelay: "0.4s" }}>
           <div>
             <p className="text-sm font-semibold" style={{ color: "#0f2d1f" }}>{a.ctaTitle}</p>
             <p className="text-xs mt-0.5" style={{ color: "rgba(15,45,31,0.45)" }}>{a.ctaSub}</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <a href="mailto:contact@soafgn2027.org"
               className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-lg transition-all duration-200 hover:opacity-90"
               style={{ backgroundColor: "#246444", color: "white" }}>
@@ -662,6 +710,7 @@ function OrgsSection() {
             </TransitionLink>
           </div>
         </div>
+
       </div>
     </section>
   );
