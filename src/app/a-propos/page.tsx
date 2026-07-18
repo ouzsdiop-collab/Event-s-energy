@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import TransitionLink from "@/components/TransitionLink";
 import { ArrowUpRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 function useReveal(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -292,36 +293,86 @@ function ThemeSection() {
 /* ─── SOUS-THÈMES ───────────────────────────────────────────────────────── */
 function SubthemesSection() {
   const { ref: headerRef, visible: headerVisible } = useReveal();
-  const { refs: rowRefs, visible: rowsVisible } = useRevealList(4, 80);
+  const { refs: cardRefs, visible: cardsVisible } = useRevealList(4, 90);
   const { t } = useLang();
   const a = t.about;
+
+  const ICONS = [
+    <svg key="flame" width="22" height="22" viewBox="0 0 32 32" fill="none">
+      <path d="M16 3c0 0-1 5-5 8s-5 7-3 11c1.5 3 5 5 8 5s8-3 8-7c0-3-2-5-2-5s0 3-2 4c0-4-2-7-4-10z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+    </svg>,
+    <svg key="globe" width="22" height="22" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="2"/>
+      <path d="M4 16h24M16 4c-3 4-4 8-4 12s1 8 4 12M16 4c3 4 4 8 4 12s-1 8-4 12" stroke="currentColor" strokeWidth="2"/>
+    </svg>,
+    <svg key="leaf" width="22" height="22" viewBox="0 0 32 32" fill="none">
+      <path d="M6 26c4-8 10-12 20-14-2 10-8 16-20 14z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      <path d="M6 26l5-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>,
+    <svg key="handshake" width="22" height="22" viewBox="0 0 32 32" fill="none">
+      <path d="M3 18l6-6h4l3-3h4l6 6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      <path d="M3 18l4 4 5-5 3 3 5-5 4 4-6 6H9L3 18z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+    </svg>,
+  ];
+
   return (
     <section style={{ backgroundColor: "#f7f9f7" }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 md:py-20">
-        <div ref={headerRef}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-14 md:py-20">
+        <div ref={headerRef} className="mb-12">
           <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${headerVisible ? "visible" : ""}`}
             style={{ color: "#c49a30" }}>
             {a.subthemesLabel}
           </p>
-          <h2 className={`font-heading font-black text-2xl md:text-3xl mb-10 ap-reveal ${headerVisible ? "visible" : ""}`}
+          <h2 className={`font-heading font-black text-2xl md:text-3xl ap-reveal ${headerVisible ? "visible" : ""}`}
             style={{ color: "#0f2d1f", animationDelay: "0.1s" }}>
             {a.subthemesTitle}
           </h2>
+          <div className="w-14 h-[3px] rounded-full mt-4" style={{ background: "#c49a30" }} />
         </div>
-        <div className="flex flex-col divide-y" style={{ borderColor: "rgba(36,100,68,0.10)" }}>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {a.subthemes.map((st, i) => (
-            <div key={st.num} ref={el => { rowRefs.current[i] = el; }}>
-              <div className={`flex gap-6 md:gap-10 py-5 md:py-7 ap-reveal ${rowsVisible[i] ? "visible" : ""}`}>
-                <span className="font-mono text-xs shrink-0 pt-1 w-6 text-right" style={{ color: "rgba(36,100,68,0.28)" }}>
-                  {st.num}
-                </span>
-                <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-10 flex-1">
-                  <h3 className="font-heading font-bold text-base md:text-lg shrink-0 md:w-64" style={{ color: "#0f2d1f" }}>
-                    {st.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.52)" }}>{st.desc}</p>
+            <div
+              key={st.num}
+              ref={el => { cardRefs.current[i] = el; }}
+              className={`group relative bg-white rounded-2xl p-6 border border-gray-100 cursor-default
+                shadow-sm hover:shadow-xl hover:shadow-forest-900/10 hover:-translate-y-1.5
+                transition-all duration-400 ease-out overflow-hidden
+                ${cardsVisible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: cardsVisible[i] ? "0ms" : `${i * 90}ms` }}
+            >
+              <GlowingEffect spread={40} glow={false} disabled={false} proximity={60} inactiveZone={0.01} borderWidth={2} variant="forest" />
+
+              {/* Number watermark */}
+              <span
+                className="absolute top-3 right-4 font-heading font-black select-none pointer-events-none transition-opacity duration-300 group-hover:opacity-[0.08]"
+                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", color: "#246444", opacity: 0.04, lineHeight: 1 }}
+                aria-hidden
+              >
+                {st.num}
+              </span>
+
+              <div className="relative z-10">
+                {/* Icon */}
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl mb-4 transition-colors duration-300"
+                  style={{ background: "rgba(36,100,68,0.08)", color: "#246444" }}>
+                  {ICONS[i % ICONS.length]}
                 </div>
+
+                {/* Title */}
+                <h3 className="font-heading font-bold text-base md:text-lg mb-3 leading-snug" style={{ color: "#0f2d1f" }}>
+                  {st.title}
+                </h3>
+
+                {/* Desc */}
+                <p className="text-sm leading-relaxed" style={{ color: "rgba(15,45,31,0.52)" }}>
+                  {st.desc}
+                </p>
               </div>
+
+              {/* Gold bottom bar */}
+              <span className="absolute bottom-0 left-0 h-[2px] w-0 transition-all duration-500 group-hover:w-full rounded-full"
+                style={{ background: "linear-gradient(to right, #246444, #c49a30)" }} />
             </div>
           ))}
         </div>
