@@ -316,8 +316,15 @@ function SubthemesSection() {
   ];
 
   return (
-    <section style={{ backgroundColor: "#f7f9f7" }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-14 md:py-20">
+    <section className="relative" style={{ backgroundColor: "#f7f9f7" }}>
+      {/* Fondu depuis le sombre du haut */}
+      <div className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+        style={{ background: "linear-gradient(to bottom, #0f2d1f 0%, #f7f9f7 100%)" }} />
+      {/* Fondu vers le sombre du bas */}
+      <div className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+        style={{ background: "linear-gradient(to top, #071810 0%, #f7f9f7 100%)" }} />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-20 md:py-28 relative z-10">
         <div ref={headerRef} className="mb-12">
           <p className={`text-[10px] font-bold uppercase tracking-[0.20em] mb-3 ap-fade ${headerVisible ? "visible" : ""}`}
             style={{ color: "#c49a30" }}>
